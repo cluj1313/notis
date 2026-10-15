@@ -1108,7 +1108,7 @@ function ciSort(n,list){var m=n.isort||'alpha',base=n.createdAt||n.ts||'';list=l
 function chkOrder(n){var a=n.items||[];return ciSort(n,a.filter(function(x){return !x.done})).concat(ciSort(n,a.filter(function(x){return x.done})))}
 function chkTouch(n){n.updatedAt=n.editedAt=new Date().toISOString();chkSync(n);nSaveSoon()}
 function chkNote(){return fullId&&findN(fullId)}
-function chkRow(x){return '<div class="ci'+(x.done?' done':'')+'" data-id="'+x.id+'"><input type="checkbox"'+(x.done?' checked':'')+' aria-label="Bifează"><input class="cit" value="'+esc(x.text).replace(/"/g,'&quot;')+'" enterkeyhint="next" autocomplete="off"><button type="button" class="cix" aria-label="Șterge rândul">×</button></div>'}
+function chkRow(x){return '<div class="ci'+(x.done?' done':'')+'" data-id="'+x.id+'"><input type="checkbox"'+(x.done?' checked':'')+' aria-label="Bifează"><textarea class="cit" enterkeyhint="next" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" rows="1" wrap="off">'+esc(x.text)+'</textarea><button type="button" class="cix" aria-label="Șterge rândul">×</button></div>'}
 function chkRender(focusId,atEnd){var n=chkNote();if(!n)return;$('nfTitle').value=n.title||'';var a=n.items||[],un=ciSort(n,a.filter(function(x){return !x.done})),dn=ciSort(n,a.filter(function(x){return x.done}));if(!focusId){var ae=document.activeElement,ar=ae&&ae.closest&&ae.closest('#nfItems .ci');if(ar&&ae.classList.contains('cit')){focusId=ar.dataset.id;atEnd=true}}
  $('nfItems').innerHTML=un.map(chkRow).join('')+'<button type="button" class="ciadd" aria-label="Adaugă element"></button>'+(dn.length?'<div class="cisep"></div>'+dn.map(chkRow).join(''):'');
  if(focusId){var el=document.querySelector('#nfItems .ci[data-id="'+focusId+'"] .cit');if(el){el.focus();var L=atEnd?el.value.length:0;try{el.setSelectionRange(L,L)}catch(_){}}}}
@@ -1225,6 +1225,8 @@ $('sShareApp').onclick=function(){var U='https://cluj1313.github.io/notis/',d={t
  function cp(){var ok=function(){toast('Link copiat')};try{if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(U).then(ok,leg)}catch(_){}leg();
   function leg(){var ta=document.createElement('textarea');ta.value=U;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove();ok()}}
  if(navigator.share)navigator.share(d).catch(function(e){if(!e||e.name!=='AbortError')cp()});else cp()};
+/* v7: single-line textareas (no Chrome autofill bar): strip pasted newlines */
+document.addEventListener('input',function(e){var t=e.target;if(t&&(t.id==='nfTitle'||t.id==='prIn'||(t.classList&&t.classList.contains('cit')))&&/[\r\n]/.test(t.value)){var p=t.selectionStart;t.value=t.value.replace(/[\r\n]+/g,' ');try{t.setSelectionRange(p,p)}catch(_){}}},true);
 $('bJvImport').onclick=function(){nsImportJarvis();nsRenderJv()};
 $('nsImpGo').onclick=function(){if(!nsImportJarvis()){toast('Alege fișierul de backup Jarvis (.json)');$('bBkFile').value='';$('bBkFile').click()}};
 $('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner()};
