@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06111f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Notis">
+<meta name="jarvis-version" content="notis-v1">
+<title>Notis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"DSEG7 Classic";font-weight:700;font-display:swap;src:url(https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG7-Classic/DSEG7Classic-Bold.woff2) format("woff2")}
+@font-face{font-family:"DSEG14 Classic";font-weight:700;font-display:swap;src:url(https://cdn.jsdelivr.net/npm/dseg@0.46.0/fonts/DSEG14-Classic/DSEG14Classic-Bold.woff2) format("woff2")}
+:root{--bg:#06111f;--card:rgba(10,30,50,.55);--line:rgba(80,200,255,.28);--cyan:#3fd8ff;--cyan2:#7fe6ff;--txt:#e6f2fa;--mut:#8aa3b5;--green:#4ade80;--orange:#f5b84a;--red:#ff6b6b;--clock:#3fd8ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:Roboto,"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+body{min-height:100vh;background:
+ radial-gradient(ellipse at 20% -10%,rgba(30,120,180,.25),transparent 60%),
+ linear-gradient(rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,
+ linear-gradient(90deg,rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,var(--bg);
+ background-attachment:fixed}
+.wrap{max-width:460px;margin:0 auto;padding:16px 16px 120px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 18px}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.orb{width:68px;height:101px;flex:none;position:relative;overflow:visible}
+.orb-img{display:block;width:100%;height:100%;object-fit:fill;
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 6.5%,#000 93.5%,transparent),linear-gradient(transparent,#000 10%,#000 85%,transparent),radial-gradient(ellipse 72% 60% at 50% 50%,#000 70%,transparent 100%);
+ -webkit-mask-composite:source-in;
+ mask-image:linear-gradient(90deg,transparent,#000 6.5%,#000 93.5%,transparent),linear-gradient(transparent,#000 10%,#000 85%,transparent),radial-gradient(ellipse 72% 60% at 50% 50%,#000 70%,transparent 100%);
+ mask-composite:intersect}
+/* light racing once around the painted circle (ellipse cx576.5 cy877 rx498 ry527 in the 1152x1712 source; L≈3220.8), parked hidden behind the hat crown between laps */
+.orb-race{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:2;
+ filter:drop-shadow(0 0 1.5px rgba(170,248,255,.95)) drop-shadow(0 0 4px rgba(63,216,255,.6))}
+.orb-race path{fill:none;stroke-linecap:butt;animation:2.8s cubic-bezier(.5,.08,.5,.92) infinite;will-change:stroke-dashoffset}
+.orb-race .rt{stroke:rgba(110,225,255,.45);stroke-width:34;stroke-dasharray:315.6 2905.2;stroke-dashoffset:-2238.4;animation-name:orb-race-t}
+.orb-race .rm{stroke:rgba(185,248,255,.8);stroke-width:24;stroke-dasharray:170.7 3050.1;stroke-dashoffset:-2383.4;animation-name:orb-race-m}
+.orb-race .rh{stroke:#f4ffff;stroke-width:18;stroke-dasharray:74.1 3146.7;stroke-dashoffset:-2480;animation-name:orb-race-h}
+.orb.active .orb-race path{animation-duration:1.15s}
+@keyframes orb-race-t{0%{stroke-dashoffset:-2238.4}28.6%,100%{stroke-dashoffset:-5459.2}}
+@keyframes orb-race-m{0%{stroke-dashoffset:-2383.4}28.6%,100%{stroke-dashoffset:-5604.2}}
+@keyframes orb-race-h{0%{stroke-dashoffset:-2480}28.6%,100%{stroke-dashoffset:-5700.8}}
+.orb-spark{position:absolute;left:calc(71% - 2.5px);top:calc(26.4% - 2.5px);width:5px;height:5px;border-radius:50%;z-index:3;pointer-events:none;
+ background:#eefcff;box-shadow:0 0 5px 1.5px rgba(180,250,255,.95),0 0 10px 3px rgba(63,216,255,.45);
+ opacity:0;animation:orb-twinkle 5.2s ease-in-out infinite;animation-delay:1.55s;will-change:opacity,transform}
+.orb-spark::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:1px;background:rgba(230,255,255,.85);
+ transform:translate(-50%,-50%);box-shadow:0 0 3px rgba(200,250,255,.8)}
+.orb-spark::before{content:"";position:absolute;left:50%;top:50%;width:1px;height:7px;background:rgba(230,255,255,.85);
+ transform:translate(-50%,-50%);box-shadow:0 0 3px rgba(200,250,255,.8)}
+@keyframes orb-twinkle{0%,68%,100%{opacity:0;transform:scale(.35)}76%{opacity:1;transform:scale(1.15)}84%{opacity:.25;transform:scale(.65)}91%{opacity:.85;transform:scale(1)}97%{opacity:0;transform:scale(.35)}}
+@media (prefers-reduced-motion:reduce){
+ .orb-race path,.orb-spark{animation:none!important}
+ .orb-race{display:none}
+ .orb-spark{opacity:0!important;visibility:hidden}
+}
+.brand h1{margin:0;font-weight:400;letter-spacing:.27em;font-size:23px;color:#eef6fb;line-height:1}
+.brand small{display:block;color:#7cc3d8;letter-spacing:.13em;font-size:10.5px;margin-top:10px;font-weight:400;white-space:nowrap}
+.right{text-align:right;flex:none}
+.clock{position:relative;display:inline-block;font-family:"Roboto Condensed",Oswald,"Arial Narrow",sans-serif;font-weight:700;font-size:56px;line-height:.95;color:var(--clock);text-shadow:0 0 14px var(--clock);letter-spacing:.5px;white-space:nowrap}
+@supports (color:color-mix(in srgb,red 50%,transparent)){.clock{text-shadow:0 0 14px color-mix(in srgb,var(--clock) 60%,transparent)}}
+.clock.seg::before{content:attr(data-ghost);position:absolute;right:0;top:0;opacity:.1;text-shadow:none}
+.hbtns{display:flex;gap:6px;justify-content:flex-end;margin-top:10px}
+.btn.pill{white-space:nowrap;padding:6px 11px;font-size:13px;line-height:1.25;background:rgba(10,30,50,.4);color:#cfe3ee;border:1px solid var(--line);border-radius:999px}
+.btn{background:rgba(20,60,90,.45);color:var(--txt);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer}
+.btn:active{background:rgba(63,216,255,.25)}
+.btn.sel{border-color:var(--cyan);background:rgba(63,216,255,.2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:22px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 0 24px rgba(63,216,255,.04)}
+.lbl{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#9eebff;font-size:13.5px;letter-spacing:.15em;text-transform:uppercase;margin:-2px 0 12px;font-weight:600;min-height:32px}
+.spk{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(20,60,90,.35);color:var(--cyan2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.spk svg{width:16px;height:16px}
+.spk.on{background:rgba(63,216,255,.3);border-color:var(--cyan);box-shadow:0 0 10px rgba(63,216,255,.5)}
+.voice{font-size:18px;line-height:1.55;margin:0 0 12px}
+.status{color:var(--green);font-size:14px}
+.status.err{color:var(--orange)}
+.vprog{display:none;margin-top:10px;font-size:13px;color:var(--cyan2)}
+.vprog.show{display:block}
+.vprog .pb{height:4px;border-radius:4px;background:rgba(63,216,255,.15);margin-top:6px;overflow:hidden}
+.vprog .pb i{display:block;height:100%;width:0;background:var(--cyan);box-shadow:0 0 8px var(--cyan);transition:width .3s}
+/* karaoke */
+.kw{position:relative;scroll-margin:90px 0 120px}
+.lt.kw{display:inline-block}
+.w{transition:color .2s}
+.w.cur{color:#fff;text-shadow:0 0 8px rgba(63,216,255,.6)}
+.w.past{color:#b9cfdd}
+.lbl .w.cur{color:#fff}
+.done .w.past,.done .w.cur{color:inherit}
+.kbar{position:absolute;left:0;top:0;height:3px;width:0;border-radius:3px;background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 16px rgba(63,216,255,.6);opacity:0;pointer-events:none;
+ transition:transform .16s cubic-bezier(.4,.1,.2,1),width .16s cubic-bezier(.4,.1,.2,1),opacity .25s;will-change:transform,width}
+.kbar.show{opacity:1}
+.wx{display:flex;gap:14px;align-items:center;position:relative}
+.wxleft{flex:none;width:76px;text-align:center}
+.wxicon{display:flex;justify-content:center;line-height:0}
+.wxicon svg{width:72px;height:72px;display:block}
+.wxtemp{font-size:28px;font-weight:700;letter-spacing:-.02em;margin-top:-2px;line-height:1.1;color:var(--txt)}
+.wxright{flex:1;min-width:0;padding-right:2px}
+.wxhi{position:absolute;top:0;right:0;font-size:12.5px;color:var(--mut);font-weight:500}
+.wxcond{font-size:17px;font-weight:700;line-height:1.2;padding-right:52px}
+.wxfeel{font-size:13.5px;color:var(--mut);margin-top:3px}
+.wxline{font-size:13px;color:#9eb4c4;margin-top:4px}
+.wxmeta{color:#6f8798;font-size:11px;margin-top:5px;line-height:1.3}
+.wxtxt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wxdays{display:flex;gap:2px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(120,160,190,.18)}
+.wxday{flex:1 1 0;min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px}
+.wxday .wd{font-size:10.5px;color:var(--mut);font-weight:600;letter-spacing:.01em;line-height:1.1;white-space:nowrap}
+.wxday .wi{line-height:0;display:flex;justify-content:center}
+.wxday .wi svg{width:34px;height:34px;display:block}
+#cWx{padding:14px 16px}
+#cWx .lbl{margin-bottom:8px}
+ul.tasks{list-style:none;margin:0;padding:0}
+.task{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(120,180,220,.12);user-select:none;-webkit-user-select:none;cursor:pointer}
+.task:last-child{border-bottom:0}
+.dot{width:9px;height:9px;border-radius:50%;margin-top:7px;flex:none}
+.old .dot{background:var(--orange);box-shadow:0 0 6px var(--orange)}
+.new .dot{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.shop .dot{background:#c084fc;box-shadow:0 0 6px #c084fc}
+.task .t{flex:1;font-size:16.5px;line-height:1.5;padding-bottom:3px}
+.task .st{color:var(--mut);font-size:12.5px;margin-top:3px;white-space:nowrap;text-align:right}
+.task .st small{display:block;font-size:11px;color:#6f8798;margin-top:2px}
+.task .x{background:none;border:0;color:var(--mut);font-size:18px;line-height:1;padding:2px 2px 2px 6px;cursor:pointer}
+.task .ed{background:none;border:0;color:var(--mut);font-size:16px;line-height:1;padding:2px 4px;cursor:pointer}
+.task .al{background:none;border:0;color:var(--mut);font-size:15px;line-height:1;padding:2px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;opacity:.5;filter:grayscale(1)}
+.task .al.on{color:var(--cyan);opacity:1;filter:none;text-shadow:0 0 6px rgba(63,216,255,.6)}
+.task .al small{font-size:9.5px;margin-top:2px;white-space:nowrap;color:var(--cyan)}
+.task.editing .al{display:none}
+.alseg{display:flex;gap:8px}.alseg .btn,.alc{flex:1}
+.alseg .btn.on,.alc.on{border-color:rgba(63,216,255,.7);background:rgba(63,216,255,.14);color:var(--cyan)}
+.alchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.alc{flex:0 0 auto;background:rgba(5,18,32,.6);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
+.al2{display:flex;gap:8px}.al2 input{flex:1;min-width:0}
+#alFire .card{text-align:center}#alfTask{font-size:20px;margin:10px 0 16px;color:var(--txt)}
+.task .ed,.task .x,.task .al i{display:none}.task .al:not(.on){display:none}
+.task .al.on{pointer-events:none;padding:0;align-self:center;text-shadow:none}.task .al.on small{margin:0;font-size:10px;opacity:.85}
+.task.jv-lpon{background:rgba(63,216,255,.07);border-radius:10px}
+#lpMenu{position:fixed;inset:0;z-index:11;display:none}#lpMenu.show{display:block}
+#lpBox{position:fixed;min-width:190px;max-width:260px;max-height:70vh;overflow:auto;background:#0a1d30;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#lpBox button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--txt);font:inherit;font-size:15px;padding:11px 12px;border-radius:10px;cursor:pointer}
+#lpBox button:active{background:rgba(63,216,255,.12)}#lpBox .dng{color:var(--red)}#lpBox .cur{color:var(--cyan)}
+#lpBox .lph{color:var(--mut);font-size:12px;padding:6px 12px 2px;text-transform:uppercase;letter-spacing:.08em}
+.task.editing{cursor:default}
+.task.editing .st,.task.editing .x,.task.editing .ed{display:none}
+.task.editing .t{text-decoration:none;color:var(--txt)}
+.edin{display:block;width:100%;resize:none;overflow:hidden;background:rgba(5,18,32,.85);border:1px solid var(--cyan);color:var(--txt);border-radius:10px;padding:8px 10px;font:inherit;font-size:16px;line-height:1.4;outline:none;user-select:text;-webkit-user-select:text;box-shadow:0 0 10px rgba(63,216,255,.25)}
+.edb{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.edb .btn{width:44px;height:36px;padding:0;font-size:17px}
+.edb .eok{color:var(--green);border-color:rgba(74,222,128,.5)}
+.edb .eno{color:var(--red);border-color:rgba(255,107,107,.45)}
+.task.done .t{text-decoration:line-through;color:var(--mut)}
+.task.done .st{color:var(--green)}
+.task.done .dot{background:var(--green);box-shadow:0 0 6px var(--green)}
+.empty{color:var(--mut);font-size:14px;padding:6px 0}
+.add{display:flex;gap:8px;margin-top:14px}
+.add input{flex:1;min-width:0;background:rgba(5,18,32,.7);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:13px 14px;font:inherit;font-size:16px;outline:none}
+.add input:focus{border-color:var(--cyan)}
+.add input::placeholder{font-size:14.5px}
+.add .btn{padding:0 14px;font-size:15px}
+.mic{width:46px;flex:none;display:flex;align-items:center;justify-content:center}
+.mic.on{background:rgba(255,80,80,.3);border-color:var(--red)}
+.bar{position:fixed;left:0;right:0;bottom:0;padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:5}
+.barin{max-width:432px;margin:0 auto;display:flex;align-items:center;gap:10px;background:rgba(8,24,40,.88);border:1px solid var(--line);border-radius:20px;padding:12px 14px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.eq{display:flex;gap:3px;align-items:center;width:44px;height:20px;flex:none}
+.eq i{width:4px;height:6px;border-radius:2px;background:var(--cyan);opacity:.6}
+.eq.on i{animation:eq .7s ease-in-out infinite;opacity:1}
+.eq.on i:nth-child(2){animation-delay:.1s}.eq.on i:nth-child(3){animation-delay:.2s}.eq.on i:nth-child(4){animation-delay:.3s}.eq.on i:nth-child(5){animation-delay:.4s}
+@keyframes eq{50%{height:18px}}
+.barbtns{display:flex;gap:8px;flex:1;justify-content:center}
+.barbtns .btn.on{background:rgba(63,216,255,.3);border-color:var(--cyan)}
+.modal{position:fixed;inset:0;background:rgba(0,8,16,.75);display:none;align-items:center;justify-content:center;z-index:10;padding:16px}
+.modal.show{display:flex}
+.modal .card{width:100%;max-width:400px;background:#0a1d30;max-height:92vh;overflow:auto}
+.sec{color:var(--cyan2);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;margin:18px 0 10px;border-top:1px solid rgba(120,180,220,.15);padding-top:14px}
+.field{margin-bottom:14px}
+.field label{display:block;color:var(--mut);font-size:13px;margin-bottom:6px}
+.field input:not([type=range]):not([type=color]),.field select{width:100%;background:rgba(5,18,32,.8);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font:inherit;font-size:15px;outline:none}
+.field input[type=range]{width:100%;accent-color:var(--cyan)}
+.field .val{float:right;color:var(--cyan)}
+.hint{color:var(--mut);font-size:12px;margin-top:5px;line-height:1.4}
+.prow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.prow .ptxt{flex:1;min-width:150px;font-size:13.5px}
+.bklist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.bkrow{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(5,18,32,.6)}
+.bkrow .bklbl{font-size:14px;color:var(--txt);margin:0 0 8px;font-weight:500}
+.bkrow .bkacts{display:flex;gap:6px;flex-wrap:wrap}
+.bkrow .bkacts .btn{padding:5px 10px;font-size:12.5px}
+.bkempty{color:var(--mut);font-size:13px;padding:2px 0}
+
+.fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fopt{background:rgba(5,18,32,.7);border:1px solid var(--line);border-radius:12px;padding:8px 6px 6px;color:var(--clock);cursor:pointer;text-align:center;font:inherit}
+.fopt b{display:block;font-size:26px;line-height:1.15;white-space:nowrap;overflow:hidden}
+.fopt span{display:block;color:var(--mut);font-size:11px;margin-top:4px;font-family:Roboto,system-ui,sans-serif}
+.fopt.sel{border-color:var(--cyan);box-shadow:0 0 10px rgba(63,216,255,.35)}
+.colors{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.sw.sel{border-color:#fff}
+.colors input[type=color]{width:38px;height:32px;border:0;background:none;padding:0}
+.mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#0d2a40;border:1px solid var(--cyan);padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20;max-width:90%}
+.toast.show{opacity:1}
+.citylist{margin-top:8px}
+.citylist button{display:block;width:100%;text-align:left;margin-bottom:6px;border-radius:10px}
+.citylist button b{font-weight:500;color:var(--txt)}.citylist button small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.cityrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}.citysel{font-size:12.5px;color:var(--cyan2);flex:1;min-width:120px}
+.chk{display:flex;align-items:center;gap:10px;color:var(--txt);font-size:14.5px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.chk input{width:18px;height:18px;margin:0;flex:none;accent-color:var(--cyan)}
+
+.ctab .dot{background:var(--tc,#3fd8ff);box-shadow:0 0 6px var(--tc,#3fd8ff)}
+.ctab .lbl .lt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctab .lbl .lt::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--tc,#3fd8ff);box-shadow:0 0 6px var(--tc,#3fd8ff);margin-right:9px;vertical-align:1px}
+.hb{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(20,60,90,.35);color:var(--cyan2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:15px;line-height:1}
+.hb svg{width:15px;height:15px}
+.hb.del{color:#ff8a8a}
+.ctab .hb.ren,.ctab .hb.del{display:none}
+.lbl .hgrp{display:flex;gap:6px;flex:none}
+.ctab .lbl{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ctab .tcnt{display:none;flex:none;color:var(--mut);letter-spacing:.06em;margin-left:-2px}
+.ctab.col .tcnt{display:inline;margin-right:auto}
+.ctab.col .lbl .lt{flex:0 1 auto}
+.hb.tcol{width:34px;height:34px;border-color:transparent;background:none;color:#b7d4e4;transform-origin:center center;transition:transform .2s ease,color .2s}
+.hb.tcol svg{width:20px;height:20px;display:block}
+.hb.tcol:hover{color:var(--cyan2)}
+.ctab.col .hb.tcol{transform:rotate(-90deg)}
+.ctab.col ul.ctl,.ctab.col form.add{display:none}
+.ctab.col{padding-top:15px;padding-bottom:15px}.ctab.col .lbl{margin-bottom:0;min-height:34px}
+.ccol .lbl{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ccol .tcnt{display:none;flex:none;color:var(--mut);letter-spacing:.06em;margin-left:-2px}
+.ccol.col .tcnt{display:inline;margin-right:auto}
+.ccol.col .hb.tcol{transform:rotate(-90deg)}
+.ccol.col ul.tasks,.ccol.col form.add,.ccol.col .news-meta,.ccol.col .news-search,.ccol.col #newsBody{display:none}
+.ccol.col{padding-top:15px;padding-bottom:15px}.ccol.col .lbl{margin-bottom:0;min-height:34px}
+#cVoice.col > :not(.lbl),#cWx.col > :not(.lbl){display:none}
+#voiceModal{align-items:flex-end}#voiceModal #cVoice{margin:0 0 70px}#voiceModal #cVoice .lbl{cursor:default}#voiceModal .hb.tcol{display:none}#voiceModal .vclose{font-size:20px}
+#cWx .wxsum{display:none;flex:1;min-width:0;align-items:center;gap:10px;margin-right:2px}
+#cWx.col .wxsum{display:flex}
+#cWx.col #wxlbl{display:none}
+#cWx .wxcity{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#9eebff;font-size:13.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:600}
+#cWx .wxsumr{display:flex;align-items:center;gap:6px;flex:none}
+#cWx .wxtempmini{font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--txt);line-height:1}
+#cWx .wxiconmini{display:flex;align-items:center;justify-content:center;line-height:0}
+#cWx .wxiconmini svg{width:30px;height:30px;display:block}
+
+.btn.pill.newtab{color:var(--cyan2);border-style:dashed}
+.barin{padding:9px 12px}.barbtns{gap:6px}
+@media (max-width:440px){.bar{padding-left:8px;padding-right:8px}.barin{gap:8px;padding:9px 10px}.eq{width:32px;gap:2px}.eq i{width:3.5px}}
+@media (max-width:370px){.eq{width:26px}.eq i{width:3px}}
+.tcolors{display:flex;gap:10px;flex-wrap:wrap}
+.tcolors .sw{width:32px;height:32px}
+.tcolors .sw.none{background:none;border:2px dashed var(--line);color:var(--mut);font-size:12px}
+.tcolors .sw.sel{border-color:#fff;box-shadow:0 0 8px rgba(255,255,255,.4)}
+.offnote{background:rgba(255,181,71,.12);border:1px solid rgba(255,181,71,.5);color:#ffd9a0;border-radius:14px;padding:10px 14px;font-size:13.5px;line-height:1.45;margin-bottom:14px}
+.offnote a{color:#fff;word-break:break-all}
+.offnote[hidden]{display:none}
+.btn.pill.hist{padding-left:8px;padding-right:8px}
+.btn.pill.hist:disabled{opacity:.35;cursor:default}
+.readall{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:44px;margin:0 0 16px;padding:10px 16px;border:1px solid var(--line);border-radius:18px;background:rgba(20,60,90,.35);color:var(--cyan2);font:inherit;font-size:15px;letter-spacing:.04em;cursor:pointer;box-shadow:inset 0 0 24px rgba(63,216,255,.04)}
+.readall:active{background:rgba(63,216,255,.25)}
+.readall.on{background:rgba(63,216,255,.3);border-color:var(--cyan);box-shadow:0 0 10px rgba(63,216,255,.5)}
+.readall .rai{display:flex;width:18px;height:18px}.readall .rai svg{width:18px;height:18px}
+/* v14 drag & drop: these classes exist only while a press/drag is in progress */
+.jv-press,.jv-press *{-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+.jv-dragging,.jv-dragging *{cursor:grabbing!important}
+.task.jv-lift{transform:scale(1.02);transition:transform .12s ease;position:relative;z-index:2}
+.task.jv-hide{display:none}
+.jv-ph{list-style:none;box-sizing:border-box;border:1px dashed rgba(63,216,255,.45);border-radius:10px;background:rgba(63,216,255,.06);margin:2px 0}
+.jv-over>.empty{display:none}
+.card.jv-tgt{border-color:rgba(63,216,255,.55);box-shadow:inset 0 0 24px rgba(63,216,255,.08),0 0 14px rgba(63,216,255,.18)}
+.jv-ghost{position:fixed;left:0;top:0;z-index:9999;margin:0;pointer-events:none;background:#0a1d30;border:1px solid rgba(63,216,255,.5);border-radius:12px;padding:0 12px;box-sizing:border-box;box-shadow:0 10px 28px rgba(0,0,0,.55);opacity:.96;transform-origin:center}
+.jv-ghost .task{border-bottom:0}
+/* v16 urgent separator */
+.jv-sep{list-style:none;display:flex;align-items:center;gap:8px;padding:5px 0;margin:1px 0;user-select:none;-webkit-user-select:none;pointer-events:none}
+.jv-sep span{font-size:9px;letter-spacing:.06em;color:rgba(255,130,130,.65);font-weight:600;flex:none}
+.jv-sep::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(255,107,107,.5),rgba(255,107,107,.12) 70%,transparent);box-shadow:0 0 6px rgba(255,107,107,.3)}
+.task.urgent:not(.done) .dot{background:#ff6b6b!important;box-shadow:0 0 7px rgba(255,107,107,.75)!important}
+
+/* v22 AI news RSS */
+#cNews{--ns:1}
+.nrf{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(20,60,90,.35);color:var(--cyan2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.nrf svg{width:16px;height:16px}
+.nrf.spin svg{animation:nrfspin .9s linear infinite}
+@keyframes nrfspin{to{transform:rotate(360deg)}}
+#cNews .lbl{margin-bottom:6px}
+.news-meta{font-size:calc(11px*var(--ns));color:#6f8798;margin:-2px 0 8px}
+.news-src{margin:0 0 4px}
+.news-src+.news-src{margin-top:12px;padding-top:12px;border-top:1px solid rgba(120,160,190,.22)}
+.news-ch{font-size:calc(13px*var(--ns));font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#e8f4ff;margin:0 0 8px;line-height:1.25}
+.news-item{display:block;text-decoration:none;color:inherit;padding:7px 2px;border-radius:8px;margin:0 -2px}
+.news-item:active,.news-item:hover{background:rgba(63,216,255,.06)}
+.news-item+.news-item{border-top:1px solid rgba(100,140,170,.12)}
+.news-t{font-size:calc(14px*var(--ns));font-weight:600;line-height:1.3;color:#9eb8cc;margin:0 0 3px}
+.news-s{font-size:calc(12.5px*var(--ns));line-height:1.35;color:#7a94a8;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.news-when{font-size:calc(11px*var(--ns));color:#5e7588;margin-top:3px}
+.news-cat{font-size:calc(10.5px*var(--ns));font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan2);margin:2px 0 10px;display:flex;align-items:center;gap:8px}
+.news-cat::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(63,216,255,.35),transparent)}
+.news-catblk+.news-catblk{margin-top:18px;padding-top:14px;border-top:1px solid rgba(63,216,255,.22)}
+.ncats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field .ncats .ncat{margin:0;display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--txt);padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(5,18,32,.6);cursor:pointer;user-select:none;-webkit-user-select:none}
+.field .ncats .ncat input[type=checkbox]{width:18px;height:18px;margin:0;padding:0;flex:none;border-radius:4px;background:none;accent-color:var(--cyan)}
+.field .ncats .ncat.on{border-color:rgba(63,216,255,.55);background:rgba(63,216,255,.08)}
+.news-empty{color:var(--mut);font-size:calc(13.5px*var(--ns));padding:4px 0}
+/* v38 news search */
+.news-search{display:flex;align-items:center;gap:8px;margin:0 0 10px;padding:7px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(5,18,32,.7)}
+.news-search .ns-ico{flex:none;font-size:calc(14px*var(--ns));line-height:1;opacity:.9}
+.news-search input{flex:1;min-width:0;background:none;border:0;color:var(--txt);font:inherit;font-size:calc(14px*var(--ns));outline:none;padding:0;line-height:1.3}
+.news-search input::placeholder{color:var(--mut);font-size:calc(13.5px*var(--ns))}
+.news-search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.news-search .ns-clear{flex:none;width:28px;height:28px;border:0;border-radius:50%;background:rgba(20,60,90,.45);color:var(--mut);font-size:18px;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.news-search .ns-clear[hidden]{display:none!important}
+/* v39 web search row */
+.news-web{display:flex;align-items:center;gap:8px;margin:-4px 0 10px;padding:7px 10px;border:1px solid rgba(63,216,255,.22);border-radius:12px;background:rgba(63,216,255,.05);color:var(--cyan2);text-decoration:none;font-size:calc(13px*var(--ns));line-height:1.3;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.news-web:hover,.news-web:active{background:rgba(63,216,255,.1)}
+.news-web[hidden]{display:none!important}
+.news-web .nw-q{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccol.col .news-web{display:none!important}
+
+.task,.note,.lbl,#lpMenu,#lpBox{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.task textarea,.note textarea,.lbl input{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#notesPg{position:fixed;inset:0;z-index:9;overflow:auto;transform:translateX(100%);transition:transform .28s ease;visibility:hidden;background:
+ radial-gradient(ellipse at 20% -10%,rgba(30,120,180,.25),transparent 60%),
+ linear-gradient(rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,
+ linear-gradient(90deg,rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,var(--bg)}
+#notesPg.show{transform:none;visibility:visible}
+html.jv-notes body{overflow:hidden}
+#notesPg .nwrap{max-width:560px;margin:0 auto;padding:18px 16px 40px}
+#notesPg .ntop{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+#notesBack{width:38px;height:38px;font-size:24px;line-height:1}
+#notesPg h2{margin:0;font-size:18px;letter-spacing:.18em;color:var(--cyan);font-weight:700}
+#notesList{list-style:none;margin:14px 0 0;padding:0}
+.note{padding:11px 4px;border-bottom:1px solid rgba(120,180,220,.12);font-size:16.5px;line-height:1.5;cursor:default}
+.note:last-child{border-bottom:0}.note .t{display:block;white-space:pre-wrap;word-break:break-word}
+.note .nts{display:block;color:#6f8798;font-size:11px;margin-top:2px}.note.editing .nts{display:none}
+#notesList .empty{color:var(--mut);padding:8px 4px}
+#notesPg .nwrap{padding-left:12px;padding-right:12px}#notesPg .card{padding:14px 12px}
+#fNote.nadd{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+#iNote{width:100%;box-sizing:border-box;resize:none;overflow:hidden;min-height:46px;max-height:40vh;background:rgba(5,18,32,.8);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font:inherit;font-size:15px;line-height:1.4;outline:none}
+#fNote.nadd .btn{align-self:flex-end;padding:11px 22px}#iNote:focus{border-color:var(--cyan)}#iNote::placeholder{font-size:14.5px}
+.note::after{content:'';display:block;clear:both}.note .t{display:inline;overflow-wrap:anywhere;word-break:normal}.note.editing .t{display:block}.note .nts{float:right;margin:5px 0 0 12px;display:inline;line-height:1.5}
+
+.wrap .card{margin-bottom:10px}.wrap .readall{margin-bottom:10px}
+.ntabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.ntabs::-webkit-scrollbar{display:none}
+.ntab{flex:none;background:rgba(20,60,90,.35);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.ntab.on{border-color:rgba(63,216,255,.75);background:rgba(63,216,255,.16);color:var(--cyan);box-shadow:0 0 10px rgba(63,216,255,.25)}
+.ntab.nadd1{color:var(--cyan2);font-size:17px;padding:6px 14px}.ntab.jv-lpon{background:rgba(63,216,255,.25)}
+#notesList .note{display:flex;align-items:baseline;gap:10px;padding:12px 4px;cursor:pointer}
+#notesList .note::after{display:none}
+#notesList .note .t{display:block;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#notesList .note .nts{float:none;flex:none;margin:0;display:block}
+#noteFull{position:fixed;inset:0;z-index:10;overflow:auto;display:none;background:
+ radial-gradient(ellipse at 20% -10%,rgba(30,120,180,.25),transparent 60%),
+ linear-gradient(rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,
+ linear-gradient(90deg,rgba(80,180,255,.05) 1px,transparent 1px) 0 0/28px 28px,var(--bg)}
+#noteFull.show{display:block}
+#noteFull .nwrap{max-width:560px;margin:0 auto;padding:18px 12px 30px}#noteFull .ntop{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+#nfBack{width:38px;height:38px;font-size:24px;line-height:1}#noteFull h2{margin:0;font-size:18px;letter-spacing:.18em;color:var(--cyan);font-weight:700}
+#noteFull .nfcard{padding:12px}
+#nfText{display:block;width:100%;box-sizing:border-box;min-height:calc(100vh - 130px);resize:none;background:transparent;border:0;color:var(--txt);font:inherit;font-size:16.5px;line-height:1.55;outline:none;overflow-wrap:anywhere}
+
+.modal .card.jvdlg{max-width:320px}.cftxt{font-size:17px;text-align:center;margin:6px 0 18px}
+.jvdlg .btn{padding:10px 24px;font-size:15px}#cfModal .mrow{justify-content:center;gap:14px}.btn.dngb{color:var(--red);border-color:rgba(255,107,107,.55);background:rgba(255,107,107,.1)}
+#cfModal,#prModal{z-index:12}
+.ntab{--nc:#3fd8ff;border-color:color-mix(in srgb,var(--nc) 55%,transparent);color:var(--nc)}
+.ntab.on{border-color:var(--nc);background:color-mix(in srgb,var(--nc) 22%,transparent);color:var(--nc);box-shadow:0 0 10px color-mix(in srgb,var(--nc) 40%,transparent)}
+.ntab.nadd1{--nc:#7fe6ff}
+.npal{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:6px}
+#lpBox .npal button{width:40px;height:40px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid transparent}
+#lpBox .npal button i{width:26px;height:26px;border-radius:50%;background:var(--nc);display:block}
+#lpBox .npal button.cur{border-color:var(--nc)}
+
+#notesList{margin-top:0}
+#noteFab{position:fixed;right:calc(18px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;z-index:9;display:none;align-items:center;justify-content:center;padding:0 0 3px;
+ font-family:inherit;font-size:34px;font-weight:400;line-height:1;color:#04121f;background:var(--cyan);border:0;box-shadow:0 0 18px rgba(63,216,255,.6),0 6px 16px rgba(0,0,0,.45);cursor:pointer}
+html.jv-notes #noteFab{display:flex}#noteFull.show~#noteFab,html.jv-nfull #noteFab{display:none}
+
+#noteFab{background:rgba(10,30,50,.55)!important;color:var(--cyan)!important;border:1.5px solid rgba(63,216,255,.75)!important;box-shadow:0 0 12px rgba(63,216,255,.35),inset 0 0 10px rgba(63,216,255,.12)!important;font-weight:300!important}
+#nfRead{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:11;font-size:14px;padding:8px 16px}
+#nfRead.on{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px rgba(63,216,255,.4)}
+#nfText{padding-bottom:56px}
+
+@keyframes nfPulse{0%,100%{box-shadow:0 0 6px rgba(63,216,255,.35);opacity:1}50%{box-shadow:0 0 18px rgba(63,216,255,.85),0 0 4px rgba(63,216,255,.9) inset;opacity:.75}}
+#nfRead.on{animation:nfPulse 1.1s ease-in-out infinite;background:rgba(63,216,255,.14)}
+
+#notesList .note.ndrag{touch-action:none;position:relative;z-index:2;background:rgba(63,216,255,.12);border-radius:12px;box-shadow:0 0 0 1px rgba(63,216,255,.6),0 10px 24px rgba(0,0,0,.5);transform:scale(1.03);transition:transform .12s}
+#notesList .note.ndrag.ndon{transform:scale(1.05);box-shadow:0 0 0 1.5px var(--cyan),0 0 16px rgba(63,216,255,.45),0 14px 28px rgba(0,0,0,.55)}
+
+#notesPg .ntools{margin-left:auto;display:flex;gap:8px}#notesPg .ntools .hb{width:38px;height:38px}
+#nfChk{display:none}#noteFull.chk #nfChk{display:block}#noteFull.chk #nfText{display:none}#noteFull.chk .nfcard{min-height:calc(100vh - 130px)}
+#nfTitle{width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1px solid rgba(120,180,220,.18);color:var(--txt);font:inherit;font-size:18px;font-weight:600;padding:6px 2px 10px;outline:none;margin-bottom:6px}
+#nfItems .ci{display:flex;align-items:center;gap:10px;padding:4px 0}
+#nfItems .ci input[type=checkbox]{width:20px;height:20px;flex:none;margin:0;accent-color:var(--cyan)}
+#nfItems .cit{flex:1;min-width:0;background:transparent;border:0;color:var(--txt);font:inherit;font-size:16.5px;padding:7px 2px;outline:none}
+#nfItems .ci.done .cit{text-decoration:line-through;color:var(--mut)}
+#nfItems .cix{flex:none;background:none;border:0;color:var(--mut);font-size:18px;line-height:1;padding:4px 6px;cursor:pointer}
+#nfItems .cisep{height:1px;background:rgba(120,180,220,.28);margin:10px 0 6px}
+
+#pinModal{z-index:12}#pinBox{text-align:center}
+.pindots{display:flex;justify-content:center;gap:16px;margin:16px 0 8px;cursor:text}
+.pindots i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--cyan);display:block;transition:background .1s}
+.pindots i.on{background:var(--cyan);box-shadow:0 0 8px rgba(63,216,255,.6)}
+#pinIn{position:absolute;opacity:0;width:1px;height:1px;left:50%;top:50%;border:0;padding:0}
+.pinmsg{min-height:20px;color:var(--red);font-size:14px;margin:4px 0}.pinwarn{color:var(--mut);font-size:11.5px;margin:4px 0 10px}
+#pinModal .mrow{justify-content:center}
+@keyframes pinShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}.shake{animation:pinShake .35s}
+#pinModal .card{position:relative}
+#notesList .note.nlocked .t{color:var(--mut);font-style:italic}
+
+.nhist{position:fixed;left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom));z-index:11;display:none;gap:8px}
+html.jv-notes #nHistBar{display:flex}html.jv-nfull #nHistBar{display:none}#noteFull .nfhist{display:flex}
+#nHistBar{bottom:calc(30px + env(safe-area-inset-bottom))}
+.nhist .btn.pill.hist{width:38px;height:34px;font-size:16px;padding:0}
+#nfItems .ciadd{display:block;width:100%;height:44px;margin:0;padding:0;background:none;border:0;cursor:text;-webkit-tap-highlight-color:transparent}
+#nfItems .ci input[type=checkbox]{-webkit-appearance:none;appearance:none;width:20px;height:20px;border:1.5px solid rgba(63,216,255,.7);border-radius:6px;background:transparent;display:grid;place-items:center;cursor:pointer}
+#nfItems .ci input[type=checkbox]:checked{background:rgba(63,216,255,.14);border-color:var(--cyan)}
+#nfItems .ci input[type=checkbox]:checked::after{content:'';width:5px;height:10px;border:solid var(--cyan);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)}
+
+#nfSort{display:none;margin-left:auto;width:38px;height:38px}#noteFull.chk #nfSort{display:flex}
+
+html.notis body>.wrap,html.notis body>.bar,html.notis #notesBack{display:none!important}
+html.notis #notesPg{transition:none}
+html.notis #notesPg .ntop h2{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),html.notis #modal .field:has(#sCity),html.notis #modal .nsx{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <div class="brand"><div class="orb" id="orb"><img class="orb-img" width="210" height="312" alt="Jarvis" decoding="async"><svg class="orb-race" viewBox="0 0 1152 1712" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><mask id="orbHat" maskUnits="userSpaceOnUse" x="0" y="0" width="1152" height="1712"><rect width="1152" height="1712" fill="#fff"/><polygon points="371,280 734,280 737,450 378,450" fill="#000"/></mask></defs><g mask="url(#orbHat)"><path class="rt" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rm" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rh" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/></g></svg><span class="orb-spark" aria-hidden="true"></span></div><div><h1>JARVIS</h1><small>COMMAND CENTER</small></div></div>
+  <div class="right"><div class="clock" id="clock" data-ghost="88.88">--.--</div>
+   <div class="hbtns"><button class="btn pill" id="bSettings">Setări</button><button class="btn pill" id="bShare">Trimite copia</button></div></div>
+ </header>
+
+ <div class="offnote" id="offNote" hidden></div>
+
+
+ <section class="card ccol" id="cWx"><div class="lbl"><span class="lt" id="wxlbl">Vremea · Gherla</span><span class="wxsum"><span class="wxcity" id="wxcity">Gherla</span><span class="wxsumr"><span class="wxtempmini" id="wxtempmini">—°</span><span class="wxiconmini" id="wxiconmini"></span></span></span><span class="hgrp"><button class="spk" data-read="wx" aria-label="Citește"></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div>
+  <div class="wx"><div class="wxleft"><div class="wxicon" id="wxicon"></div><div class="wxtemp" id="wxtemp">—°</div></div>
+   <div class="wxright"><div class="wxhi" id="wxhi"></div><div class="wxcond" id="wxcond">Se încarcă…</div><div class="wxfeel" id="wxfeel"></div><div class="wxline" id="wxline"></div><div class="wxmeta" id="wxmeta"></div></div>
+   <div class="wxtxt kw" id="wxtxt" aria-hidden="true"></div></div>
+  <div class="wxdays" id="wxdays" aria-hidden="true"></div></section>
+
+ <button type="button" class="readall" id="bReadAll" aria-label="Citește tot"><span class="rai"></span>Citește tot</button>
+
+ <section class="card ccol" id="cAzi"><div class="lbl"><span class="lt kw" id="ltAzi">Taskuri azi</span><span class="tcnt" aria-hidden="true"></span><span class="hgrp"><button class="spk" data-read="azi" aria-label="Citește"></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div><ul class="tasks new" id="lAzi"></ul>
+  <form class="add" id="fAdd"><input id="iTask" placeholder="Spune sau scrie un task" autocomplete="off">
+   <button type="button" class="btn mic" id="bMic" title="Dictează (sau tastatură)" aria-label="Dictează"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+   <button class="btn" type="submit">Adaugă</button></form></section>
+
+ <section class="card ccol" id="cMaine"><div class="lbl"><span class="lt kw" id="ltMaine">Taskuri mâine</span><span class="tcnt" aria-hidden="true"></span><span class="hgrp"><button class="spk" data-read="maine" aria-label="Citește"></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div><ul class="tasks old" id="lMaine"></ul>
+  <form class="add" id="fAddM"><input id="iTaskM" placeholder="Spune sau scrie un task" autocomplete="off">
+   <button type="button" class="btn mic" id="bMicM" title="Dictează (sau tastatură)" aria-label="Dictează"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+   <button class="btn" type="submit">Adaugă</button></form></section>
+
+ <section class="card ccol" id="cShop"><div class="lbl"><span class="lt kw" id="ltShop">Cumpărături</span><span class="tcnt" aria-hidden="true"></span><span class="hgrp"><button class="spk" data-read="shop" aria-label="Citește"></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div><ul class="tasks shop" id="lShop"></ul>
+  <form class="add" id="fShop"><input id="iShop" placeholder="Spune sau scrie un produs" autocomplete="off">
+   <button type="button" class="btn mic" id="bMicShop" title="Dictează (sau tastatură)" aria-label="Dictează"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg></button>
+   <button class="btn" type="submit">Adaugă</button></form></section>
+ <div id="customCards"></div>
+ <section class="card ccol" id="cNews"><div class="lbl"><span class="lt">Știri</span><span class="tcnt" aria-hidden="true"></span><span class="hgrp"><button type="button" class="nrf" id="newsRefresh" aria-label="Reîmprospătează știrile" title="Reîmprospătează"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div>
+  <div class="news-meta" id="newsMeta">Se încarcă…</div>
+  <div class="news-search" id="newsSearchWrap">
+   <span class="ns-ico" aria-hidden="true">🔍</span>
+   <input type="search" id="newsSearch" placeholder="Caută în știri…" autocomplete="off" enterkeyhint="search" aria-label="Caută în știri">
+   <button type="button" class="ns-clear" id="newsSearchClear" aria-label="Șterge căutarea" hidden>×</button>
+  </div>
+  <a class="news-web" id="newsWebSearch" href="#" target="_blank" rel="noopener noreferrer" hidden><span aria-hidden="true">🌐</span><span class="nw-q" id="newsWebSearchTxt"></span></a>
+  <div id="newsBody"><div class="news-empty">Se încarcă știrile…</div></div>
+ </section>
+</div>
+
+<div class="bar"><div class="barin">
+ <div class="eq" id="eq"><i></i><i></i><i></i><i></i><i></i></div>
+ <div class="barbtns"><button class="btn pill hist" id="bUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button class="btn pill hist" id="bRedo" aria-label="Refă" title="Refă" disabled>↷</button><button class="btn pill newtab" id="bNewTab" aria-label="Tab nou">+ Tab nou</button><button class="btn pill" id="bRead">Citește</button><button class="btn pill" id="bHi">Salut</button></div>
+</div></div>
+
+<div class="modal" id="modal"><div class="card"><div class="lbl"><span>Setări</span></div>
+ <div class="field"><label for="sName">Nume</label><input id="sName"></div>
+ <div class="field"><label class="chk"><input type="checkbox" id="sRemindUrg" checked> Amintește-mi urgentele</label><div class="hint">La deschiderea aplicației, o notificare scurtă o dată pe zi dacă ai taskuri urgente azi.</div></div>
+ <div class="field"><label for="sCity">Oraș (vremea)</label><input id="sCity" placeholder="Caută orașul, ex. Gherla" autocomplete="off" enterkeyhint="search"><div class="cityrow"><button type="button" class="btn" id="sGeo">📍 Folosește locația mea</button><span class="citysel" id="citySel"></span></div><div class="citylist" id="cityList"></div></div>
+
+ <div class="sec">Voce</div>
+ <div class="field"><label for="sEngine">Motor voce</label><select id="sEngine"></select></div>
+ <div class="field" id="fPiper"><div class="prow"><span class="ptxt" id="pState">…</span><button type="button" class="btn" id="pDl">Descarcă</button><button type="button" class="btn" id="pDel">Șterge</button></div>
+  <div class="hint">Se descarcă o singură dată (≈<span id="pMB">88</span> MB) și rămâne salvată în browser pentru folosire offline. <span id="pNote"></span></div></div>
+ <div class="field" id="fTone"><label for="sTone">Ton <span class="val" id="vTone"></span></label><input type="range" id="sTone" min="0.7" max="1.3" step="0.01"><div class="hint">Stânga = voce mai groasă (aceeași viteză).</div></div>
+ <div class="field" id="fVoice"><label for="sVoice">Voce telefon</label><select id="sVoice"></select></div>
+ <div class="field"><label for="sRate">Viteză <span class="val" id="vRate"></span></label><input type="range" id="sRate" min="0.8" max="2" step="0.05"></div>
+ <div class="field" id="fPitch"><label for="sPitch">Ton (doar vocea telefonului) <span class="val" id="vPitch"></span></label><input type="range" id="sPitch" min="0.5" max="1.5" step="0.05"></div>
+ <div class="field"><button type="button" class="btn" id="sTest">Test voce</button></div>
+
+<div class="nsx"> <div class="sec">Ceas</div>
+ <div class="field"><label>Font</label><div class="fonts" id="fontGrid"></div></div>
+ <div class="field"><label>Culoare</label><div class="colors" id="colorRow"></div></div>
+ <div class="field"><label for="sSize">Mărime <span class="val" id="vSize"></span></label><input type="range" id="sSize" min="30" max="72" step="1"></div>
+
+ <div class="sec">Știri</div>
+ <div class="field"><label>Categorii știri</label><div class="ncats" id="newsCats"></div><div class="hint">Bifează ce fel de știri vrei să vezi jos. Nimic bifat = cardul de știri e ascuns.</div></div>
+ <div class="field"><label for="sNewsSize">Mărime text știri <span class="val" id="vNewsSize"></span></label><input type="range" id="sNewsSize" min="80" max="160" step="5"><div class="hint" id="newsSizePrev" style="font-size:calc(14px*var(--ns,1));color:#9eb8cc;--ns:1">Exemplu titlu de știre AI</div></div>
+</div>
+ <div class="sec">Backup</div>
+ <div class="field">
+  <div class="prow" style="margin-bottom:8px"><button type="button" class="btn" id="bBkSave">Salvează backup</button><button type="button" class="btn" id="bBkImport">Importă backup</button><input type="file" id="bBkFile" accept="application/json,.json" hidden></div>
+  <div class="hint">Salvează pe telefon notițele, taburile de notițe și setările vocii. Poți restaura un backup vechi sau îl poți trimite ca fișier .json.</div>
+  <div class="bklist" id="bkList"><div class="bkempty">Niciun backup încă.</div></div>
+ </div>
+
+ <div id="fInstall"><div class="sec">Aplicație</div>
+ <div class="field"><button type="button" class="btn" id="sInstall">Instalează aplicația</button>
+  <div class="hint" id="installHint">Chrome: meniu ⋮ → „Instalează aplicația” / „Adaugă pe ecranul de pornire”.<br>Brave: meniu ⋮ → „Adaugă pe ecranul de pornire” / „Instalează aplicația”.</div></div></div>
+
+ <div class="mrow"><button class="btn" id="sCancel">Anulează</button><button class="btn" id="sSave">Salvează</button></div>
+</div></div>
+<div class="modal" id="tabModal"><div class="card"><div class="lbl"><span id="tmTitle">Tab nou</span></div>
+ <form id="tmForm"><div class="field"><label for="tmName">Nume (obligatoriu)</label><input id="tmName" maxlength="40" placeholder="ex. Farmacie, Mașină, Idei" autocomplete="off" enterkeyhint="done"></div>
+ <div class="field"><label>Culoare (opțional)</label><div class="tcolors" id="tmColors"></div></div>
+ <div class="mrow"><button type="button" class="btn" id="tmCancel">Anulează</button><button type="submit" class="btn" id="tmSave">Creează</button></div></form>
+</div></div>
+<div class="modal" id="alModal"><div class="card"><div class="lbl"><span>⏰ Alarmă</span></div>
+ <div class="field" style="color:var(--mut);font-size:14px" id="alTask"></div>
+ <div class="field"><label>Data și ora</label><div class="al2"><input type="date" id="alDate"><input type="time" id="alTime"></div></div>
+ <div class="field"><label>Tip</label><div class="alseg"><button type="button" class="btn" id="alT1">Unică</button><button type="button" class="btn" id="alT2">Repetitivă</button></div></div>
+ <div id="alRepBox"><div class="field"><label>Repetă la fiecare</label><div class="alchips" id="alChips"></div><input type="number" id="alMin" min="1" inputmode="numeric" placeholder="sau minute (ex. 90)"></div>
+ <div class="field"><label>Sfârșit</label><select id="alEnd"><option value="none">Fără sfârșit</option><option value="until">Până la…</option></select>
+ <div class="al2" id="alUntilBox" style="margin-top:8px"><input type="date" id="alUDate"><input type="time" id="alUTime"></div></div></div>
+ <div class="mrow"><button type="button" class="btn" id="alDel">Șterge alarma</button><button type="button" class="btn" id="alCancel">Anulează</button><button type="button" class="btn" id="alSave">Salvează</button></div>
+</div></div>
+<div class="modal" id="alFire"><div class="card"><div class="lbl"><span>⏰ Alarmă</span></div><div id="alfTask"></div>
+ <div class="mrow" style="justify-content:center"><button type="button" class="btn" id="alSnz">Amână 10 min</button><button type="button" class="btn" id="alOff">Oprit</button></div></div></div>
+<div id="notesPg" aria-label="Notițe"><div class="nwrap"><div class="ntop"><button type="button" class="hb" id="notesBack" aria-label="Înapoi">‹</button><h2>NOTIȚE</h2><span class="ntools"><button type="button" class="hb" id="nChkNew" aria-label="Listă nouă"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8 12.3l2.8 2.8L16.5 9"/></svg></button><button type="button" class="hb" id="nSort" aria-label="Sortare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h6"/></svg></button></span></div>
+ <div class="ntabs" id="noteTabs"></div>
+ <section class="card">
+ <ul id="notesList"></ul></section></div></div>
+<div class="nhist" id="nHistBar"><button type="button" class="btn pill hist" id="nUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nRedo" aria-label="Refă" title="Refă" disabled>↷</button></div>
+<button type="button" id="noteFab" aria-label="Notiță nouă">+</button>
+<div id="noteFull" aria-label="Notiță"><div class="nwrap"><div class="ntop"><button type="button" class="hb" id="nfBack" aria-label="Înapoi">‹</button><h2>NOTIȚĂ</h2><button type="button" class="hb" id="nfSort" aria-label="Sortare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h6"/></svg></button></div>
+ <section class="card nfcard"><textarea id="nfText" aria-label="Textul notiței"></textarea><div id="nfChk"><input id="nfTitle" placeholder="Titlu" autocomplete="off" enterkeyhint="next"><div id="nfItems"></div></div></section><div class="nhist nfhist"><button type="button" class="btn pill hist" id="nfUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nfRedo" aria-label="Refă" title="Refă" disabled>↷</button></div><button type="button" class="btn pill" id="nfRead">Citește</button></div></div>
+<div class="modal" id="cfModal"><div class="card jvdlg"><div class="cftxt">Sigur vrei să ștergi?</div><div class="mrow"><button type="button" class="btn" id="cfNo">Nu</button><button type="button" class="btn dngb" id="cfOk">Șterge</button></div></div></div>
+<div class="modal" id="prModal"><div class="card jvdlg"><div class="lbl"><span id="prTitle">Tab nou</span></div><div class="field"><input id="prIn" maxlength="40" autocomplete="off" enterkeyhint="done"></div><div class="mrow"><button type="button" class="btn" id="prNo">Anulează</button><button type="button" class="btn" id="prOk">Salvează</button></div></div></div>
+<div class="modal" id="pinModal"><div class="card jvdlg" id="pinBox"><div class="lbl"><span id="pinTitle">PIN</span></div>
+ <div class="pindots" id="pinDots"><i></i><i></i><i></i><i></i></div><input id="pinIn" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="PIN">
+ <div class="pinmsg" id="pinMsg"></div><div class="pinwarn" id="pinWarn">Dacă uiți PIN-ul, notița nu mai poate fi recuperată.</div>
+ <div class="mrow"><button type="button" class="btn" id="pinCancel">Anulează</button></div></div></div>
+<div id="lpMenu"><div id="lpBox"></div></div>
+ <div class="modal" id="voiceModal"><section class="card ccol" id="cVoice"><div class="lbl"><span class="lt">Voice status</span><span class="hgrp"><button type="button" class="hb vclose" id="voiceClose" aria-label="Închide">×</button><button class="spk" data-read="voice" aria-label="Citește"></button><button type="button" class="hb tcol" aria-expanded="true" aria-label="Restrânge cardul"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.2 8.1a1.5 1.5 0 0 1 2.1 0L12 13.8l5.7-5.7a1.5 1.5 0 1 1 2.1 2.1l-6.75 6.75a1.5 1.5 0 0 1-2.1 0L4.2 10.2a1.5 1.5 0 0 1 0-2.1z"/></svg></button></span></div>
+  <p class="voice kw" id="greet">…</p>
+  <div class="status" id="vstatus">Agent local. Doar vreme și taskuri.</div>
+  <div class="vprog" id="vprog"><span id="vprogTxt"></span><div class="pb"><i id="vprogBar"></i></div></div></section></div>
+<div class="toast" id="toast"></div>

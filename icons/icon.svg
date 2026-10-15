@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+ <radialGradient id="bg" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#0b2a44"/><stop offset="1" stop-color="#050f1c"/></radialGradient>
+ <linearGradient id="pen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e3f8ff"/><stop offset="1" stop-color="#9fe6ff"/></linearGradient>
+ <filter id="gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <clipPath id="c"><circle cx="256" cy="256" r="206"/></clipPath>
+</defs>
+<rect width="512" height="512" fill="#06121f"/>
+<circle cx="256" cy="256" r="222" fill="#06121f" stroke="#3fd8ff" stroke-width="10" filter="url(#gl)"/>
+<circle cx="256" cy="256" r="206" fill="url(#bg)"/>
+<g clip-path="url(#c)" stroke="#3fd8ff" stroke-width="5" opacity=".85">
+ <path d="M40 120H472M40 160H472M40 200H472M40 240H472M40 280H472M40 320H472M40 360H472M40 400H472"/>
+ <path d="M150 40V472" stroke="#9fe6ff" stroke-width="6" opacity=".7"/>
+</g>
+<g transform="translate(256 262) rotate(-42)" filter="url(#gl)" stroke="#3fd8ff" stroke-width="9" stroke-linejoin="round">
+ <path d="M-205 0 L-128 -30 L-128 30 Z" fill="#e3f8ff"/>
+ <path d="M-128 -36 H-92 V36 H-128 Z" fill="#cff3ff"/>
+ <path d="M-92 -44 H150 Q196 -44 196 0 Q196 44 150 44 H-92 Z" fill="url(#pen)"/>
+ <path d="M60 -44 V-70 Q60 -78 70 -78 H176 Q190 -78 190 -64 V-40" fill="none"/>
+</g>
+<g transform="translate(256 262) rotate(-42)"><path d="M-182 -2 L-150 -12 L-150 6 Z" fill="#06121f"/></g>
+</svg>
