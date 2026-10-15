@@ -12,15 +12,14 @@
  <path d="M178 40V472M192 40V472" stroke="#3fd8ff" stroke-width="5" opacity=".9"/>
 </g>
 <circle cx="256" cy="256" r="190" fill="none" stroke="#ffffff" stroke-width="5"/>
-<g transform="translate(262 250) rotate(-45)" stroke="#0b6f8f" stroke-width="7" stroke-linejoin="round" stroke-linecap="round">
- <g filter="url(#gl)" stroke="#3fd8ff">
- <path d="M-238 0 L-160 -26 L-160 26 Z" fill="#e6f9ff"/>
- <path d="M-160 -34 L-120 -40 V40 L-160 34 Z" fill="#c6f1ff"/>
- <path d="M-120 -40 H150 Q192 -40 192 0 Q192 40 150 40 H-120 Z" fill="url(#pen)"/>
- <path d="M192 -14 H214 Q222 -14 222 -6 V6 Q222 14 214 14 H192" fill="#c6f1ff"/>
- <path d="M168 -40 V-58 H-10 Q-24 -58 -24 -48 V-40" fill="#e6f9ff"/>
+<g transform="translate(256 256) rotate(-43.6) scale(1.03 1.18)" stroke-linejoin="round" stroke-linecap="round">
+ <g filter="url(#gl)" stroke="#3fd8ff" stroke-width="6">
+  <path d="M-245 -4 C-205 -16 -95 -45 21 -45 L21 45 C-95 45 -205 16 -245 4 Q-249 0 -245 -4 Z" fill="url(#pen)"/>
+  <path d="M21 -49 L196 -46 A46 46 0 0 1 196 46 L21 49 Q30 0 21 -49 Z" fill="url(#pen)"/>
+  <path d="M70 -58 L200 -58 Q232 -58 238 -30" fill="none" stroke-width="15"/>
  </g>
- <path d="M-226 -2 L-196 -12 L-196 8 Z" fill="#06121f" stroke="none"/>
- <path d="M-100 -26 H140" stroke="#ffffff" stroke-width="8" opacity=".9"/>
+ <path d="M70 -58 L200 -58 Q232 -58 238 -30" fill="none" stroke="#f4fcff" stroke-width="6"/>
+ <path d="M-180 -20 Q-174 0 -180 20" fill="none" stroke="#3fd8ff" stroke-width="4"/>
+ <path d="M-150 -16 C-80 -30 -10 -33 14 -32" fill="none" stroke="#ffffff" stroke-width="6" opacity=".9"/>
 </g>
 </svg>
