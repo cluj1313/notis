@@ -4,7 +4,7 @@ var $=function(id){return document.getElementById(id)};
 var BLANK=false,PFX='';
 document.documentElement.classList.add('notis');
 /* Notis: one-time copy of Jarvis notes (same origin), Jarvis data untouched */
-var NS_IMPORTED=false;try{if(!localStorage.getItem('ns_imported')){if(localStorage.getItem('ns_notes')==null&&localStorage.getItem('jv_notes')){['notes','notetabs','notetab','notesort1'].forEach(function(k){var v=localStorage.getItem('jv_'+k);if(v!=null)localStorage.setItem('ns_'+k,v)});NS_IMPORTED=true}localStorage.setItem('ns_imported','1')}}catch(_){}
+var NS_IMPORTED=false;
 var LS={get:function(k,d){try{var v=localStorage.getItem(PFX+k);return v?JSON.parse(v):d}catch(e){return d}},set:function(k,v){try{localStorage.setItem(PFX+k,JSON.stringify(v))}catch(e){}}};
 /* v21: drop AI/search keys */
 (function(){['ns_gkey','ns_skey','ns_chat','ns_gmodel','ns_gauto','ns_gnosearch'].forEach(function(k){try{localStorage.removeItem(PFX+k)}catch(e){}})})();
@@ -811,7 +811,7 @@ $('bBkImport').onclick=function(){$('bBkFile').value='';$('bBkFile').click()};
 $('bBkFile').onchange=function(){var f=this.files&&this.files[0];if(!f)return;
  bkImportFile(f).then(function(entry){var a=bkList();a.unshift(entry);if(a.length>BK_MAX)a=a.slice(0,BK_MAX);bkSaveList(a);renderBkList();toast('Backup importat · '+entry.label);
   if(confirm('Backup importat ('+entry.label+'). Restaurezi acum?')){try{bkApply(entry.data);toast('Restaurat · '+entry.label)}catch(err){console.warn(err);toast('Nu am putut restaura backup-ul')}}
- }).catch(function(err){console.warn(err);toast('Fișier invalid — nu e un backup JARVIS')})};
+ }).catch(function(err){console.warn(err);toast('Fișier invalid — nu e un backup Notis sau Jarvis')})};
 
 /* ---------- share ---------- */
 function summary(){var d=new Date(),tk=dkey(),o=tasks.filter(function(t){return live(t)&&!t.done});
@@ -1199,6 +1199,39 @@ document.addEventListener('touchend',function(e){var d=sw;sw=null;if(!d||lpJust|
  if(dx<0&&!open)notesOpen();else if(dx>0&&open)notesClose()},{passive:true});
 renderNotes();
 nH.cur=nSnap();nHistBtns();
+/* ---------- Notis v2: import notes from Jarvis (same-origin localStorage, Jarvis backups in jv_backups, Jarvis backup .json files) ---------- */
+function nsReal(){return notes.filter(function(n){return n.lock||(n.text||'').trim()||(n.title||'').trim()||(n.items||[]).some(function(x){return (x.text||'').trim()})}).length}
+function nsJSON(v){if(v==null)return null;if(typeof v!=='string')return v;try{return JSON.parse(v)}catch(_){return null}}
+function nsMerge(src){var ns=Array.isArray(src&&src.notes)?src.notes:[],ts=Array.isArray(src&&src.tabs)?src.tabs:[];if(!ns.length)return 0;
+ if(draftId)try{draftFinish()}catch(_){}
+ ts.forEach(function(t){if(t&&t.id&&!noteTabs.some(function(x){return x.id===t.id}))noteTabs.push(JSON.parse(JSON.stringify(t)))});
+ var add=0;ns.forEach(function(n){if(!n||!n.id||findN(n.id))return;notes.push(JSON.parse(JSON.stringify(n)));add++});
+ if(add){ntMigrate();saveNotes();renderNotes()}return add}
+function nsFromData(d){d=d&&typeof d==='object'?(d.data&&typeof d.data==='object'?d.data:d):null;if(!d)return null;
+ var p=['jv_','jvb_'].filter(function(x){return Array.isArray(nsJSON(d[x+'notes']))})[0];if(!p)return null;
+ return{notes:nsJSON(d[p+'notes']),tabs:nsJSON(d[p+'notetabs'])||[]}}
+function nsFromLS(){var out={notes:[],tabs:[]};['jv_','jvb_'].forEach(function(p){var n=nsJSON(localStorage.getItem(p+'notes')),t=nsJSON(localStorage.getItem(p+'notetabs'));
+ if(Array.isArray(n))out.notes=out.notes.concat(n);if(Array.isArray(t))out.tabs=out.tabs.concat(t)});return out}
+function nsJvBackups(){var a=[];['jv_','jvb_'].forEach(function(p){var l=nsJSON(localStorage.getItem(p+'backups'));if(Array.isArray(l))l.forEach(function(e){var s=e&&nsFromData(e.data);if(s&&s.notes.length)a.push({e:e,s:s})})});return a}
+function nsMsg(add,found){toast(add?'Am importat '+add+(add===1?' notiță':' notițe')+' din Jarvis':found?'Notițele din Jarvis sunt deja aici':'Nu am găsit notițe Jarvis')}
+function nsImportJarvis(){var s=nsFromLS(),add=nsMerge(s),found=s.notes.length;
+ if(!found){var b=nsJvBackups()[0];if(b){add=nsMerge(b.s);found=b.s.notes.length}}
+ if(found){try{localStorage.setItem('ns_impban','off')}catch(_){}}nsBanner();nsMsg(add,found);return found}
+function nsRenderJv(){var box=$('jvBkList');if(!box)return;var a=nsJvBackups();box.innerHTML='';
+ a.forEach(function(x){var row=document.createElement('div');row.className='bkrow';var l=document.createElement('div');l.className='bklbl';l.textContent='Backup Jarvis din '+(x.e.label||x.e.ts||'')+' · '+x.s.notes.length+' notițe';row.appendChild(l);
+  var ac=document.createElement('div');ac.className='bkacts';var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Importă';b.onclick=function(){var n=nsMerge(x.s);try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner();nsMsg(n,1)};ac.appendChild(b);row.appendChild(ac);box.appendChild(row)})}
+function nsBanner(){var el=$('nsImp');if(!el)return;var off=false;try{off=localStorage.getItem('ns_impban')==='off'}catch(_){}el.hidden=off||nsReal()>0}
+$('bJvImport').onclick=function(){nsImportJarvis();nsRenderJv()};
+$('nsImpGo').onclick=function(){if(!nsImportJarvis()){toast('Alege fișierul de backup Jarvis (.json)');$('bBkFile').value='';$('bBkFile').click()}};
+$('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner()};
+(function(){var orig=$('bBkFile').onchange;$('bBkFile').onchange=function(){var self=this,f=this.files&&this.files[0];if(!f)return;var r=new FileReader();
+ r.onload=function(){var s=null;try{s=nsFromData(JSON.parse(r.result))}catch(_){}
+  if(s){var n=nsMerge(s);try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner();nsMsg(n,s.notes.length||0);return}orig.call(self)};r.readAsText(f)}})();
+(function(){var ob=$('bSettings').onclick;$('bSettings').onclick=function(){ob.apply(this,arguments);nsRenderJv()}})();
+(function(){var _rn=renderNotes;renderNotes=function(){_rn.apply(this,arguments);nsBanner()}})();
+/* auto-import: whenever Notis has no real notes yet and Jarvis notes exist on this origin */
+if(!nsReal()){var s0=nsFromLS();if(s0.notes.length&&nsMerge(s0)){NS_IMPORTED=true;try{localStorage.setItem('ns_impban','off')}catch(_){}}}
+nsBanner();
 notesOpen();if(NS_IMPORTED)setTimeout(function(){toast('Am importat notițele din Jarvis')},400);
 /* Notis: long-press on the NOTIȚE title opens Setări (voice + backup) */
 (function(){var h=document.querySelector('#notesPg .ntop h2'),t=null;function go(){t=null;try{if(navigator.vibrate)navigator.vibrate(20)}catch(_){}$('bSettings').onclick()}

@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v1">
+<meta name="jarvis-version" content="notis-v2">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -420,6 +420,8 @@ html.notis body>.wrap,html.notis body>.bar,html.notis #notesBack{display:none!im
 html.notis #notesPg{transition:none}
 html.notis #notesPg .ntop h2{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),html.notis #modal .field:has(#sCity),html.notis #modal .nsx{display:none}
+#nsImp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:12px}#nsImp[hidden]{display:none}#nsImp span{flex:1 1 100%;font-size:14px;opacity:.85}#nsImp .btn{flex:1}#nsImp .hb{width:34px;height:34px}
+#modal .prow{flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -499,9 +501,9 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 </div>
  <div class="sec">Backup</div>
  <div class="field">
-  <div class="prow" style="margin-bottom:8px"><button type="button" class="btn" id="bBkSave">Salvează backup</button><button type="button" class="btn" id="bBkImport">Importă backup</button><input type="file" id="bBkFile" accept="application/json,.json" hidden></div>
+  <div class="prow" style="margin-bottom:8px"><button type="button" class="btn" id="bBkSave">Salvează backup</button><button type="button" class="btn" id="bBkImport">Importă fișier</button><button type="button" class="btn" id="bJvImport">Importă din Jarvis</button><input type="file" id="bBkFile" accept="application/json,.json" hidden></div>
   <div class="hint">Salvează pe telefon notițele, taburile de notițe și setările vocii. Poți restaura un backup vechi sau îl poți trimite ca fișier .json.</div>
-  <div class="bklist" id="bkList"><div class="bkempty">Niciun backup încă.</div></div>
+  <div class="bklist" id="jvBkList" style="margin-bottom:8px"></div><div class="bklist" id="bkList"><div class="bkempty">Niciun backup încă.</div></div>
  </div>
 
  <div id="fInstall"><div class="sec">Aplicație</div>
@@ -528,6 +530,7 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
  <div class="mrow" style="justify-content:center"><button type="button" class="btn" id="alSnz">Amână 10 min</button><button type="button" class="btn" id="alOff">Oprit</button></div></div></div>
 <div id="notesPg" aria-label="Notițe"><div class="nwrap"><div class="ntop"><button type="button" class="hb" id="notesBack" aria-label="Înapoi">‹</button><h2>NOTIȚE</h2><span class="ntools"><button type="button" class="hb" id="nChkNew" aria-label="Listă nouă"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><path d="M8 12.3l2.8 2.8L16.5 9"/></svg></button><button type="button" class="hb" id="nSort" aria-label="Sortare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h6"/></svg></button></span></div>
  <div class="ntabs" id="noteTabs"></div>
+ <div id="nsImp" class="card" hidden><span>Ai notițe în Jarvis?</span><button type="button" class="btn" id="nsImpGo">Importă notițele din Jarvis</button><button type="button" class="hb" id="nsImpX" aria-label="Închide">×</button></div>
  <section class="card">
  <ul id="notesList"></ul></section></div></div>
 <div class="nhist" id="nHistBar"><button type="button" class="btn pill hist" id="nUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nRedo" aria-label="Refă" title="Refă" disabled>↷</button></div>
