@@ -1221,6 +1221,10 @@ function nsRenderJv(){var box=$('jvBkList');if(!box)return;var a=nsJvBackups();b
  a.forEach(function(x){var row=document.createElement('div');row.className='bkrow';var l=document.createElement('div');l.className='bklbl';l.textContent='Backup Jarvis din '+(x.e.label||x.e.ts||'')+' · '+x.s.notes.length+' notițe';row.appendChild(l);
   var ac=document.createElement('div');ac.className='bkacts';var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Importă';b.onclick=function(){var n=nsMerge(x.s);try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner();nsMsg(n,1)};ac.appendChild(b);row.appendChild(ac);box.appendChild(row)})}
 function nsBanner(){var el=$('nsImp');if(!el)return;var off=false;try{off=localStorage.getItem('ns_impban')==='off'}catch(_){}el.hidden=off||nsReal()>0}
+$('sShareApp').onclick=function(){var U='https://cluj1313.github.io/notis/',d={title:'Notis',text:'Aplicația de notițe Notis — deschide linkul în Chrome/Brave și instalează:',url:U};
+ function cp(){var ok=function(){toast('Link copiat')};try{if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(U).then(ok,leg)}catch(_){}leg();
+  function leg(){var ta=document.createElement('textarea');ta.value=U;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove();ok()}}
+ if(navigator.share)navigator.share(d).catch(function(e){if(!e||e.name!=='AbortError')cp()});else cp()};
 $('bJvImport').onclick=function(){nsImportJarvis();nsRenderJv()};
 $('nsImpGo').onclick=function(){if(!nsImportJarvis()){toast('Alege fișierul de backup Jarvis (.json)');$('bBkFile').value='';$('bBkFile').click()}};
 $('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner()};
