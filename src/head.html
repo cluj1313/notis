@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v19">
+<meta name="jarvis-version" content="notis-v20">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -93,6 +93,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:8px;mar
  transition:transform .16s cubic-bezier(.4,.1,.2,1),width .16s cubic-bezier(.4,.1,.2,1),opacity .25s;will-change:transform,width}
 .kbar.show{opacity:1}
 .nrMir{position:absolute;margin:0;border-style:solid;border-color:transparent;color:transparent;background:transparent;overflow:visible;pointer-events:none;z-index:2;scroll-margin:90px 0 120px}
+.nhm{position:relative}.nhm::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;border-radius:3px;background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 16px rgba(63,216,255,.6)}
 .nrMir .w.past{color:transparent}.nrMir .w.cur{color:#fff;text-shadow:0 0 8px rgba(63,216,255,.6)}
 .wx{display:flex;gap:14px;align-items:center;position:relative}
 .wxleft{flex:none;width:76px;text-align:center}

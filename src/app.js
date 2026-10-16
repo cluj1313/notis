@@ -1061,7 +1061,7 @@ function draftFinish(){if(!$('iNote')){draftId=null;return}var n=draftId&&findN(
 function noteGrow(){var i=$('iNote');if(!i)return;i.style.height='auto';i.style.height=i.scrollHeight+'px'}
 /* v50: top input removed; new notes start from the + button in the full editor */
 var fullId=null;
-function fullOpen(id){if(draftId)draftFinish();var n=findN(id);if(!n)return;if(n.lock&&!n._key){lkOpen(id);return}fullId=id;fullIsNew=false;var ta=$('nfText');ta.value=n.text;mShow(n);$('noteFull').classList.toggle('chk',n.type==='check');phClear();if(n.type==='mix')mRender();edState();setTimeout(phRender,0);if(n.type==='check')chkRender();$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}}
+function fullOpen(id){if(draftId)draftFinish();var n=findN(id);if(!n)return;if(n.lock&&!n._key){lkOpen(id);return}nHlClear();var hp=nHlPend&&nHlPend.id===id?nHlPend:null;nHlPend=null;if(hp)setTimeout(function(){if(fullId===id)nHlApply(hp.q)},250);fullId=id;fullIsNew=false;var ta=$('nfText');ta.value=n.text;mShow(n);$('noteFull').classList.toggle('chk',n.type==='check');phClear();if(n.type==='mix')mRender();edState();setTimeout(phRender,0);if(n.type==='check')chkRender();$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}}
 function fullInput(){var n=fullId&&findN(fullId);if(!n){var v=$('nfText').value;if(!v.trim())return;var now=new Date().toISOString();n={id:ntUid(),text:v,ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true;nSaveSoon();return}if(n.type==='check'||n.type==='mix')return;n.text=$('nfText').value;n.editedAt=n.updatedAt=new Date().toISOString();nSaveSoon()}
 function fullFlush(){if(!fullId)return;var n=findN(fullId);if(n){if(n.type==='check')chkSync(n);else if(n.type==='mix')mSync(n);else n.text=$('nfText').value;if(!n.text.trim()&&!n.ph)notes=notes.filter(function(x){return x!==n})}nFlush()}
 var fullIsNew=false;
@@ -1238,7 +1238,7 @@ function noteRead(){if(speaking&&speakKey==='note'){stopSpeaking();return}nrClea
  else nrField($('nfText'),$('nfText').value,sg);
  if(!sg.length){nrClear();toast('Notița e goală');return}nrBusy=true;try{return speak(sg,'note')}finally{nrBusy=false}}
 $('nfRead').addEventListener('click',function(e){e.preventDefault();noteRead()});
-function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='mix')mClean(cq);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phCacheClear();phViewClose(false);$('noteFull').classList.remove('show','mix');ncApply(null);document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
+function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;nHlClear();var cq=fullId&&findN(fullId);if(cq&&cq.type==='mix')mClean(cq);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phCacheClear();phViewClose(false);$('noteFull').classList.remove('show','mix');ncApply(null);document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
  if(!fromPop&&history.state&&history.state.jvNote)try{nIgnorePop=true;history.back()}catch(_){nIgnorePop=false}}
 var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
@@ -1246,7 +1246,25 @@ $('nfBack').addEventListener('click',function(){fullClose()});
 function nFlushAll(){if(fullId)fullFlush();if(draftId){var n=findN(draftId);if(n)n.text=$('iNote').value}nFlush()}
 document.addEventListener('visibilitychange',function(){if(document.hidden)nFlushAll()});
 window.addEventListener('pagehide',nFlushAll);window.addEventListener('beforeunload',nFlushAll);
-$('notesList').addEventListener('click',function(e){if(lpJust)return;var li=e.target.closest('.note');if(li)fullOpen(li.dataset.id)});
+$('notesList').addEventListener('click',function(e){if(lpJust)return;var li=e.target.closest('.note');if(li){nHlPend=nQ&&nQ.trim()?{id:li.dataset.id,q:nQ}:null;fullOpen(li.dataset.id)}});
+/* v20: search matches in the editor — mirror overlays (inputs untouched), cyan bar under each match, jump to the first */
+var nHlPend=null,nHlM=[];
+function nHlClear(){nHlM.forEach(function(d){if(d._un)d._un();if(d.parentNode)d.parentNode.removeChild(d)});nHlM=[]}
+function nHlFold(v){var f='',map=[];for(var i=0;i<v.length;i++){var c=nFold(v[i]);for(var k=0;k<c.length;k++){f+=c[k];map.push(i)}}return{f:f,map:map}}
+function nHlField(ta,qs){if(!ta||!ta.offsetParent||!ta.value)return null;var v=ta.value,F=nHlFold(v),R=[];
+ qs.forEach(function(w){var i=0;while((i=F.f.indexOf(w,i))>=0){R.push([F.map[i],F.map[i+w.length-1]+1]);i+=w.length}});if(!R.length)return null;
+ R.sort(function(a,b){return a[0]-b[0]});var M=[];R.forEach(function(r){var l=M[M.length-1];if(l&&r[0]<=l[1])l[1]=Math.max(l[1],r[1]);else M.push(r.slice())});
+ var cs=getComputedStyle(ta),d=document.createElement('div'),op=ta.offsetParent;d.className='nrMir nhlMir';
+ ['fontFamily','fontSize','fontWeight','fontStyle','letterSpacing','lineHeight','whiteSpace','wordSpacing','overflowWrap','wordBreak','textAlign','tabSize','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','boxSizing','textTransform','textIndent'].forEach(function(k){d.style[k]=cs[k]});
+ if(cs.whiteSpace==='normal')d.style.whiteSpace='pre-wrap';
+ var r=ta.getBoundingClientRect(),pr=op.getBoundingClientRect();d.style.left=(r.left-pr.left-op.clientLeft+op.scrollLeft)+'px';d.style.top=(r.top-pr.top-op.clientTop+op.scrollTop)+'px';d.style.width=r.width+'px';d.style.height=r.height+'px';
+ var h='',last=0;M.forEach(function(m){h+=esc(v.slice(last,m[0]))+'<span class="nhm">'+esc(v.slice(m[0],m[1]))+'</span>';last=m[1]});d.innerHTML=h+esc(v.slice(last))+'\u200b';op.appendChild(d);nHlM.push(d);d._ta=ta;if(ta.scrollHeight>ta.clientHeight+2){d.style.overflow='hidden';d.scrollTop=ta.scrollTop;var sy=function(){d.scrollTop=ta.scrollTop};ta.addEventListener('scroll',sy);d._un=function(){ta.removeEventListener('scroll',sy)}}var f1=d.querySelector('.nhm');if(f1)f1._d=d;return f1}
+function nHlApply(q){nHlClear();var qs=nFold(q).trim().split(/\s+/).filter(Boolean);if(!qs.length)return;var n=fullId&&findN(fullId);if(!n)return;
+ var fs=n.type==='mix'?[].slice.call(document.querySelectorAll('#nfBlocks .nbt,#nfBlocks .cit')):n.type==='check'?[$('nfTitle')].concat([].slice.call(document.querySelectorAll('#nfChk .cit'))):[$('nfText')];
+ var first=null;fs.forEach(function(ta){var s1=nHlField(ta,qs);if(s1&&!first)first=s1});
+ if(first){var d=first._d,ta=d._ta;if(d.style.overflow==='hidden'){ta.scrollTop=Math.max(0,first.offsetTop-ta.clientHeight/2);d.scrollTop=ta.scrollTop;var r=ta.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-80)ta.scrollIntoView({block:'nearest'})}else first.scrollIntoView({block:'center'})}}
+['input','keydown','focusin','click'].forEach(function(ev){$('noteFull').addEventListener(ev,function(){if(nHlM.length)nHlClear()},true)});
+window.addEventListener('resize',function(){if(nHlM.length)nHlClear()});
 $('noteTabs').addEventListener('click',function(e){var b=e.target.closest('.ntab');if(!b)return;if(draftId)draftFinish();
  if(b.classList.contains('nadd1')){jvPrompt('Tab nou','',function(nm){var t={id:ntUid(),name:nm};noteTabs.push(t);noteTab=t.id;saveNotes();renderNotes()});return}
  noteTab=b.dataset.id;saveNotes();renderNotes()});
