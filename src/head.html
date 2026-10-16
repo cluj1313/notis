@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v13">
+<meta name="jarvis-version" content="notis-v14">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -441,15 +441,15 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 .nbi .phi{aspect-ratio:1;border-radius:12px;background:#0a1a2c center/cover no-repeat;border:1px solid rgba(120,180,220,.18);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .nbi.one{display:block}.nbi.one .phi{width:100%;aspect-ratio:4 / 3;background-size:100% 100%}
 #phView{touch-action:none;overflow:hidden;-webkit-user-select:none;user-select:none}#phView img{pointer-events:none;will-change:transform}#pvCount{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));text-align:center;color:var(--mut);font-size:13px}
-#crop{position:fixed;inset:0;z-index:70;background:#040b14;display:none;flex-direction:column}#crop.show{display:flex}
-#cropStage{position:relative;flex:1;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#crop{position:fixed;inset:0;z-index:70;background:#040b14;display:none;flex-direction:column;touch-action:none;overscroll-behavior:contain}#crop.show{display:flex}
+#cropStage{position:relative;flex:1;margin-bottom:calc(60px + env(safe-area-inset-bottom));overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
 #cropImg{position:absolute;left:0;top:0;transform-origin:center center;max-width:none;pointer-events:none;-webkit-user-drag:none}
 #cropFrame{position:absolute;border:1.5px solid var(--cyan);box-shadow:0 0 0 9999px rgba(2,8,16,.62),0 0 10px rgba(63,216,255,.35);box-sizing:border-box;pointer-events:none}
-#cropFrame .ch{position:absolute;width:30px;height:30px;pointer-events:auto;touch-action:none}
-#cropFrame .ch::after{content:'';position:absolute;left:11px;top:11px;width:8px;height:8px;border-radius:2px;background:var(--cyan);box-shadow:0 0 6px rgba(63,216,255,.6)}
+#cropFrame .ch{position:absolute;width:44px;height:44px;margin:-7px;pointer-events:auto;touch-action:none}
+#cropFrame .ch::after{content:'';position:absolute;left:18px;top:18px;width:8px;height:8px;border-radius:2px;background:var(--cyan);box-shadow:0 0 6px rgba(63,216,255,.6)}
 #cropFrame .ch[data-h=tl]{left:-15px;top:-15px}#cropFrame .ch[data-h=tr]{right:-15px;top:-15px}#cropFrame .ch[data-h=bl]{left:-15px;bottom:-15px}#cropFrame .ch[data-h=br]{right:-15px;bottom:-15px}
 #cropFrame .ch[data-h=t]{left:calc(50% - 15px);top:-15px}#cropFrame .ch[data-h=b]{left:calc(50% - 15px);bottom:-15px}#cropFrame .ch[data-h=l]{top:calc(50% - 15px);left:-15px}#cropFrame .ch[data-h=r]{top:calc(50% - 15px);right:-15px}
-#cropBar{display:flex;align-items:center;gap:10px;padding:12px calc(14px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+#cropBar{order:-1;display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:calc(60px + env(safe-area-inset-top));padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left))}
 #cropBar #cropNo,#cropBar #cropOk{font-size:14px;padding:8px 16px}#cropCount{flex:1;text-align:center;color:var(--mut);font-size:13px}#cropRot svg{display:block;margin:auto}
 </style>
 </head>
