@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v20">
+<meta name="jarvis-version" content="notis-v21">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -462,6 +462,19 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 #cropFrame .ch[data-h=t]{left:calc(50% - 15px);top:-15px}#cropFrame .ch[data-h=b]{left:calc(50% - 15px);bottom:-15px}#cropFrame .ch[data-h=l]{top:calc(50% - 15px);left:-15px}#cropFrame .ch[data-h=r]{top:calc(50% - 15px);right:-15px}
 #cropBar{order:-1;display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:calc(60px + env(safe-area-inset-top));padding:calc(10px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 10px calc(14px + env(safe-area-inset-left))}
 #cropBar #cropNo,#cropBar #cropOk{font-size:14px;padding:8px 16px}#cropCount{flex:1;text-align:center;color:var(--mut);font-size:13px}#cropRot svg{display:block;margin:auto}
+
+/* v21 */
+#notesList .note.nsr,#notesList .note:has(.nsnip){flex-wrap:wrap}
+.nsnip{flex-basis:100%;display:flex;flex-direction:column;gap:2px;margin-top:2px;color:#9fb6c6;font-size:13.5px;line-height:1.45;min-width:0}
+.nsl{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.note .t .nhm,.nsnip .nhm{color:#fff}
+.trbar{display:flex;align-items:center;gap:8px;padding:6px 4px 10px;color:var(--mut);font-size:13px;border-bottom:1px solid rgba(120,180,220,.12)}.trbar span{flex:1}.trbar .btn{font-size:13px;padding:6px 12px}.trbar .hb{width:34px;height:34px}
+#notesPg.ntrash #noteTabs,#notesPg.ntrash #noteFab{display:none}
+.note.ndel .t{color:#b9cfdd}
+#nfRestore{display:none;position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));z-index:12;font-size:14px;padding:8px 16px;border-color:var(--cyan);color:var(--cyan)}
+#noteFull.nro #nfRestore{display:block}#noteFull.nro #nfRead,#noteFull.nro .nfhist,#noteFull.nro #nfTools,#noteFull.nro .nftools{display:none!important}
+#noteFull::after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom));background:rgba(4,11,20,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid rgba(63,216,255,.12);z-index:10;pointer-events:none}
+#noteFull .nwrap{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
