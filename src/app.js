@@ -1105,25 +1105,43 @@ function nShareText(o){var L=[],it=function(x){if((x.text||'').trim())L.push((x.
  else if(o.type==='check'){if((o.title||'').trim())L.push(o.title.trim());chkOrder(o).forEach(it)}
  else if((o.text||'').trim())L.push(o.text.replace(/\s+$/,''));
  return L.join('\n')}
-/* payload is prepared ahead (menu open) so navigator.share runs synchronously inside the tap */
-var nShP=null;
-function nSharePrep(o){var txt=nShareText(o),P={id:o.id,txt:txt,files:null,ready:false};
+/* payload is prepared ahead (menu open) so navigator.share runs synchronously inside the tap; photos re-encoded small and split in batches */
+var nShP=null,SH_MAXN=10,SH_MAXB=8e6;
+function nShSmall(b,i){return (window.createImageBitmap?createImageBitmap(b):Promise.reject()).catch(function(){return new Promise(function(ok,no){var u=URL.createObjectURL(b),im=new Image();im.onload=function(){ok(im);setTimeout(function(){URL.revokeObjectURL(u)},0)};im.onerror=function(){URL.revokeObjectURL(u);no()};im.src=u})}).then(function(src){
+ var w=src.width||src.naturalWidth,h=src.height||src.naturalHeight,k=Math.min(1,1280/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));c.getContext('2d').drawImage(src,0,0,c.width,c.height);try{src.close&&src.close()}catch(_){}
+ return new Promise(function(r){c.toBlob(function(x){r(x&&x.size<b.size?x:b)},'image/jpeg',0.75)})}).catch(function(){return b}).then(function(x){return new File([x],'notis-'+(i+1)+'.jpg',{type:'image/jpeg'})})}
+function nSharePrep(o){var txt=nShareText(o),P={id:o.id,txt:txt,files:null,batches:[],ready:false};
  var ord=o.type==='mix'?[].concat.apply([],(o.blocks||[]).filter(function(b){return b.t==='img'}).map(function(b){return b.ph||[]})):null;
  P.p=phOf(o.id).then(function(a){if(ord)a=a.filter(function(r){return ord.indexOf(r.id)>=0}).sort(function(x,y){return ord.indexOf(x.id)-ord.indexOf(y.id)});
-  return Promise.all(a.map(function(r,i){return phBlob(o,r).then(function(b){return new File([b],'notis-'+(i+1)+'.jpg',{type:'image/jpeg'})},function(){return null})}))},function(){return[]}).then(function(fs){P.files=(fs||[]).filter(Boolean);P.ready=true;return P});
+  return a.reduce(function(q,r,i){return q.then(function(acc){return phBlob(o,r).then(function(b){return nShSmall(b,i)},function(){return null}).then(function(f){if(f)acc.push(f);return acc})})},Promise.resolve([]))},function(){return[]}).then(function(fs){
+  P.files=fs||[];var cur=[],sz=0;P.files.forEach(function(f){if(cur.length&&(cur.length>=SH_MAXN||sz+f.size>SH_MAXB)){P.batches.push(cur);cur=[];sz=0}cur.push(f);sz+=f.size});if(cur.length)P.batches.push(cur);P.ready=true;return P});
  return P}
 function nCopySync(txt){var ok=false;try{var t=document.createElement('textarea');t.value=txt;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}
  if(!ok)try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).catch(function(){});ok=true}}catch(_){}toast(ok?'Copiat':'Nu am putut copia')}
-function nShareNow(P){var txt=P.txt,fs=P.ready&&P.files||[];if(!txt&&!fs.length){if(!P.ready){toast('Pregătesc pozele…');return}toast('Notița e goală');return}
- if(!navigator.share){nCopySync(txt);return}
- var d={text:txt};if(fs.length&&navigator.canShare&&navigator.canShare({files:fs,text:txt}))d.files=fs;
- navigator.share(d).catch(function(e){if(e&&e.name==='AbortError')return;console.warn(e);nShareAsk(P)})}
-function nShareAsk(P){var cf=$('cfModal'),tx=cf.querySelector('.cftxt'),ok=$('cfOk'),t0=tx.textContent,o0=ok.textContent,c0=ok.className;
- tx.textContent='Trimite notița'+(P.files&&P.files.length?' cu '+P.files.length+(P.files.length===1?' poză':' poze'):'')+'?';ok.textContent='📤 Trimite';ok.className='btn';
- var back=function(){tx.textContent=t0;ok.textContent=o0;ok.className=c0};
- $('cfOk').onclick=function(){jvClose('cfModal');back();nShareNow(P)};$('cfNo').onclick=function(){jvClose('cfModal');back()};cf.classList.add('show')}
+/* in-app sheet with several choices; always closes on any tap */
+function nShSheet(msg,opts){var m=$('shModal');if(!m){m=document.createElement('div');m.id='shModal';m.className='modal';m.style.zIndex='90';document.body.appendChild(m)}
+ m.innerHTML='<div class="card jvdlg"><div class="cftxt">'+esc(msg)+'</div><div class="shcol"></div></div>';var col=m.querySelector('.shcol');
+ opts.concat([{t:'Renunță',f:null}]).forEach(function(o){var b=document.createElement('button');b.type='button';b.className='btn'+(o.f?'':' shno');b.textContent=o.t;b.onclick=function(){m.classList.remove('show');m.innerHTML='';if(o.f)try{o.f()}catch(e){console.warn(e);toast('Telefonul a refuzat trimiterea')}};col.appendChild(b)});
+ m.onclick=function(e){if(e.target===m){m.classList.remove('show');m.innerHTML=''}};m.classList.add('show')}
+function nShRange(P,bi){var a=0;for(var k=0;k<bi;k++)a+=P.batches[k].length;return (a+1)+'–'+(a+P.batches[bi].length)}
+function nShSend(d,ok,bad){var t=setTimeout(function(){t=null},60000);
+ try{navigator.share(d).then(function(){if(t)clearTimeout(t);ok&&ok()},function(e){if(t)clearTimeout(t);if(e&&e.name==='AbortError')return;console.warn(e);toast('Telefonul a refuzat trimiterea'+(e&&e.name&&e.name!=='Error'?' ('+e.name+')':''));bad&&bad(e)})}catch(e){console.warn(e);toast('Telefonul a refuzat trimiterea');bad&&bad(e)}}
+function nShBatch(P,bi){var fs=P.batches[bi],withTxt=bi===0&&P.txt,d={files:fs};if(withTxt)d.text=P.txt;
+ var can=true;try{can=!navigator.canShare||navigator.canShare(d)}catch(_){can=false}
+ if(!can){toast('Telefonul a refuzat trimiterea pozelor');return nShMenu(P,bi)}
+ nShSend(d,function(){if(bi+1<P.batches.length)nShMenu(P,bi+1)},function(){nShMenu(P,bi)})}
+function nShMenu(P,bi){var o=[{t:'📤 Trimite pozele '+nShRange(P,bi)+' din '+P.files.length+(bi===0&&P.txt?' + text':''),f:function(){nShBatch(P,bi)}}];
+ if(P.txt)o.push({t:'Doar text',f:function(){nShSend({text:P.txt},null,function(){nCopySync(P.txt)})}});
+ nShSheet(P.files.length>SH_MAXN&&bi===0?'Notița are '+P.files.length+' poze — le trimit pe rând, câte '+SH_MAXN+'.':'Trimite notița',o)}
+function nShareNow(P){var txt=P.txt;if(!P.ready){if(txt&&navigator.share){nShSend({text:txt},null,function(){nCopySync(txt)});return}toast('Pregătesc pozele…');return}
+ if(!txt&&!P.files.length){toast('Notița e goală');return}
+ if(!navigator.share){if(txt)nCopySync(txt);else toast('Telefonul nu poate trimite');return}
+ if(!P.files.length){nShSend({text:txt},null,function(){nCopySync(txt)});return}
+ if(P.batches.length===1)return nShBatch(P,0);
+ nShMenu(P,0)}
+function nShareAsk(P){nShMenu(P,0)}
 function nShare(id){var n=findN(id);if(!n)return;
- if(n.lock&&!n._key){pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';var o={id:n.id,_key:r.k,isort:n.isort,createdAt:n.createdAt,ts:n.ts};lkApply(o,r.o);var P=nSharePrep(o);P.p.then(function(){setTimeout(function(){nShareAsk(P)},0)});return true})}});return}
+ if(n.lock&&!n._key){pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';var o={id:n.id,_key:r.k,isort:n.isort,createdAt:n.createdAt,ts:n.ts};lkApply(o,r.o);var P=nSharePrep(o);P.p.then(function(){setTimeout(function(){if(P.files.length)nShMenu(P,0);else if(P.txt)nShSheet('Trimite notița',[{t:'📤 Trimite',f:function(){nShSend({text:P.txt},null,function(){nCopySync(P.txt)})}}]);else toast('Notița e goală')},0)});return true})}});return}
  var P=nShP&&nShP.id===id?nShP:null;if(!P||P.txt!==nShareText(n))P=nSharePrep(n);nShareNow(P)}
 function lkOpen(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';lkApply(n,r.o);n._key=r.k;setTimeout(function(){fullOpen(id)},0);return true})}})}
 function lkUnlock(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';phUnlockAll(n.id,r.k).catch(function(e){console.warn(e)});lkApply(n,r.o);delete n.lock;delete n._key;delete n.ltitle;nHistReset();saveNotes();renderNotes();toast('Notiță deblocată');return true})}})}
