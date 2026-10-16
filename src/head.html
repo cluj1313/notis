@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v15">
+<meta name="jarvis-version" content="notis-v16">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -436,6 +436,9 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 .nbt{display:block;width:100%;box-sizing:border-box;min-height:28px;resize:none;overflow:hidden;background:transparent;border:0;color:var(--txt);font:inherit;font-size:16.5px;line-height:1.55;outline:none;overflow-wrap:anywhere;padding:2px 0}
 .nbc{margin:4px 0}.nbc .ciadd{height:30px}
 .nfhist{gap:4px}.nfhist .hist{width:34px!important;min-width:0}.nfhist .hist svg{display:block;margin:auto}.nfhist .hist.on{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(63,216,255,.35)}
+.hist#bUndo,.hist#bRedo,.hist#nUndo,.hist#nRedo,#nfUndo,#nfRedo{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(63,216,255,.35);opacity:1;font-size:19px}
+.hist#bUndo:disabled,.hist#bRedo:disabled,.hist#nUndo:disabled,.hist#nRedo:disabled,#nfUndo:disabled,#nfRedo:disabled{opacity:.45;box-shadow:none}
+#nfUndo svg,#nfRedo svg,#bUndo svg,#bRedo svg,#nUndo svg,#nRedo svg{width:19px;height:19px}
 #notesList .note.ncol{background:linear-gradient(90deg,var(--nc) 0,transparent 80%);border-radius:10px}
 .npal i.ncdef{background:transparent!important;border:1.5px dashed rgba(160,200,230,.6);box-sizing:border-box}
 #noteFull.mix #nfPh{display:none}

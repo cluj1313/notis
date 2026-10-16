@@ -492,7 +492,7 @@ function lpMoveMenu(){var c=lpCur,o=dndObj(c.S,c.id),box=$('lpBox'),h='<div clas
  h+='<button data-a="urg">'+(o.urgent?'● Normal':'● Urgent')+'</button>';box.innerHTML=h;lpPos()}
 function lpTabOpen(hd){lpCur={li:hd,tabHd:true};$('lpBox').innerHTML='<button data-a="ren">✎ Redenumește</button><button data-a="tdel" class="dng">🗑 Șterge tabul</button>';$('lpMenu').classList.add('show');hd.classList.add('jv-lpon');lpPos()}
 function lpNTOpen(b){lpCur={li:b,nt:b.dataset.id};$('lpBox').innerHTML='<button data-a="ntren">✎ Redenumește</button><button data-a="ntmv">↔ Mută</button><button data-a="ntcol">🎨 Culoare</button><button data-a="ntdel" class="dng">🗑 Șterge tabul</button>';$('lpMenu').classList.add('show');b.classList.add('jv-lpon');lpPos()}
-function lpNoteOpen(li){lpCur={li:li,note:true};$('lpBox').innerHTML='<button data-a="nal">⏰ Alarmă</button><button data-a="ned">✎ Editează</button><button data-a="ndrag">✥ Mută (drag &amp; drop)</button><button data-a="nmv">↕ Mută în alt tab</button>'+((findN(li.dataset.id)||{}).lock?'<button data-a="nunl">🔓 Deblochează</button>':'<button data-a="nlock">🔒 Blochează</button>')+'<button data-a="ndel" class="dng">× Șterge</button>';$('lpMenu').classList.add('show');li.classList.add('jv-lpon');lpPos()}
+function lpNoteOpen(li){lpCur={li:li,note:true};$('lpBox').innerHTML='<button data-a="nal">⏰ Alarmă</button><button data-a="ned">✎ Editează</button><button data-a="nshr">📤 Trimite</button><button data-a="ndrag">✥ Mută (drag &amp; drop)</button><button data-a="nmv">↕ Mută în alt tab</button>'+((findN(li.dataset.id)||{}).lock?'<button data-a="nunl">🔓 Deblochează</button>':'<button data-a="nlock">🔒 Blochează</button>')+'<button data-a="ndel" class="dng">× Șterge</button>';$('lpMenu').classList.add('show');li.classList.add('jv-lpon');lpPos()}
 function lpClose(){$('lpMenu').classList.remove('show');if(lpCur&&lpCur.li)lpCur.li.classList.remove('jv-lpon');lpCur=null}
 $('lpMenu').addEventListener('click',function(e){if(lpJust){lpJust=false;return}var c=lpCur;if(!c){lpClose();return}var b=e.target.closest('button');if(!b){lpClose();return}
  if(b.dataset.mv!=null){var T=lpLists()[+b.dataset.mv];if(T.key===c.S.key){lpClose();return}lpMove(T);return}
@@ -510,7 +510,7 @@ $('lpMenu').addEventListener('click',function(e){if(lpJust){lpJust=false;return}
  if(a==='ntcol'){var ct=findNT(c.nt)||{},hh='<div class="lph">Culoare</div><div class="npal">';NT_COLORS.forEach(function(k){hh+='<button data-ntc="'+k[0]+'" class="'+((ct.color||'#3fd8ff')===k[0]?'cur':'')+'" style="--nc:'+k[0]+'" aria-label="'+k[1]+'"><i></i></button>'});$('lpBox').innerHTML=hh+'</div>';lpPos();return}
  if(a==='ntmv'){$('lpBox').innerHTML='<button data-a="ntl">← Mută la stânga</button><button data-a="ntr">Mută la dreapta →</button>';lpPos();return}
  if(a==='ntl'||a==='ntr'||a==='ntren'||a==='ntdel'){var tid=c.nt;lpClose();if(a==='ntl')ntShift(tid,-1);else if(a==='ntr')ntShift(tid,1);else if(a==='ntren')ntRename(tid);else ntDelete(tid);return}
- if(a==='ned'||a==='ndel'){var nli=c.li;lpClose();if(a==='ned')noteEdit(nli);else noteDel(nli.dataset.id);return}if(a==='ren'||a==='tdel'){var hd=c.li;lpClose();var hb=hd.querySelector(a==='ren'?'.hb.ren':'.hb.del');if(hb)hb.click();return}if(a==='mv'){lpMoveMenu();return}if(a==='urg'){var o=dndObj(c.S,c.id);lpMove(c.S,!(o&&o.urgent));return}
+ if(a==='nshr'){var sli=c.li;lpClose();nShare(sli.dataset.id);return}if(a==='ned'||a==='ndel'){var nli=c.li;lpClose();if(a==='ned')noteEdit(nli);else noteDel(nli.dataset.id);return}if(a==='ren'||a==='tdel'){var hd=c.li;lpClose();var hb=hd.querySelector(a==='ren'?'.hb.ren':'.hb.del');if(hb)hb.click();return}if(a==='mv'){lpMoveMenu();return}if(a==='urg'){var o=dndObj(c.S,c.id);lpMove(c.S,!(o&&o.urgent));return}
  var li=c.li;lpClose();var btn=li.querySelector(a==='al'?'.al':a==='ed'?'.ed':'.x');if(btn){dndEatClick=false;btn.click()}});
 document.addEventListener('touchmove',function(e){if(dnd&&dnd.armed&&e.cancelable)e.preventDefault()},{passive:false});
 ['contextmenu','selectstart','dragstart'].forEach(function(ev){document.addEventListener(ev,function(e){if(dnd)e.preventDefault()})});
@@ -1099,6 +1099,25 @@ function lkLock(id){var n=findN(id);if(!n||n.lock)return;if(!window.crypto||!cry
   var salt=crypto.getRandomValues(new Uint8Array(16));var tt=nTitle0(n);var lkK=null;return lkDerive(p2,salt).then(function(k){lkK=k;return lkEnc(k,salt,n)}).then(function(l){var kk=l;return phLockAll(n.id,lkK).then(function(){return kk})}).then(function(l){n.lock=l;n.ltitle=tt;nHistReset();lkStrip(n);saveNotes();toast('Notiță blocată');return true})}})}
  step1()}
 function lkTry(n,pin){return lkDerive(pin,b64d(n.lock.salt)).then(function(k){return lkDec(k,n.lock).then(function(o){return{k:k,o:o}})}).catch(function(){return null})}
+/* share a note: text + photos via Web Share */
+function nShareText(o){var L=[],it=function(x){if((x.text||'').trim())L.push((x.done?'☑ ':'☐ ')+x.text.trim())};
+ if(o.type==='mix')(o.blocks||[]).forEach(function(b){if(b.t==='text'){if((b.v||'').trim())L.push(b.v.replace(/\s+$/,''))}else if(b.t==='chk')mOrder(o,b).forEach(it)});
+ else if(o.type==='check'){if((o.title||'').trim())L.push(o.title.trim());chkOrder(o).forEach(it)}
+ else if((o.text||'').trim())L.push(o.text.replace(/\s+$/,''));
+ return L.join('\n')}
+function nShareGo(o){var txt=nShareText(o);
+ var ord=o.type==='mix'?[].concat.apply([],(o.blocks||[]).filter(function(b){return b.t==='img'}).map(function(b){return b.ph||[]})):null;
+ return phOf(o.id).then(function(a){if(ord)a=a.filter(function(r){return ord.indexOf(r.id)>=0}).sort(function(x,y){return ord.indexOf(x.id)-ord.indexOf(y.id)});
+  return Promise.all(a.map(function(r,i){return phBlob(o,r).then(function(b){return new File([b],'notis-'+(i+1)+'.jpg',{type:'image/jpeg'})},function(){return null})}))},function(){return[]}).then(function(fs){fs=(fs||[]).filter(Boolean);
+  if(!txt&&!fs.length){toast('Notița e goală');return}
+  function cp(){var done=function(){toast('Copiat')};try{navigator.clipboard.writeText(txt).then(done,function(){fb();done()})}catch(_){fb();done()}}
+  function fb(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch(_){}t.remove()}
+  if(!navigator.share)return cp();
+  var d={text:txt};if(fs.length&&navigator.canShare&&navigator.canShare({files:fs}))d.files=fs;
+  return navigator.share(d).catch(function(e){if(e&&e.name==='AbortError')return;if(d.files){delete d.files;return navigator.share(d).catch(function(e2){if(!e2||e2.name!=='AbortError')cp()})}cp()})})}
+function nShare(id){var n=findN(id);if(!n)return;
+ if(n.lock&&!n._key){pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';var o={id:n.id,_key:r.k,isort:n.isort,createdAt:n.createdAt,ts:n.ts};lkApply(o,r.o);setTimeout(function(){nShareGo(o)},0);return true})}});return}
+ nShareGo(n)}
 function lkOpen(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';lkApply(n,r.o);n._key=r.k;setTimeout(function(){fullOpen(id)},0);return true})}})}
 function lkUnlock(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';phUnlockAll(n.id,r.k).catch(function(e){console.warn(e)});lkApply(n,r.o);delete n.lock;delete n._key;delete n.ltitle;nHistReset();saveNotes();renderNotes();toast('Notiță deblocată');return true})}})}
 /* v54: checklist notes */
