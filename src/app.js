@@ -492,7 +492,7 @@ function lpMoveMenu(){var c=lpCur,o=dndObj(c.S,c.id),box=$('lpBox'),h='<div clas
  h+='<button data-a="urg">'+(o.urgent?'● Normal':'● Urgent')+'</button>';box.innerHTML=h;lpPos()}
 function lpTabOpen(hd){lpCur={li:hd,tabHd:true};$('lpBox').innerHTML='<button data-a="ren">✎ Redenumește</button><button data-a="tdel" class="dng">🗑 Șterge tabul</button>';$('lpMenu').classList.add('show');hd.classList.add('jv-lpon');lpPos()}
 function lpNTOpen(b){lpCur={li:b,nt:b.dataset.id};$('lpBox').innerHTML='<button data-a="ntren">✎ Redenumește</button><button data-a="ntmv">↔ Mută</button><button data-a="ntcol">🎨 Culoare</button><button data-a="ntdel" class="dng">🗑 Șterge tabul</button>';$('lpMenu').classList.add('show');b.classList.add('jv-lpon');lpPos()}
-function lpNoteOpen(li){lpCur={li:li,note:true};$('lpBox').innerHTML='<button data-a="nal">⏰ Alarmă</button><button data-a="ned">✎ Editează</button><button data-a="nshr">📤 Trimite</button><button data-a="ndrag">✥ Mută (drag &amp; drop)</button><button data-a="nmv">↕ Mută în alt tab</button>'+((findN(li.dataset.id)||{}).lock?'<button data-a="nunl">🔓 Deblochează</button>':'<button data-a="nlock">🔒 Blochează</button>')+'<button data-a="ndel" class="dng">× Șterge</button>';$('lpMenu').classList.add('show');li.classList.add('jv-lpon');lpPos()}
+function lpNoteOpen(li){lpCur={li:li,note:true};try{var _sn=findN(li.dataset.id);nShP=_sn&&!(_sn.lock&&!_sn._key)?nSharePrep(_sn):null}catch(_){nShP=null}$('lpBox').innerHTML='<button data-a="nal">⏰ Alarmă</button><button data-a="ned">✎ Editează</button><button data-a="nshr">📤 Trimite</button><button data-a="ndrag">✥ Mută (drag &amp; drop)</button><button data-a="nmv">↕ Mută în alt tab</button>'+((findN(li.dataset.id)||{}).lock?'<button data-a="nunl">🔓 Deblochează</button>':'<button data-a="nlock">🔒 Blochează</button>')+'<button data-a="ndel" class="dng">× Șterge</button>';$('lpMenu').classList.add('show');li.classList.add('jv-lpon');lpPos()}
 function lpClose(){$('lpMenu').classList.remove('show');if(lpCur&&lpCur.li)lpCur.li.classList.remove('jv-lpon');lpCur=null}
 $('lpMenu').addEventListener('click',function(e){if(lpJust){lpJust=false;return}var c=lpCur;if(!c){lpClose();return}var b=e.target.closest('button');if(!b){lpClose();return}
  if(b.dataset.mv!=null){var T=lpLists()[+b.dataset.mv];if(T.key===c.S.key){lpClose();return}lpMove(T);return}
@@ -842,7 +842,7 @@ $('bShare').onclick=function(){var url=blankURL(),text='JARVIS Command Center �
 (function(){
  var standalone=function(){try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: minimal-ui)').matches||navigator.standalone===true}catch(e){return false}};
  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')&&!TTS.opaque)
-  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW',e)})});
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){var up=function(){try{reg.update()}catch(_){}};up();document.addEventListener('visibilitychange',function(){if(!document.hidden)up()});setInterval(up,30*60*1000)}).catch(function(e){console.warn('SW',e)});var hadC=!!navigator.serviceWorker.controller,rl=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(!hadC){hadC=true;return}if(rl)return;rl=true;try{if(typeof nFlushAll==='function')nFlushAll()}catch(_){}location.reload()})});
  var deferred=null;
  function upd(){var f=$('fInstall');if(!f)return;f.style.display=standalone()?'none':'';
   $('sInstall').style.display=deferred?'':'none';$('installHint').style.display=deferred?'none':''}
@@ -1105,19 +1105,26 @@ function nShareText(o){var L=[],it=function(x){if((x.text||'').trim())L.push((x.
  else if(o.type==='check'){if((o.title||'').trim())L.push(o.title.trim());chkOrder(o).forEach(it)}
  else if((o.text||'').trim())L.push(o.text.replace(/\s+$/,''));
  return L.join('\n')}
-function nShareGo(o){var txt=nShareText(o);
+/* payload is prepared ahead (menu open) so navigator.share runs synchronously inside the tap */
+var nShP=null;
+function nSharePrep(o){var txt=nShareText(o),P={id:o.id,txt:txt,files:null,ready:false};
  var ord=o.type==='mix'?[].concat.apply([],(o.blocks||[]).filter(function(b){return b.t==='img'}).map(function(b){return b.ph||[]})):null;
- return phOf(o.id).then(function(a){if(ord)a=a.filter(function(r){return ord.indexOf(r.id)>=0}).sort(function(x,y){return ord.indexOf(x.id)-ord.indexOf(y.id)});
-  return Promise.all(a.map(function(r,i){return phBlob(o,r).then(function(b){return new File([b],'notis-'+(i+1)+'.jpg',{type:'image/jpeg'})},function(){return null})}))},function(){return[]}).then(function(fs){fs=(fs||[]).filter(Boolean);
-  if(!txt&&!fs.length){toast('Notița e goală');return}
-  function cp(){var done=function(){toast('Copiat')};try{navigator.clipboard.writeText(txt).then(done,function(){fb();done()})}catch(_){fb();done()}}
-  function fb(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy')}catch(_){}t.remove()}
-  if(!navigator.share)return cp();
-  var d={text:txt};if(fs.length&&navigator.canShare&&navigator.canShare({files:fs}))d.files=fs;
-  return navigator.share(d).catch(function(e){if(e&&e.name==='AbortError')return;if(d.files){delete d.files;return navigator.share(d).catch(function(e2){if(!e2||e2.name!=='AbortError')cp()})}cp()})})}
+ P.p=phOf(o.id).then(function(a){if(ord)a=a.filter(function(r){return ord.indexOf(r.id)>=0}).sort(function(x,y){return ord.indexOf(x.id)-ord.indexOf(y.id)});
+  return Promise.all(a.map(function(r,i){return phBlob(o,r).then(function(b){return new File([b],'notis-'+(i+1)+'.jpg',{type:'image/jpeg'})},function(){return null})}))},function(){return[]}).then(function(fs){P.files=(fs||[]).filter(Boolean);P.ready=true;return P});
+ return P}
+function nCopySync(txt){var ok=false;try{var t=document.createElement('textarea');t.value=txt;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();ok=document.execCommand('copy');t.remove()}catch(_){}
+ if(!ok)try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).catch(function(){});ok=true}}catch(_){}toast(ok?'Copiat':'Nu am putut copia')}
+function nShareNow(P){var txt=P.txt,fs=P.ready&&P.files||[];if(!txt&&!fs.length){if(!P.ready){toast('Pregătesc pozele…');return}toast('Notița e goală');return}
+ if(!navigator.share){nCopySync(txt);return}
+ var d={text:txt};if(fs.length&&navigator.canShare&&navigator.canShare({files:fs,text:txt}))d.files=fs;
+ navigator.share(d).catch(function(e){if(e&&e.name==='AbortError')return;console.warn(e);nShareAsk(P)})}
+function nShareAsk(P){var cf=$('cfModal'),tx=cf.querySelector('.cftxt'),ok=$('cfOk'),t0=tx.textContent,o0=ok.textContent,c0=ok.className;
+ tx.textContent='Trimite notița'+(P.files&&P.files.length?' cu '+P.files.length+(P.files.length===1?' poză':' poze'):'')+'?';ok.textContent='📤 Trimite';ok.className='btn';
+ var back=function(){tx.textContent=t0;ok.textContent=o0;ok.className=c0};
+ $('cfOk').onclick=function(){jvClose('cfModal');back();nShareNow(P)};$('cfNo').onclick=function(){jvClose('cfModal');back()};cf.classList.add('show')}
 function nShare(id){var n=findN(id);if(!n)return;
- if(n.lock&&!n._key){pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';var o={id:n.id,_key:r.k,isort:n.isort,createdAt:n.createdAt,ts:n.ts};lkApply(o,r.o);setTimeout(function(){nShareGo(o)},0);return true})}});return}
- nShareGo(n)}
+ if(n.lock&&!n._key){pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';var o={id:n.id,_key:r.k,isort:n.isort,createdAt:n.createdAt,ts:n.ts};lkApply(o,r.o);var P=nSharePrep(o);P.p.then(function(){setTimeout(function(){nShareAsk(P)},0)});return true})}});return}
+ var P=nShP&&nShP.id===id?nShP:null;if(!P||P.txt!==nShareText(n))P=nSharePrep(n);nShareNow(P)}
 function lkOpen(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';lkApply(n,r.o);n._key=r.k;setTimeout(function(){fullOpen(id)},0);return true})}})}
 function lkUnlock(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';phUnlockAll(n.id,r.k).catch(function(e){console.warn(e)});lkApply(n,r.o);delete n.lock;delete n._key;delete n.ltitle;nHistReset();saveNotes();renderNotes();toast('Notiță deblocată');return true})}})}
 /* v54: checklist notes */
