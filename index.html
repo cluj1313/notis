@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v10">
+<meta name="jarvis-version" content="notis-v11">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -436,6 +436,19 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 .nfhist{gap:4px}.nfhist .hist{width:34px!important;min-width:0}.nfhist .hist svg{display:block;margin:auto}.nfhist .hist.on{color:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px rgba(63,216,255,.35)}
 #notesList .note.ncol{background:linear-gradient(90deg,var(--nc) 0,transparent 80%);border-radius:10px}
 .npal i.ncdef{background:transparent!important;border:1.5px dashed rgba(160,200,230,.6);box-sizing:border-box}
+#noteFull.mix #nfPh{display:none}
+.nbi{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin:8px 0}
+.nbi .phi{aspect-ratio:1;border-radius:12px;background:#0a1a2c center/cover no-repeat;border:1px solid rgba(120,180,220,.18);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+#crop{position:fixed;inset:0;z-index:70;background:#040b14;display:none;flex-direction:column}#crop.show{display:flex}
+#cropStage{position:relative;flex:1;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none}
+#cropImg{position:absolute;left:0;top:0;transform-origin:center center;max-width:none;pointer-events:none;-webkit-user-drag:none}
+#cropFrame{position:absolute;border:1.5px solid var(--cyan);box-shadow:0 0 0 9999px rgba(2,8,16,.62),0 0 10px rgba(63,216,255,.35);box-sizing:border-box;pointer-events:none}
+#cropFrame .ch{position:absolute;width:30px;height:30px;pointer-events:auto;touch-action:none}
+#cropFrame .ch::after{content:'';position:absolute;left:11px;top:11px;width:8px;height:8px;border-radius:2px;background:var(--cyan);box-shadow:0 0 6px rgba(63,216,255,.6)}
+#cropFrame .ch[data-h=tl]{left:-15px;top:-15px}#cropFrame .ch[data-h=tr]{right:-15px;top:-15px}#cropFrame .ch[data-h=bl]{left:-15px;bottom:-15px}#cropFrame .ch[data-h=br]{right:-15px;bottom:-15px}
+#cropFrame .ch[data-h=t]{left:calc(50% - 15px);top:-15px}#cropFrame .ch[data-h=b]{left:calc(50% - 15px);bottom:-15px}#cropFrame .ch[data-h=l]{top:calc(50% - 15px);left:-15px}#cropFrame .ch[data-h=r]{top:calc(50% - 15px);right:-15px}
+#cropBar{display:flex;align-items:center;gap:10px;padding:12px calc(14px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+#cropBar #cropNo,#cropBar #cropOk{font-size:14px;padding:8px 16px}#cropCount{flex:1;text-align:center;color:var(--mut);font-size:13px}#cropRot svg{display:block;margin:auto}
 </style>
 </head>
 <body>
@@ -551,7 +564,7 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 <div class="nhist" id="nHistBar"><button type="button" class="btn pill hist" id="nUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nRedo" aria-label="Refă" title="Refă" disabled>↷</button></div>
 <button type="button" id="noteFab" aria-label="Notiță nouă">+</button>
 <div id="noteFull" aria-label="Notiță"><div class="nwrap"><div class="ntop"><button type="button" class="hb" id="nfBack" aria-label="Înapoi">‹</button><h2>NOTIȚĂ</h2><button type="button" class="hb" id="nfSort" aria-label="Sortare"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h11M4 18h6"/></svg></button></div>
- <section class="card nfcard"><textarea id="nfText" aria-label="Textul notiței" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other"></textarea><div id="nfChk"><textarea id="nfTitle" placeholder="Titlu" enterkeyhint="next" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" rows="1" wrap="off"></textarea><div id="nfItems"></div></div><div id="nfBlocks"></div><div id="nfPh"></div></section><div class="nhist nfhist"><button type="button" class="btn pill hist" id="nfUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nfRedo" aria-label="Refă" title="Refă" disabled>↷</button><button type="button" class="btn pill hist" id="nfPhoto" aria-label="Adaugă poză" title="Adaugă poză"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></svg></button><button type="button" class="btn pill hist" id="nfChkIns" aria-label="Inserează listă" title="Inserează listă"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="6" height="6" rx="1.5"/><path d="M5 7.6l1.2 1.2 2-2.3M13 7.5h7.5M3.5 15.5h6v4h-6zM13 17.5h7.5"/></svg></button><button type="button" class="btn pill hist" id="nfColor" aria-label="Culoare" title="Culoare"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10" cy="7" r="1.1"/><circle cx="15" cy="7.5" r="1.1"/></svg></button><button type="button" class="btn pill hist" id="nfMove" aria-label="Mută în tab" title="Mută în tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M10 13.5h6M13.5 11l2.5 2.5-2.5 2.5"/></svg></button><button type="button" class="btn pill hist" id="nfAlarm" aria-label="Alarmă" title="Alarmă"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.3 1.6M4.5 5.5l3-2.5M19.5 5.5l-3-2.5"/></svg></button></div><input type="file" id="nfPhIn" accept="image/*" multiple hidden><div id="phView"><img id="phImg" alt=""></div><button type="button" class="btn pill" id="nfRead">Citește</button></div></div>
+ <section class="card nfcard"><textarea id="nfText" aria-label="Textul notiței" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other"></textarea><div id="nfChk"><textarea id="nfTitle" placeholder="Titlu" enterkeyhint="next" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" rows="1" wrap="off"></textarea><div id="nfItems"></div></div><div id="nfBlocks"></div><div id="nfPh"></div></section><div class="nhist nfhist"><button type="button" class="btn pill hist" id="nfUndo" aria-label="Anulează" title="Anulează" disabled>↶</button><button type="button" class="btn pill hist" id="nfRedo" aria-label="Refă" title="Refă" disabled>↷</button><button type="button" class="btn pill hist" id="nfPhoto" aria-label="Adaugă poză" title="Adaugă poză"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.7"/><path d="M21 16l-5-5-8 8"/></svg></button><button type="button" class="btn pill hist" id="nfChkIns" aria-label="Inserează listă" title="Inserează listă"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="6" height="6" rx="1.5"/><path d="M5 7.6l1.2 1.2 2-2.3M13 7.5h7.5M3.5 15.5h6v4h-6zM13 17.5h7.5"/></svg></button><button type="button" class="btn pill hist" id="nfColor" aria-label="Culoare" title="Culoare"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5C21 6.5 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.1"/><circle cx="10" cy="7" r="1.1"/><circle cx="15" cy="7.5" r="1.1"/></svg></button><button type="button" class="btn pill hist" id="nfMove" aria-label="Mută în tab" title="Mută în tab"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M10 13.5h6M13.5 11l2.5 2.5-2.5 2.5"/></svg></button><button type="button" class="btn pill hist" id="nfAlarm" aria-label="Alarmă" title="Alarmă"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.3 1.6M4.5 5.5l3-2.5M19.5 5.5l-3-2.5"/></svg></button></div><input type="file" id="nfPhIn" accept="image/*" multiple hidden><div id="crop"><div id="cropStage"><img id="cropImg" alt="" draggable="false"><div id="cropFrame"><i class="ch" data-h="tl"></i><i class="ch" data-h="t"></i><i class="ch" data-h="tr"></i><i class="ch" data-h="r"></i><i class="ch" data-h="br"></i><i class="ch" data-h="b"></i><i class="ch" data-h="bl"></i><i class="ch" data-h="l"></i></div></div><div id="cropBar"><button type="button" class="btn pill" id="cropNo">Anulează</button><span id="cropCount"></span><button type="button" class="btn pill hist" id="cropRot" aria-label="Rotește" title="Rotește"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button><button type="button" class="btn pill" id="cropOk">Gata</button></div></div><div id="phView"><img id="phImg" alt=""></div><button type="button" class="btn pill" id="nfRead">Citește</button></div></div>
 <div class="modal" id="cfModal"><div class="card jvdlg"><div class="cftxt">Sigur vrei să ștergi?</div><div class="mrow"><button type="button" class="btn" id="cfNo">Nu</button><button type="button" class="btn dngb" id="cfOk">Șterge</button></div></div></div>
 <div class="modal" id="prModal"><div class="card jvdlg"><div class="lbl"><span id="prTitle">Tab nou</span></div><div class="field"><textarea id="prIn" maxlength="40" enterkeyhint="done" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" rows="1" wrap="off"></textarea></div><div class="mrow"><button type="button" class="btn" id="prNo">Anulează</button><button type="button" class="btn" id="prOk">Salvează</button></div></div></div>
 <div class="modal" id="pinModal"><div class="card jvdlg" id="pinBox"><div class="lbl"><span id="pinTitle">PIN</span></div>
@@ -1877,7 +1890,7 @@ function noteRead(){if(speaking&&speakKey==='note'){stopSpeaking();return}var cn
  var t=$('nfText').value.trim();if(!t){toast('Notița e goală');return}
  return speak(t.split(/\n+/).filter(function(x){return x.trim()}).map(function(x){return prepSeg(null,x)}),'note')}
 $('nfRead').addEventListener('click',function(e){e.preventDefault();noteRead()});
-function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='mix')mClean(cq);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phViewClose(false);$('noteFull').classList.remove('show','mix');ncApply(null);document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
+function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='mix')mClean(cq);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phCacheClear();phViewClose(false);$('noteFull').classList.remove('show','mix');ncApply(null);document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
  if(!fromPop&&history.state&&history.state.jvNote)try{nIgnorePop=true;history.back()}catch(_){nIgnorePop=false}}
 var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
@@ -1973,9 +1986,9 @@ function phBlob(n,r){if(!r.iv)return Promise.resolve(new Blob([r.buf],{type:'ima
 function phLockAll(nid,key){return phOf(nid).then(function(a){return Promise.all(a.filter(function(r){return !r.iv}).map(function(r){return phSeal(key,r.buf).then(function(x){r.iv=x.iv;r.buf=x.buf;return phPut(r)})}))})}
 function phUnlockAll(nid,key){return phOf(nid).then(function(a){return Promise.all(a.filter(function(r){return r.iv}).map(function(r){return crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(r.iv)},key,r.buf).then(function(b){delete r.iv;r.buf=b;return phPut(r)})}))})}
 var phURLs=[],phGen=0;
-function phClear(){phURLs.forEach(function(u){URL.revokeObjectURL(u)});phURLs=[];$('nfPh').innerHTML='';$('noteFull').classList.remove('hasph')}
+function phClear(){if(!fullId)phCacheClear();phURLs.forEach(function(u){URL.revokeObjectURL(u)});phURLs=[];$('nfPh').innerHTML='';$('noteFull').classList.remove('hasph')}
 function phFit(){var ta=$('nfText');if($('noteFull').classList.contains('hasph')){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'}else ta.style.height=''}
-function phRender(){var g=++phGen,n=fullId&&findN(fullId);if(!n){phClear();phFit();return Promise.resolve()}
+function phRender(){var g=++phGen,n=fullId&&findN(fullId);if(!n){phClear();phFit();return Promise.resolve()}if(n.type==='mix'){phClear();phFit();return phCount(n).then(function(a){if(g===phGen)mAdopt(n,a)})}
  return phCount(n).then(function(a){if(g!==phGen)return;return Promise.all(a.map(function(r){return phBlob(n,r).then(function(b){return{r:r,b:b}},function(){return null})})).then(function(xs){if(g!==phGen)return;phClear();var box=$('nfPh');
   xs.forEach(function(x){if(!x)return;var u=URL.createObjectURL(x.b);phURLs.push(u);var d=document.createElement('div');d.className='phi';d.dataset.id=x.r.id;d.dataset.u=u;d.style.backgroundImage='url('+u+')';box.appendChild(d)});
   $('noteFull').classList.toggle('hasph',box.children.length>0);phFit()})})}
@@ -1994,16 +2007,16 @@ function phLoad(list){if(!Array.isArray(list)||!list.length)return Promise.resol
 function phView(u){var v=$('phView');$('phImg').src=u;v.classList.add('show');try{history.pushState({jvPh:1},'')}catch(_){}}
 function phViewClose(back){var v=$('phView');if(!v.classList.contains('show'))return;v.classList.remove('show');$('phImg').removeAttribute('src');if(back){nIgnorePop=false;try{history.back()}catch(_){}}}
 $('phView').addEventListener('click',function(){try{history.back()}catch(_){phViewClose(false)}});
-(function(){var box=$('nfPh'),t=null,sx=0,sy=0,fired=false,tgt=null;
+[['nfPh',1],['nfBlocks',0]].forEach(function(BX){var box=$(BX[0]),t=null,sx=0,sy=0,fired=false,tgt=null;
  function cancel(){clearTimeout(t);t=null}
  box.addEventListener('pointerdown',function(e){var d=e.target.closest('.phi');if(!d)return;tgt=d;fired=false;sx=e.clientX;sy=e.clientY;cancel();t=setTimeout(function(){t=null;fired=true;try{if(navigator.vibrate)navigator.vibrate(20)}catch(_){}
-  var id=d.dataset.id;jvConfirm(function(){phDel(id).then(function(){var n=fullId&&findN(fullId);if(n){n.updatedAt=new Date().toISOString();return phCount(n)}}).then(function(){nFlush();phRender()})})},450)});
+  var id=d.dataset.id;jvConfirm(function(){phDel(id).then(function(){var n=fullId&&findN(fullId);if(n){n.updatedAt=new Date().toISOString();return phCount(n)}}).then(function(){var m=fullId&&findN(fullId);if(m&&m.type==='mix'){(m.blocks||[]).forEach(function(b){if(b.t==='img')b.ph=(b.ph||[]).filter(function(x){return x!==id})});mNorm(m);mSync(m);nFlush();mRender()}else{nFlush();phRender()}})})},450)});
  box.addEventListener('pointermove',function(e){if(t&&(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10))cancel()});
  box.addEventListener('pointerup',function(e){var d=e.target.closest('.phi');if(t){cancel();if(d&&d===tgt&&!fired)phView(d.dataset.u)}});
  box.addEventListener('pointercancel',cancel);box.addEventListener('contextmenu',function(e){e.preventDefault()});
- box.addEventListener('click',function(e){e.stopPropagation()})})();
+ if(BX[1])box.addEventListener('click',function(e){e.stopPropagation()})});
 $('nfPhoto').addEventListener('click',function(){var i=$('nfPhIn');i.value='';i.click()});
-$('nfPhIn').addEventListener('change',function(){phAdd(this.files)});
+$('nfPhIn').addEventListener('change',function(){phPick(this.files)});$('nfPhoto').addEventListener('mousedown',function(e){e.preventDefault()});
 $('nfText').addEventListener('input',function(){if($('noteFull').classList.contains('hasph')&&!phFit._q){phFit._q=1;requestAnimationFrame(function(){phFit._q=0;phFit()})}});
 setTimeout(phGC,3000);
 /* ---------- v9: mixed notes (type 'mix': blocks text/checklist), note color, editor move/alarm ---------- */
@@ -2011,7 +2024,7 @@ var NC=[['','Implicit'],['#103a3d','Turcoaz'],['#163a22','Verde'],['#3a3514','Ga
 function bUid(){return 'b'+ntUid()}
 function mOrder(n,b){var a=b.items||[],P={isort:n.isort,items:a,createdAt:n.createdAt,ts:n.ts};return ciSort(P,a.filter(function(x){return !x.done})).concat(ciSort(P,a.filter(function(x){return x.done})))}
 function mSync(n){if(n.type!=='mix')return;var L=[];(n.blocks||[]).forEach(function(b){if(b.t==='text')L.push(b.v||'');else mOrder(n,b).forEach(function(x){if(x.text.trim())L.push(x.text.trim())})});n.text=L.join('\n').replace(/^\s*\n/,'').replace(/\n{3,}/g,'\n\n')}
-function mNorm(n){var a=[];(n.blocks||[]).forEach(function(b){if(b.t==='chk'&&!(b.items||[]).length)return;var p=a[a.length-1];if(b.t==='text'&&p&&p.t==='text'){p.v=(p.v||'')+((p.v&&b.v)?'\n':'')+(b.v||'');return}a.push(b)});
+function mNorm(n){var a=[];(n.blocks||[]).forEach(function(b){if(b.t==='chk'&&!(b.items||[]).length)return;if(b.t==='img'&&!(b.ph||[]).length)return;var q=a[a.length-1];if(b.t!=='text'&&q&&q.t!=='text')a.push({id:bUid(),t:'text',v:''});var p=a[a.length-1];if(b.t==='text'&&p&&p.t==='text'){p.v=(p.v||'')+((p.v&&b.v)?'\n':'')+(b.v||'');return}a.push(b)});
  if(!a.length||a[a.length-1].t!=='text')a.push({id:bUid(),t:'text',v:''});n.blocks=a}
 function mTouch(n){n.updatedAt=n.editedAt=new Date().toISOString();mSync(n);nSaveSoon()}
 function mPre(n){if(nSaveT){clearTimeout(nSaveT);nSaveT=null}mSync(n);saveNotes()}
@@ -2019,19 +2032,20 @@ function mBlk(id){var n=fullId&&findN(fullId);if(!n||!n.blocks)return{};for(var 
 function mFit(t){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
 function mRender(focus){var n=fullId&&findN(fullId);if(!n||n.type!=='mix')return;mNorm(n);var box=$('nfBlocks');
  if(!focus){var ae=document.activeElement;if(ae&&box.contains(ae)){var bb=ae.closest('[data-b]');if(ae.classList.contains('cit'))focus={b:bb.dataset.b,item:ae.closest('.ci').dataset.id,end:true};else if(ae.classList.contains('nbt'))focus={b:bb.dataset.b,pos:ae.selectionStart}}}
- var h='';n.blocks.forEach(function(b){if(b.t==='text')h+='<div class="nbw" data-b="'+b.id+'"><textarea class="nbt" rows="1" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" aria-label="Text">'+esc(b.v||'')+'</textarea></div>';
+ var h='';n.blocks.forEach(function(b){h+=b.t==='img'?'<div class="nbi" data-b="'+b.id+'">'+(b.ph||[]).map(function(id){return '<div class="phi" data-id="'+esc(id)+'"'+(phCache[id]?' data-u="'+phCache[id]+'" style="background-image:url('+phCache[id]+')"':'')+'></div>'}).join('')+'</div>':'';if(b.t==='img');else if(b.t==='text')h+='<div class="nbw" data-b="'+b.id+'"><textarea class="nbt" rows="1" autocomplete="off" data-lpignore="true" data-1p-ignore="true" data-form-type="other" aria-label="Text">'+esc(b.v||'')+'</textarea></div>';
   else{var a=b.items||[],P={isort:n.isort,items:a,createdAt:n.createdAt,ts:n.ts},un=ciSort(P,a.filter(function(x){return !x.done})),dn=ciSort(P,a.filter(function(x){return x.done}));
    h+='<div class="nbc" data-b="'+b.id+'">'+un.map(chkRow).join('')+'<button type="button" class="ciadd" aria-label="Adaugă element"></button>'+(dn.length?'<div class="cisep"></div>'+dn.map(chkRow).join(''):'')+'</div>'}});
- box.innerHTML=h;box.querySelectorAll('.nbt').forEach(mFit);
+ box.innerHTML=h;box.querySelectorAll('.nbt').forEach(mFit);phFill();
  if(focus){var w=box.querySelector('[data-b="'+focus.b+'"]'),el=w&&(focus.item?w.querySelector('.ci[data-id="'+focus.item+'"] .cit'):w.querySelector('.nbt'));if(el){el.focus();var L=focus.pos!=null?focus.pos:(focus.end?el.value.length:0);try{el.setSelectionRange(L,L)}catch(_){}}}}
 function mItem(el){var w=el.closest('.nbc'),row=el.closest('.ci');if(!w||!row)return{};var r=mBlk(w.dataset.b);if(!r.b)return{};for(var i=0;i<r.b.items.length;i++)if(r.b.items[i].id===row.dataset.id){r.x=r.b.items[i];r.xi=i;return r}return r}
 var mCaret=null;/* last caret: {b:blockId,pos} or {plain:pos} or {chkb:blockId} */
 document.addEventListener('focusin',function(e){var t=e.target;if(t===$('nfText'))mCaret={plain:1};else if(t.classList&&t.classList.contains('nbt'))mCaret={b:t.closest('[data-b]').dataset.b};else if(t.closest&&t.closest('.nbc'))mCaret={chkb:t.closest('.nbc').dataset.b};else if(t.closest&&t.closest('#nfChk'))mCaret={chk:1}});
 document.addEventListener('selectionchange',function(){var t=document.activeElement;if(!mCaret||!t)return;if(t===$('nfText')||(t.classList&&t.classList.contains('nbt')))mCaret.pos=t.selectionStart});
-function mInsert(){var n=fullId&&findN(fullId);if(n&&n.lock&&!n._key)return;
+function mInsert(){mInsertB({id:bUid(),t:'chk',items:[ciNew(false)]})}
+function mInsertB(nb){var n=fullId&&findN(fullId);if(n&&n.lock&&!n._key)return;
  if(!n){var now=new Date().toISOString();n={id:ntUid(),text:'',ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true}
  else mPre(n);
- var it=ciNew(false),nb={id:bUid(),t:'chk',items:[it]};
+ var it=nb.items?nb.items[0]:null;
  if(n.type!=='mix'){var bl=[];if(n.type==='check'){if((n.title||'').trim())bl.push({id:bUid(),t:'text',v:n.title.trim()});if((n.items||[]).length)bl.push({id:bUid(),t:'chk',items:n.items},{id:bUid(),t:'text',v:''});bl.push(nb)}
   else{var v=$('nfText').value||n.text||'',p=(mCaret&&mCaret.plain&&mCaret.pos!=null)?mCaret.pos:v.length;var bf=v.slice(0,p).replace(/\n$/,''),af=v.slice(p).replace(/^\n/,'');if(bf)bl.push({id:bUid(),t:'text',v:bf});bl.push(nb);bl.push({id:bUid(),t:'text',v:af})}
   n.type='mix';n.blocks=bl;delete n.title;delete n.items}
@@ -2039,7 +2053,7 @@ function mInsert(){var n=fullId&&findN(fullId);if(n&&n.lock&&!n._key)return;
   if(c&&c.b){var r=mBlk(c.b);if(r.b){var v2=r.b.v||'',p2=c.pos!=null?c.pos:v2.length,bf2=v2.slice(0,p2).replace(/\n$/,''),af2=v2.slice(p2).replace(/^\n/,'');r.b.v=bf2;n.blocks.splice(r.i+1,0,nb,{id:bUid(),t:'text',v:af2});at=-1}}
   else if(c&&c.chkb){var r2=mBlk(c.chkb);if(r2.b){n.blocks.splice(r2.i+1,0,{id:bUid(),t:'text',v:''},nb);at=-1}}
   if(at>=0){var last=n.blocks[n.blocks.length-1];if(last&&last.t==='text'&&!(last.v||'').trim())n.blocks.splice(n.blocks.length-1,0,nb);else n.blocks.push(nb)}}
- mTouch(n);nFlush();mShow(n);mRender({b:nb.id,item:it.id})}
+ mTouch(n);nFlush();mShow(n);mRender(it?{b:nb.id,item:it.id}:null);return n}
 function mShow(n){var F=$('noteFull');F.classList.remove('chk');F.classList.toggle('mix',n.type==='mix')}
 var B=$('nfBlocks');
 B.addEventListener('input',function(e){var t=e.target;if(t.classList.contains('nbt')){var r=mBlk(t.closest('[data-b]').dataset.b);if(!r.b)return;r.b.v=t.value;fitSoon(t);mTouch(r.n);return}
@@ -2067,6 +2081,52 @@ $('nfAlarm').addEventListener('click',function(){var n=edNote(true);if(!n)return
 $('nfChkIns').addEventListener('mousedown',function(e){e.preventDefault()});$('nfChkIns').addEventListener('click',mInsert);
 function edState(){var n=fullId&&findN(fullId);$('nfAlarm').classList.toggle('on',!!(n&&alNext(n)));ncApply(n)}
 new MutationObserver(function(){if(!$('alModal').classList.contains('show'))setTimeout(edState,50)}).observe($('alModal'),{attributes:true,attributeFilter:['class']});
+/* ---------- v11: inline photo blocks (t:'img', ph:[photo ids]) + crop editor ---------- */
+var phCache={};
+function phCacheClear(){for(var k in phCache)try{URL.revokeObjectURL(phCache[k])}catch(_){}phCache={}}
+function phGet(id){return phTx('readonly',function(s){return s.get(id)})}
+function phFill(){var n=fullId&&findN(fullId);if(!n)return;$('nfBlocks').querySelectorAll('.phi[data-id]').forEach(function(d){var id=d.dataset.id;
+ if(phCache[id]){d.style.backgroundImage='url('+phCache[id]+')';d.dataset.u=phCache[id];return}
+ phGet(id).then(function(r){if(!r){d.remove();return}return phBlob(n,r).then(function(b){var u=URL.createObjectURL(b);phCache[id]=u;if(document.contains(d)){d.style.backgroundImage='url('+u+')';d.dataset.u=u}})}).catch(function(){})})}
+function mAdopt(n,list){if(!n||n.type!=='mix')return;var ref={};(n.blocks||[]).forEach(function(b){if(b.t==='img')(b.ph||[]).forEach(function(i){ref[i]=1})});
+ var un=list.filter(function(r){return !ref[r.id]}).map(function(r){return r.id});if(!un.length){phFill();return}
+ var bl=n.blocks,last=bl[bl.length-1],nb={id:bUid(),t:'img',ph:un};if(last&&last.t==='text'&&!(last.v||'').trim())bl.splice(bl.length-1,0,nb);else bl.push(nb);mNorm(n);mSync(n);saveNotes(true);mRender()}
+function phStore(n,blobs){var key=n.lock?n._key:null,ids=[];return blobs.reduce(function(p,b,i){return p.then(function(){return b.arrayBuffer().then(function(buf){return key?phSeal(key,buf):{buf:buf}}).then(function(x){var r={id:ntUid(),note:n.id,ts:Date.now()+i,buf:x.buf};if(x.iv)r.iv=x.iv;ids.push(r.id);return phPut(r)})})},Promise.resolve()).then(function(){return ids})}
+function phPick(files){var list=[].slice.call(files||[]);if(!list.length)return;var n0=fullId&&findN(fullId);if(n0&&n0.lock&&!n0._key){toast('Notiță blocată');return}
+ var caret=mCaret?JSON.parse(JSON.stringify(mCaret)):null,out=[];
+ list.reduce(function(p,f,i){return p.then(function(){return cropEdit(f,i+1,list.length).then(function(b){if(b)out.push(b)})})},Promise.resolve()).then(function(){if(!out.length)return;
+  mCaret=caret;var n=fullId&&findN(fullId);if(!n){var now=new Date().toISOString();n={id:ntUid(),text:$('nfText').value||'',ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true}
+  return phStore(n,out).then(function(ids){mCaret=caret;var m=mInsertB({id:bUid(),t:'img',ph:ids});if(!m)return;return phCount(m).then(function(a){mAdopt(m,a);nFlush()})})}).catch(function(e){console.warn(e);toast('Nu am putut adăuga poza')})}
+/* crop editor */
+function cropEdit(file,idx,tot){return new Promise(function(done){var ov=$('crop'),st=$('cropStage'),im=$('cropImg'),fr=$('cropFrame'),u=URL.createObjectURL(file);
+ var W=0,H=0,rot=0,s0=1,z=1,tx=0,ty=0,C={x:0,y:0,w:0,h:0},ptr={},mode=null,h0=null,c0=null,p0=null,g0=null;
+ $('cropCount').textContent=tot>1?idx+' / '+tot:'';
+ function dims(){return rot%180?{w:H,h:W}:{w:W,h:H}}
+ function sb(){return st.getBoundingClientRect()}
+ function reset(){var r=sb(),d=dims();s0=Math.min((r.width-32)/d.w,(r.height-32)/d.h);z=1;tx=r.width/2;ty=r.height/2;var s=s0*z;C={w:d.w*s,h:d.h*s};C.x=tx-C.w/2;C.y=ty-C.h/2;draw()}
+ function draw(){var s=s0*z;im.style.width=W+'px';im.style.height=H+'px';im.style.transform='translate('+(tx-W/2)+'px,'+(ty-H/2)+'px) rotate('+rot+'deg) scale('+s+')';
+  fr.style.left=C.x+'px';fr.style.top=C.y+'px';fr.style.width=C.w+'px';fr.style.height=C.h+'px'}
+ function pt(e){var r=sb();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+ function down(e){e.preventDefault();try{st.setPointerCapture(e.pointerId)}catch(_){}ptr[e.pointerId]=pt(e);var ids=Object.keys(ptr);
+  if(ids.length===2){var a=ptr[ids[0]],b=ptr[ids[1]];mode='pinch';g0={d:Math.hypot(a.x-b.x,a.y-b.y)||1,m:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},z:z,tx:tx,ty:ty};return}
+  var hd=e.target.closest('.ch');if(hd){mode='h';h0=hd.dataset.h;c0={x:C.x,y:C.y,w:C.w,h:C.h};p0=ptr[e.pointerId];return}
+  mode='pan';p0=ptr[e.pointerId];g0={tx:tx,ty:ty}}
+ function move(e){if(!ptr[e.pointerId])return;e.preventDefault();ptr[e.pointerId]=pt(e);var ids=Object.keys(ptr);
+  if(mode==='pinch'&&ids.length>=2){var a=ptr[ids[0]],b=ptr[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y),m={x:(a.x+b.x)/2,y:(a.y+b.y)/2},nz=Math.max(0.3,Math.min(8,g0.z*d/g0.d)),k=nz/g0.z;
+   z=nz;tx=m.x-(g0.m.x-g0.tx)*k;ty=m.y-(g0.m.y-g0.ty)*k;draw();return}
+  var q=ptr[e.pointerId],dx=q.x-p0.x,dy=q.y-p0.y;
+  if(mode==='pan'){tx=g0.tx+dx;ty=g0.ty+dy;draw();return}
+  if(mode==='h'){var M=40,r=sb(),x1=c0.x,y1=c0.y,x2=c0.x+c0.w,y2=c0.y+c0.h;if(/l/.test(h0))x1=Math.min(x2-M,Math.max(0,c0.x+dx));if(/r/.test(h0))x2=Math.max(x1+M,Math.min(r.width,x2+dx));if(/t/.test(h0))y1=Math.min(y2-M,Math.max(0,c0.y+dy));if(/b/.test(h0))y2=Math.max(y1+M,Math.min(r.height,y2+dy));
+   C={x:x1,y:y1,w:x2-x1,h:y2-y1};draw()}}
+ function up(e){delete ptr[e.pointerId];var ids=Object.keys(ptr);if(!ids.length)mode=null;else if(mode==='pinch'){mode='pan';p0=ptr[ids[0]];g0={tx:tx,ty:ty}}}
+ function out(){var s=s0*z,cw=C.w/s,chh=C.h/s,k=Math.min(1,1600/Math.max(cw,chh)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(cw*k));c.height=Math.max(1,Math.round(chh*k));var x=c.getContext('2d');
+  x.fillStyle='#06121f';x.fillRect(0,0,c.width,c.height);x.scale(k,k);x.translate(-(C.x-tx)/s,-(C.y-ty)/s);x.rotate(rot*Math.PI/180);x.drawImage(im,-W/2,-H/2);
+  return new Promise(function(r){c.toBlob(function(b){r(b)},'image/jpeg',0.8)})}
+ function close(v){st.removeEventListener('pointerdown',down);st.removeEventListener('pointermove',move);st.removeEventListener('pointerup',up);st.removeEventListener('pointercancel',up);
+  $('cropOk').onclick=$('cropNo').onclick=$('cropRot').onclick=null;window.removeEventListener('resize',reset);ov.classList.remove('show');im.removeAttribute('src');URL.revokeObjectURL(u);done(v)}
+ im.onload=function(){W=im.naturalWidth;H=im.naturalHeight;ov.classList.add('show');requestAnimationFrame(reset)};im.onerror=function(){toast('Nu pot deschide poza');close(null)};im.src=u;
+ st.addEventListener('pointerdown',down);st.addEventListener('pointermove',move);st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);window.addEventListener('resize',reset);
+ $('cropRot').onclick=function(){rot=(rot+90)%360;reset()};$('cropNo').onclick=function(){close(null)};$('cropOk').onclick=function(){out().then(function(b){close(b)})}})}
 $('bJvImport').onclick=function(){nsImportJarvis();nsRenderJv()};
 $('nsImpGo').onclick=function(){if(!nsImportJarvis()){toast('Alege fișierul de backup Jarvis (.json)');$('bBkFile').value='';$('bBkFile').click()}};
 $('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner()};
