@@ -761,15 +761,17 @@ function bkCreate(){var now=new Date(),entry={id:bkUid(),ts:now.toISOString(),la
  var a=bkList();a.unshift(entry);if(a.length>BK_MAX)a=a.slice(0,BK_MAX);bkSaveList(a);renderBkList();toast('Backup salvat · '+entry.label);return entry}
 function bkFind(id){var a=bkList();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null}
 function bkDelete(id){var e=bkFind(id);if(!e)return;if(!confirm('Ștergi backup-ul din '+e.label+'?'))return;bkSaveList(bkList().filter(function(x){return x.id!==id}));renderBkList();toast('Backup șters')}
-function bkExportPayload(e){return{jarvisBackup:1,version:1,exportedAt:new Date().toISOString(),id:e.id,ts:e.ts,label:e.label,data:e.data}}
+var bkPhTmp=null;function bkExportPayload(e){return{jarvisBackup:1,version:1,exportedAt:new Date().toISOString(),id:e.id,ts:e.ts,label:e.label,data:bkPhTmp?Object.assign({},e.data,{ns_photos:bkPhTmp}):e.data}}
 function bkFilename(e){var t=(e.ts||'').replace(/[:.]/g,'-').slice(0,19)||'backup';return 'notis-backup-'+t+'.json'}
-function bkShare(id){var e=bkFind(id);if(!e)return;var json=JSON.stringify(bkExportPayload(e),null,2),file=new File([json],bkFilename(e),{type:'application/json'});
+function bkShare(id){if(!bkFind(id))return;phDump().then(function(p){bkPhTmp=p;try{bkShare0(id)}finally{bkPhTmp=null}})}
+function bkShare0(id){var e=bkFind(id);if(!e)return;var json=JSON.stringify(bkExportPayload(e),null,2),file=new File([json],bkFilename(e),{type:'application/json'});
  function dl(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=bkFilename(e);document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);toast('Backup descărcat')}
  if(navigator.share){var p={title:'Backup Notis · '+e.label,text:'Backup Notis din '+e.label,files:[file]};
   if(!navigator.canShare||navigator.canShare(p))return navigator.share(p).then(function(){toast('Backup trimis')}).catch(function(err){if(err&&err.name==='AbortError')return;dl()})}
  dl()}
 function bkParseImport(raw){var j=typeof raw==='string'?JSON.parse(raw):raw;if(!j||typeof j!=='object')throw new Error('invalid');
  var data=j.data;if(!data||typeof data!=='object'){if(j.ns_tasks!=null||j.ns_cfg!=null)data=j;else throw new Error('no data')}
+ if(data.ns_photos){phLoad(data.ns_photos).then(function(c){if(c&&fullId)phRender()}).catch(function(e){console.warn(e)});data=Object.assign({},data);delete data.ns_photos}
  var ts=j.ts||j.exportedAt||new Date().toISOString(),label=j.label||bkLabel(new Date(ts));
  return{id:bkUid(),ts:ts,label:label+(j.jarvisBackup||j.data?'':' (import)'),data:data,importedAt:new Date().toISOString()}}
 function bkImportFile(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){try{res(bkParseImport(r.result))}catch(e){rej(e)}};r.onerror=function(){rej(r.error)};r.readAsText(file)})}
@@ -1050,11 +1052,11 @@ function draftFinish(){if(!$('iNote')){draftId=null;return}var n=draftId&&findN(
 function noteGrow(){var i=$('iNote');if(!i)return;i.style.height='auto';i.style.height=i.scrollHeight+'px'}
 /* v50: top input removed; new notes start from the + button in the full editor */
 var fullId=null;
-function fullOpen(id){if(draftId)draftFinish();var n=findN(id);if(!n)return;if(n.lock&&!n._key){lkOpen(id);return}fullId=id;fullIsNew=false;var ta=$('nfText');ta.value=n.text;$('noteFull').classList.toggle('chk',n.type==='check');if(n.type==='check')chkRender();$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}}
+function fullOpen(id){if(draftId)draftFinish();var n=findN(id);if(!n)return;if(n.lock&&!n._key){lkOpen(id);return}fullId=id;fullIsNew=false;var ta=$('nfText');ta.value=n.text;$('noteFull').classList.toggle('chk',n.type==='check');phClear();setTimeout(phRender,0);if(n.type==='check')chkRender();$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}}
 function fullInput(){var n=fullId&&findN(fullId);if(!n){var v=$('nfText').value;if(!v.trim())return;var now=new Date().toISOString();n={id:ntUid(),text:v,ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true;nSaveSoon();return}if(n.type==='check')return;n.text=$('nfText').value;n.editedAt=n.updatedAt=new Date().toISOString();nSaveSoon()}
-function fullFlush(){if(!fullId)return;var n=findN(fullId);if(n){if(n.type==='check')chkSync(n);else n.text=$('nfText').value;if(!n.text.trim())notes=notes.filter(function(x){return x!==n})}nFlush()}
+function fullFlush(){if(!fullId)return;var n=findN(fullId);if(n){if(n.type==='check')chkSync(n);else n.text=$('nfText').value;if(!n.text.trim()&&!n.ph)notes=notes.filter(function(x){return x!==n})}nFlush()}
 var fullIsNew=false;
-function fullNew(){var ta=$('nfText');ta.value='';fullId=null;fullIsNew=false;$('noteFull').classList.remove('chk');$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}try{ta.focus()}catch(_){}}
+function fullNew(){var ta=$('nfText');ta.value='';phGen++;phClear();phFit();fullId=null;fullIsNew=false;$('noteFull').classList.remove('chk');$('noteFull').classList.add('show');document.documentElement.classList.add('jv-nfull');try{history.pushState({jvNote:1},'')}catch(_){}try{ta.focus()}catch(_){}}
 $('noteFab').addEventListener('click',fullNew);
 /* v57: separate undo/redo for Notițe (snapshots never hold more plaintext than storage; ciphertext comes from a cache) */
 var nLockCache={},nH={u:[],r:[],cur:null},NH_MAX=60;
@@ -1092,11 +1094,11 @@ $('pinCancel').addEventListener('click',pinHide);$('pinModal').addEventListener(
 function lkLock(id){var n=findN(id);if(!n||n.lock)return;if(!window.crypto||!crypto.subtle){toast('Criptarea nu e disponibilă aici');return}
  function step1(msg){pinShow({title:'Alege un PIN de 4 cifre',warn:true,msg:msg,done:function(p1){setTimeout(function(){step2(p1)},0);return true}})}
  function step2(p1){pinShow({title:'Confirmă PIN-ul',warn:true,done:function(p2){if(p2!==p1){setTimeout(function(){step1('PIN-urile nu se potrivesc')},0);return true}
-  var salt=crypto.getRandomValues(new Uint8Array(16));var tt=nTitle0(n);return lkDerive(p2,salt).then(function(k){return lkEnc(k,salt,n)}).then(function(l){n.lock=l;n.ltitle=tt;nHistReset();lkStrip(n);saveNotes();toast('Notiță blocată');return true})}})}
+  var salt=crypto.getRandomValues(new Uint8Array(16));var tt=nTitle0(n);var lkK=null;return lkDerive(p2,salt).then(function(k){lkK=k;return lkEnc(k,salt,n)}).then(function(l){var kk=l;return phLockAll(n.id,lkK).then(function(){return kk})}).then(function(l){n.lock=l;n.ltitle=tt;nHistReset();lkStrip(n);saveNotes();toast('Notiță blocată');return true})}})}
  step1()}
 function lkTry(n,pin){return lkDerive(pin,b64d(n.lock.salt)).then(function(k){return lkDec(k,n.lock).then(function(o){return{k:k,o:o}})}).catch(function(){return null})}
 function lkOpen(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';lkApply(n,r.o);n._key=r.k;setTimeout(function(){fullOpen(id)},0);return true})}})}
-function lkUnlock(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';lkApply(n,r.o);delete n.lock;delete n._key;delete n.ltitle;nHistReset();saveNotes();renderNotes();toast('Notiță deblocată');return true})}})}
+function lkUnlock(id){var n=findN(id);if(!n||!n.lock)return;pinShow({title:'Introdu PIN-ul',done:function(pin){return lkTry(n,pin).then(function(r){if(!r)return 'PIN greșit';phUnlockAll(n.id,r.k).catch(function(e){console.warn(e)});lkApply(n,r.o);delete n.lock;delete n._key;delete n.ltitle;nHistReset();saveNotes();renderNotes();toast('Notiță deblocată');return true})}})}
 /* v54: checklist notes */
 function chkSync(n){n.text=[(n.title||'').trim()].concat((n.items||[]).map(function(x){return x.text.trim()})).filter(Boolean).join('\n')}
 function ciNew(done){var now=new Date().toISOString();return{id:ntUid(),text:'',done:!!done,createdAt:now,updatedAt:now}}
@@ -1164,7 +1166,7 @@ function noteRead(){if(speaking&&speakKey==='note'){stopSpeaking();return}var cn
  var t=$('nfText').value.trim();if(!t){toast('Notița e goală');return}
  return speak(t.split(/\n+/).filter(function(x){return x.trim()}).map(function(x){return prepSeg(null,x)}),'note')}
 $('nfRead').addEventListener('click',function(e){e.preventDefault();noteRead()});
-function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;$('noteFull').classList.remove('show');document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
+function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phViewClose(false);$('noteFull').classList.remove('show');document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
  if(!fromPop&&history.state&&history.state.jvNote)try{nIgnorePop=true;history.back()}catch(_){nIgnorePop=false}}
 var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
@@ -1187,7 +1189,7 @@ function ntShift(id,d){var i=noteTabs.findIndex(function(t){return t.id===id}),j
 function notesOpen(){var pg=$('notesPg');if(pg.classList.contains('show'))return;renderNotes();pg.classList.add('show');document.documentElement.classList.add('jv-notes');}
 function notesClose(fromPop){return;var pg=$('notesPg');if(!pg.classList.contains('show'))return;if(draftId)draftFinish();nFlushAll();pg.classList.remove('show');document.documentElement.classList.remove('jv-notes');
  if(!fromPop&&history.state&&history.state.jvNotes)try{history.back()}catch(_){}}
-window.addEventListener('popstate',function(){if(nIgnorePop){nIgnorePop=false;return}if($('noteFull').classList.contains('show'))fullClose(true);else notesClose(true)});
+window.addEventListener('popstate',function(){if($('phView').classList.contains('show')){phViewClose(false);return}if(nIgnorePop){nIgnorePop=false;return}if($('noteFull').classList.contains('show'))fullClose(true);else notesClose(true)});
 $('notesBack').addEventListener('click',function(){notesClose()});
 var sw=null;
 document.addEventListener('touchstart',function(e){sw=null;if(e.touches.length!==1)return;var t=e.target;
@@ -1200,7 +1202,7 @@ document.addEventListener('touchend',function(e){var d=sw;sw=null;if(!d||lpJust|
 renderNotes();
 nH.cur=nSnap();nHistBtns();
 /* ---------- Notis v2: import notes from Jarvis (same-origin localStorage, Jarvis backups in jv_backups, Jarvis backup .json files) ---------- */
-function nsReal(){return notes.filter(function(n){return n.lock||(n.text||'').trim()||(n.title||'').trim()||(n.items||[]).some(function(x){return (x.text||'').trim()})}).length}
+function nsReal(){return notes.filter(function(n){return n.lock||n.ph||(n.text||'').trim()||(n.title||'').trim()||(n.items||[]).some(function(x){return (x.text||'').trim()})}).length}
 function nsJSON(v){if(v==null)return null;if(typeof v!=='string')return v;try{return JSON.parse(v)}catch(_){return null}}
 function nsMerge(src){var ns=Array.isArray(src&&src.notes)?src.notes:[],ts=Array.isArray(src&&src.tabs)?src.tabs:[];if(!ns.length)return 0;
  if(draftId)try{draftFinish()}catch(_){}
@@ -1227,6 +1229,55 @@ $('sShareApp').onclick=function(){var U='https://cluj1313.github.io/notis/',d={t
  if(navigator.share)navigator.share(d).catch(function(e){if(!e||e.name!=='AbortError')cp()});else cp()};
 /* v7: single-line textareas (no Chrome autofill bar): strip pasted newlines */
 document.addEventListener('input',function(e){var t=e.target;if(t&&(t.id==='nfTitle'||t.id==='prIn'||(t.classList&&t.classList.contains('cit')))&&/[\r\n]/.test(t.value)){var p=t.selectionStart;t.value=t.value.replace(/[\r\n]+/g,' ');try{t.setSelectionRange(p,p)}catch(_){}}},true);
+/* ---------- v8: photos on notes (IndexedDB 'notis-photos'; locked notes: bytes AES-GCM encrypted with the note key) ---------- */
+var phDB=null;function phOpen(){if(phDB)return phDB;phDB=new Promise(function(res,rej){var r=indexedDB.open('notis-photos',1);r.onupgradeneeded=function(){var s=r.result.createObjectStore('p',{keyPath:'id'});s.createIndex('note','note')};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}});return phDB}
+function phTx(mode,fn){return phOpen().then(function(db){return new Promise(function(res,rej){var t=db.transaction('p',mode),s=t.objectStore('p'),out=fn(s);t.oncomplete=function(){res(out&&out.result!==undefined?out.result:out)};t.onerror=function(){rej(t.error)}})})}
+function phAll(){return phTx('readonly',function(s){return s.getAll()})}
+function phOf(nid){return phTx('readonly',function(s){return s.index('note').getAll(nid)}).then(function(a){return(a||[]).sort(function(x,y){return x.ts-y.ts})})}
+function phPut(r){return phTx('readwrite',function(s){s.put(r)})}
+function phDel(id){return phTx('readwrite',function(s){s.delete(id)})}
+function phCount(n){return phOf(n.id).then(function(a){var c=a.length;if((n.ph||0)!==c){if(c)n.ph=c;else delete n.ph;nFlush()}return a})}
+function phCompress(file){return new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){var w=im.naturalWidth,h=im.naturalHeight,s=Math.min(1,1600/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);
+ c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(b){b?res(b):rej(new Error('blob'))},'image/jpeg',0.8)};im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('img'))};im.src=u})}
+function phSeal(key,buf){var iv=crypto.getRandomValues(new Uint8Array(12));return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},key,buf).then(function(ct){return{iv:b64e(iv),buf:ct}})}
+function phBlob(n,r){if(!r.iv)return Promise.resolve(new Blob([r.buf],{type:'image/jpeg'}));if(!n._key)return Promise.reject(new Error('locked'));
+ return crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(r.iv)},n._key,r.buf).then(function(b){return new Blob([b],{type:'image/jpeg'})})}
+function phLockAll(nid,key){return phOf(nid).then(function(a){return Promise.all(a.filter(function(r){return !r.iv}).map(function(r){return phSeal(key,r.buf).then(function(x){r.iv=x.iv;r.buf=x.buf;return phPut(r)})}))})}
+function phUnlockAll(nid,key){return phOf(nid).then(function(a){return Promise.all(a.filter(function(r){return r.iv}).map(function(r){return crypto.subtle.decrypt({name:'AES-GCM',iv:b64d(r.iv)},key,r.buf).then(function(b){delete r.iv;r.buf=b;return phPut(r)})}))})}
+var phURLs=[],phGen=0;
+function phClear(){phURLs.forEach(function(u){URL.revokeObjectURL(u)});phURLs=[];$('nfPh').innerHTML='';$('noteFull').classList.remove('hasph')}
+function phFit(){var ta=$('nfText');if($('noteFull').classList.contains('hasph')){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'}else ta.style.height=''}
+function phRender(){var g=++phGen,n=fullId&&findN(fullId);if(!n){phClear();phFit();return Promise.resolve()}
+ return phCount(n).then(function(a){if(g!==phGen)return;return Promise.all(a.map(function(r){return phBlob(n,r).then(function(b){return{r:r,b:b}},function(){return null})})).then(function(xs){if(g!==phGen)return;phClear();var box=$('nfPh');
+  xs.forEach(function(x){if(!x)return;var u=URL.createObjectURL(x.b);phURLs.push(u);var d=document.createElement('div');d.className='phi';d.dataset.id=x.r.id;d.dataset.u=u;d.style.backgroundImage='url('+u+')';box.appendChild(d)});
+  $('noteFull').classList.toggle('hasph',box.children.length>0);phFit()})})}
+function phAdd(files){var n=fullId&&findN(fullId);
+ if(!n){var now=new Date().toISOString();n={id:ntUid(),text:$('nfText').value||'',ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true}
+ var nid=n.id,key=n.lock?n._key:null;if(n.lock&&!key){toast('Notiță blocată');return}
+ var list=[].slice.call(files||[]);if(!list.length)return;
+ list.reduce(function(p,f,i){return p.then(function(){return phCompress(f).then(function(b){return b.arrayBuffer()}).then(function(buf){return key?phSeal(key,buf):{buf:buf}}).then(function(x){var r={id:ntUid(),note:nid,ts:Date.now()+i,buf:x.buf};if(x.iv)r.iv=x.iv;return phPut(r)}).catch(function(e){console.warn(e);toast('Nu am putut adăuga poza')})})},Promise.resolve())
+  .then(function(){var m=findN(nid);if(m){m.updatedAt=new Date().toISOString();return phCount(m)}}).then(function(){nFlush();if(fullId===nid)phRender()})}
+function phGC(){return phAll().then(function(a){var ids={};notes.forEach(function(n){ids[n.id]=1});return Promise.all(a.filter(function(r){return !ids[r.note]}).map(function(r){return phDel(r.id)}))}).catch(function(){})}
+function phAb2b64(buf){var u=new Uint8Array(buf),s='',C=0x8000;for(var i=0;i<u.length;i+=C)s+=String.fromCharCode.apply(null,u.subarray(i,i+C));return btoa(s)}
+function phB642ab(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer}
+function phDump(){return phAll().then(function(a){var ids={};notes.forEach(function(n){ids[n.id]=1});return a.filter(function(r){return ids[r.note]}).map(function(r){var o={id:r.id,note:r.note,ts:r.ts,data:phAb2b64(r.buf)};if(r.iv)o.iv=r.iv;return o})}).catch(function(){return []})}
+function phLoad(list){if(!Array.isArray(list)||!list.length)return Promise.resolve(0);return Promise.all(list.map(function(o){if(!o||!o.id||!o.note||!o.data)return null;var r={id:o.id,note:o.note,ts:o.ts||Date.now(),buf:phB642ab(o.data)};if(o.iv)r.iv=o.iv;return phPut(r)})).then(function(){return list.length})}
+/* viewer */
+function phView(u){var v=$('phView');$('phImg').src=u;v.classList.add('show');try{history.pushState({jvPh:1},'')}catch(_){}}
+function phViewClose(back){var v=$('phView');if(!v.classList.contains('show'))return;v.classList.remove('show');$('phImg').removeAttribute('src');if(back){nIgnorePop=false;try{history.back()}catch(_){}}}
+$('phView').addEventListener('click',function(){try{history.back()}catch(_){phViewClose(false)}});
+(function(){var box=$('nfPh'),t=null,sx=0,sy=0,fired=false,tgt=null;
+ function cancel(){clearTimeout(t);t=null}
+ box.addEventListener('pointerdown',function(e){var d=e.target.closest('.phi');if(!d)return;tgt=d;fired=false;sx=e.clientX;sy=e.clientY;cancel();t=setTimeout(function(){t=null;fired=true;try{if(navigator.vibrate)navigator.vibrate(20)}catch(_){}
+  var id=d.dataset.id;jvConfirm(function(){phDel(id).then(function(){var n=fullId&&findN(fullId);if(n){n.updatedAt=new Date().toISOString();return phCount(n)}}).then(function(){nFlush();phRender()})})},450)});
+ box.addEventListener('pointermove',function(e){if(t&&(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10))cancel()});
+ box.addEventListener('pointerup',function(e){var d=e.target.closest('.phi');if(t){cancel();if(d&&d===tgt&&!fired)phView(d.dataset.u)}});
+ box.addEventListener('pointercancel',cancel);box.addEventListener('contextmenu',function(e){e.preventDefault()});
+ box.addEventListener('click',function(e){e.stopPropagation()})})();
+$('nfPhoto').addEventListener('click',function(){var i=$('nfPhIn');i.value='';i.click()});
+$('nfPhIn').addEventListener('change',function(){phAdd(this.files)});
+$('nfText').addEventListener('input',phFit);
+setTimeout(phGC,3000);
 $('bJvImport').onclick=function(){nsImportJarvis();nsRenderJv()};
 $('nsImpGo').onclick=function(){if(!nsImportJarvis()){toast('Alege fișierul de backup Jarvis (.json)');$('bBkFile').value='';$('bBkFile').click()}};
 $('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch(_){}nsBanner()};
