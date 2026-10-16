@@ -85,11 +85,11 @@ function moveBar(seg,span,instant){var b=seg&&seg.bar;if(!b)return;if(!span){b.c
 var activeSeg=null;
 function hl(seg,i){if(!seg)return;
  if(activeSeg!==seg){if(activeSeg)clearSeg(activeSeg);activeSeg=seg;seg.cur=-1;
-  if(seg.el&&seg.el.scrollIntoView&&seg.el.isConnected){var r=seg.el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-110)seg.el.scrollIntoView({block:'center',behavior:'smooth'})}}
+  if(seg.el&&!seg.el.classList.contains('nrMir')&&seg.el.scrollIntoView&&seg.el.isConnected){var r=seg.el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-110)seg.el.scrollIntoView({block:'center',behavior:'smooth'})}}
  if(i===seg.cur||i<0||i>=seg.words.length)return;seg.cur=i;
  if(!seg.el)return;
  seg.words.forEach(function(w,j){if(w.span){w.span.classList.toggle('cur',j===i);w.span.classList.toggle('past',j<i)}});
- moveBar(seg,seg.words[i].span,false)}
+ moveBar(seg,seg.words[i].span,false);var sp=seg.words[i].span;if(sp&&seg.el.classList.contains('nrMir')){var q=sp.getBoundingClientRect();if(q.top<80||q.bottom>innerHeight-120)sp.scrollIntoView({block:'center',behavior:'smooth'})}}
 function clearSeg(seg){if(!seg)return;seg.words.forEach(function(w){if(w.span)w.span.classList.remove('cur','past')});moveBar(seg,null)}
 function clearActive(){if(activeSeg)clearSeg(activeSeg);activeSeg=null}
 addEventListener('resize',reflowBars);
@@ -519,7 +519,7 @@ window.addEventListener('blur',dndReset);document.addEventListener('visibilitych
 var speaking=false,listening=false,kGen=0,speakKey=null;
 function updEq(){$('eq').classList.toggle('on',speaking||listening);$('orb').classList.toggle('active',speaking||listening);
  document.querySelectorAll('.spk').forEach(function(b){b.classList.toggle('on',speaking&&b.dataset.read===speakKey)});
- $('bRead').classList.toggle('on',speaking&&speakKey==='all');if($('nfRead')){var nr=speaking&&speakKey==='note';$('nfRead').classList.toggle('on',nr);$('nfRead').textContent=nr?'🔊 Citește…':'Citește'}$('bReadAll').classList.toggle('on',speaking&&speakKey==='below')}
+ $('bRead').classList.toggle('on',speaking&&speakKey==='all');if($('nfRead')){var nr=speaking&&speakKey==='note';if(!nr&&!nrBusy&&nrMir&&nrMir.length)nrClear();$('nfRead').classList.toggle('on',nr);$('nfRead').textContent=nr?'🔊 Citește…':'Citește'}$('bReadAll').classList.toggle('on',speaking&&speakKey==='below')}
 var actx=null,sources=[];
 function unlockAudio(){try{if(!actx){var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;actx=new AC()}
  if(actx.state==='suspended')actx.resume();
@@ -1162,9 +1162,30 @@ document.addEventListener('pointerup',function(e){var d=ndrag;if(!d||!d.on||e.po
 document.addEventListener('pointercancel',function(e){var d=ndrag;if(d&&d.on&&e.pointerId===d.pid)ndEnd(true)},true);
 document.addEventListener('touchmove',function(e){if(ndrag&&ndrag.on&&e.cancelable)e.preventDefault()},{passive:false});
 document.addEventListener('click',function(e){if(Date.now()-ndragT<400&&e.target.closest&&e.target.closest('#notesPg')){e.stopPropagation();e.preventDefault()}},true);
-function noteRead(){if(speaking&&speakKey==='note'){stopSpeaking();return}var cn=fullId&&findN(fullId);if(cn&&cn.type==='mix'){var sg=[];(cn.blocks||[]).forEach(function(b){if(b.t==='text'){(b.v||'').split('\n').forEach(function(l){if(l.trim())sg.push(prepSeg(null,l.trim()))})}else mOrder(cn,b).forEach(function(x){if(x.text.trim())sg.push(prepSeg(null,x.text.trim()+(x.done?', bifat':'')))})});if(!sg.length){toast('Notița e goală');return}return speak(sg,'note')}if(cn&&cn.type==='check'){var segs=[];if((cn.title||'').trim())segs.push(prepSeg(null,cn.title.trim()));chkOrder(cn).forEach(function(x){if(x.text.trim())segs.push(prepSeg(null,x.text.trim()+(x.done?', bifat':'')))});if(!segs.length){toast('Notița e goală');return}return speak(segs,'note')}
- var t=$('nfText').value.trim();if(!t){toast('Notița e goală');return}
- return speak(t.split(/\n+/).filter(function(x){return x.trim()}).map(function(x){return prepSeg(null,x)}),'note')}
+/* read-aloud word bar over editor fields: mirror overlays, inputs untouched (read-only while reading) */
+var nrMir=[],nrBusy=false;
+function nrClear(){nrMir.forEach(function(m){if(m.d.parentNode)m.d.parentNode.removeChild(m.d);m.ta.readOnly=m.ro});nrMir=[]}
+function nrMirror(ta){if(!ta||!ta.offsetParent)return null;for(var q=0;q<nrMir.length;q++)if(nrMir[q].ta===ta)return nrMir[q];
+ var cs=getComputedStyle(ta),d=document.createElement('div'),op=ta.offsetParent;d.className='nrMir kw';
+ ['fontFamily','fontSize','fontWeight','fontStyle','letterSpacing','lineHeight','whiteSpace','wordSpacing','overflowWrap','wordBreak','textAlign','tabSize','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','boxSizing','textTransform','textIndent'].forEach(function(k){d.style[k]=cs[k]});
+ if(cs.whiteSpace==='normal')d.style.whiteSpace='pre-wrap';
+ var r=ta.getBoundingClientRect(),pr=op.getBoundingClientRect();
+ d.style.left=(r.left-pr.left-op.clientLeft+op.scrollLeft)+'px';d.style.top=(r.top-pr.top-op.clientTop+op.scrollTop)+'px';d.style.width=r.width+'px';d.style.height=r.height+'px';
+ var v=ta.value,re=/\S+/g,m,last=0,h='',ws=[];while((m=re.exec(v))){ws.push({s:m.index,e:m.index+m[0].length});h+=esc(v.slice(last,m.index))+'<span class="w">'+esc(m[0])+'</span>';last=re.lastIndex}
+ d.innerHTML=h+esc(v.slice(last))+'\u200b<span class="kbar"></span>';op.appendChild(d);d.scrollTop=ta.scrollTop;d.scrollLeft=ta.scrollLeft;
+ var sp=d.querySelectorAll('.w');ws.forEach(function(w,k){w.span=sp[k]});var o={ta:ta,d:d,ws:ws,bar:d.querySelector('.kbar'),ro:ta.readOnly};ta.readOnly=true;nrMir.push(o);return o}
+/* seg for one line of a field: spoken text = trimmed line (+extra), words mapped onto the mirror's spans */
+function nrSeg(ta,ls,le,extra){var v=ta?ta.value:'',line=v.slice(ls,le),tr=line.trim();if(!tr)return null;var seg=prepSeg(null,tr+(extra||''));var mo=nrMirror(ta);
+ if(mo){var lw=mo.ws.filter(function(w){return w.s>=ls&&w.e<=le});seg.el=mo.d;seg.bar=mo.bar;seg.words.forEach(function(w,k){if(lw[k])w.span=lw[k].span})}return seg}
+function nrField(ta,text,out,extra){if(!ta||ta.value!==text){text.split('\n').forEach(function(l){if(l.trim())out.push(prepSeg(null,l.trim()+(extra||'')))});return}
+ var a=0;text.split('\n').forEach(function(l){var sg=nrSeg(ta,a,a+l.length,extra);if(sg)out.push(sg);a+=l.length+1})}
+function noteRead(){if(speaking&&speakKey==='note'){stopSpeaking();return}nrClear();var cn=fullId&&findN(fullId),sg=[];
+ try{var ae=document.activeElement;if(ae&&ae.blur&&$('noteFull').contains(ae))ae.blur()}catch(_){}
+ var Q=function(sel){return document.querySelector('#noteFull '+sel)};
+ if(cn&&cn.type==='mix'){(cn.blocks||[]).forEach(function(b){if(b.t==='text')nrField(Q('.nbw[data-b="'+b.id+'"] .nbt'),b.v||'',sg);else if(b.t==='chk')mOrder(cn,b).forEach(function(x){if(x.text.trim())nrField(Q('[data-b="'+b.id+'"] .ci[data-id="'+x.id+'"] .cit'),x.text,sg,x.done?', bifat':'')})})}
+ else if(cn&&cn.type==='check'){if((cn.title||'').trim())nrField($('nfTitle'),cn.title,sg);chkOrder(cn).forEach(function(x){if(x.text.trim())nrField(Q('#nfChk .ci[data-id="'+x.id+'"] .cit'),x.text,sg,x.done?', bifat':'')})}
+ else nrField($('nfText'),$('nfText').value,sg);
+ if(!sg.length){nrClear();toast('Notița e goală');return}nrBusy=true;try{return speak(sg,'note')}finally{nrBusy=false}}
 $('nfRead').addEventListener('click',function(e){e.preventDefault();noteRead()});
 function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;var cq=fullId&&findN(fullId);if(cq&&cq.type==='mix')mClean(cq);if(cq&&cq.type==='check'&&cq.items){cq.items=cq.items.filter(function(x){return x.text.trim()});chkSync(cq)}if(speaking&&speakKey==='note')stopSpeaking();fullFlush();if(fullIsNew){var nn=findN(fullId);if(nn){nInsertAlpha(nn);nFlush()}fullIsNew=false}var ln=fullId&&findN(fullId);if(ln&&ln.lock&&ln._key){var kk=ln._key;lkReseal(ln).then(function(){lkStrip(ln)});lkStrip(ln)}fullId=null;phGen++;phClear();phCacheClear();phViewClose(false);$('noteFull').classList.remove('show','mix');ncApply(null);document.documentElement.classList.remove('jv-nfull');try{$('nfText').blur()}catch(_){}renderNotes();
  if(!fromPop&&history.state&&history.state.jvNote)try{nIgnorePop=true;history.back()}catch(_){nIgnorePop=false}}
