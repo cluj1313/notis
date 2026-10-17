@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#06111f">
 <script>try{var _t=JSON.parse(localStorage.getItem('ns_theme'));if(_t&&_t!=='color')document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest?v=29">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon.png?v=29">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=29">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v28">
+<meta name="jarvis-version" content="notis-v29">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -622,9 +622,9 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 /* v28: shared faint art layer (all themes): motto, small Romanian flag, Endless Column, wolf, Carpathians (+ ink set on Color/Dark/Light/VIP) */
 #notesPg::before,#noteFull::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:var(--arto,.08);
  background:url(art/flag-s.svg) right 6px top 13%/44px 44px no-repeat,var(--artc,#3fd8ff);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-#notesPg::before,#noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg),url(art/m-land.svg),url(art/m-bamboo.svg),url(art/m-sakura.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg),url(art/m-land.svg),url(art/m-bamboo.svg),url(art/m-sakura.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px,center bottom,left top,right top;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px,center bottom,left top,right top;-webkit-mask-size:34px 34px,34px 94%,auto 62%,104px auto,100% auto,100% auto,auto 52%,62% auto;mask-size:44px 44px,34px 94%,auto 62%,104px auto,100% auto,100% auto,auto 52%,62% auto}
-:root[data-theme=jad] #notesPg::before,:root[data-theme=jad] #noteFull::before,:root[data-theme=tus] #notesPg::before,:root[data-theme=tus] #noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px;-webkit-mask-size:34px 34px,34px 94%,auto 62%,104px auto,100% auto;mask-size:44px 44px,34px 94%,auto 62%,104px auto,100% auto}
-:root[data-theme=lac] #notesPg::before,:root[data-theme=lac] #noteFull::before,:root[data-theme=pap] #notesPg::before,:root[data-theme=pap] #noteFull::before,:root[data-theme=neon] #notesPg::before,:root[data-theme=neon] #noteFull::before,:root[data-theme=cleo] #notesPg::before,:root[data-theme=cleo] #noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom;-webkit-mask-size:34px 34px,34px 94%,auto 62%,104px auto,100% auto;mask-size:44px 44px,34px 94%,auto 62%,104px auto,100% auto}
+#notesPg::before,#noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg),url(art/m-land.svg),url(art/m-bamboo.svg),url(art/m-sakura.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg),url(art/m-land.svg),url(art/m-bamboo.svg),url(art/m-sakura.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px,center bottom,left top,right top;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px,center bottom,left top,right top;-webkit-mask-size:34px 34px,34px 94%,auto 80%,130px auto,100% auto,100% auto,auto 52%,62% auto;mask-size:44px 44px,34px 94%,auto 80%,130px auto,100% auto,100% auto,auto 52%,62% auto}
+:root[data-theme=jad] #notesPg::before,:root[data-theme=jad] #noteFull::before,:root[data-theme=tus] #notesPg::before,:root[data-theme=tus] #noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp-far.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom 300px;-webkit-mask-size:34px 34px,34px 94%,auto 80%,130px auto,100% auto;mask-size:44px 44px,34px 94%,auto 80%,130px auto,100% auto}
+:root[data-theme=lac] #notesPg::before,:root[data-theme=lac] #noteFull::before,:root[data-theme=pap] #notesPg::before,:root[data-theme=pap] #noteFull::before,:root[data-theme=neon] #notesPg::before,:root[data-theme=neon] #noteFull::before,:root[data-theme=cleo] #notesPg::before,:root[data-theme=cleo] #noteFull::before{-webkit-mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp.svg);mask-image:url(art/m-flag-s.svg),url(art/m-motto.svg),url(art/m-column.svg),url(art/m-wolf.svg),url(art/m-carp.svg);-webkit-mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom;mask-position:right 6px top 13%,right 2px center,left 14px bottom 0,right 34px bottom 450px,center bottom;-webkit-mask-size:34px 34px,34px 94%,auto 80%,130px auto,100% auto;mask-size:44px 44px,34px 94%,auto 80%,130px auto,100% auto}
 :root[data-theme=cleo] #notesPg::before,:root[data-theme=cleo] #noteFull::before{-webkit-mask-position:right 6px top 13%,right 2px center,left 38px bottom 0,left 70px bottom 340px,center bottom;mask-position:right 6px top 13%,right 2px center,left 38px bottom 0,left 70px bottom 340px,center bottom}
 :root:not([data-theme]) body,:root:not([data-theme]) #notesPg,:root:not([data-theme]) #noteFull{background:radial-gradient(ellipse at 20% -10%,rgba(var(--s3R),.25),transparent 60%),var(--bg)}
 :root[data-theme=light] body,:root[data-theme=light] #notesPg,:root[data-theme=light] #noteFull{background:radial-gradient(ellipse at 50% -10%,rgba(255,255,255,.9),transparent 60%),#f3f5f8}
@@ -1993,7 +1993,7 @@ var nLockCache={},nH={u:[],r:[],cur:null},NH_MAX=60;
 function nSnap(){notes.forEach(function(n){if(n.lock)nLockCache[n.id]=n.lock});return JSON.stringify({notes:notes.map(nStore),tabs:noteTabs,tab:noteTab},function(k,v){return k==='iv'||k==='ct'||k==='salt'?undefined:v})}
 function nHistPush(){if(nH.cur===null)return;var s=nSnap();if(s===nH.cur)return;nH.u.push(nH.cur);if(nH.u.length>NH_MAX)nH.u.shift();nH.r=[];nH.cur=s;nHistBtns()}
 function nHistReset(){nH.u=[];nH.r=[];nH.cur=nSnap();nHistBtns()}
-function nHistBtns(){['nUndo','nfUndo'].forEach(function(i){var b=$(i);if(b)b.disabled=!nH.u.length});['nRedo','nfRedo'].forEach(function(i){var b=$(i);if(b)b.disabled=!nH.r.length})}
+function nHistBtns(){['nUndo'].forEach(function(i){var b=$(i);if(b)b.disabled=!nH.u.length});['nRedo'].forEach(function(i){var b=$(i);if(b)b.disabled=!nH.r.length});if(typeof eBtns==='function')eBtns()}
 function nHistApply(s){var d=JSON.parse(s);d.notes.forEach(function(n){if(n.lock){var live=findN(n.id);n.lock=(live&&live.lock)||nLockCache[n.id];if(!n.lock){delete n.lock}}});
  var openId=fullId;notes=d.notes;noteTabs=d.tabs;noteTab=d.tab;LS.set('ns_notes',notes.map(nStore));LS.set('ns_notetabs',noteTabs);LS.set('ns_notetab',noteTab);
  if(openId){var n=findN(openId);if(!n){fullId=null;fullIsNew=false;$('noteFull').classList.remove('show');document.documentElement.classList.remove('jv-nfull');if(history.state&&history.state.jvNote)try{nIgnorePop=true;history.back()}catch(_){nIgnorePop=false}}
@@ -2002,7 +2002,46 @@ function nHistApply(s){var d=JSON.parse(s);d.notes.forEach(function(n){if(n.lock
 function nStep(dir){var on=fullId&&findN(fullId);if(on&&on.lock){toast('Nu se poate într-o notiță blocată');return}
  if(nSaveT){clearTimeout(nSaveT);nSaveT=null}if(on){if(on.type==='check')chkSync(on);else on.text=$('nfText').value}saveNotes();
  var from=dir<0?nH.u:nH.r,to=dir<0?nH.r:nH.u;if(!from.length)return;to.push(nH.cur);nH.cur=from.pop();nHistApply(nH.cur);toast(dir<0?'Anulat':'Refăcut')}
-['nUndo','nfUndo'].forEach(function(i){$(i).addEventListener('click',function(){nStep(-1)})});['nRedo','nfRedo'].forEach(function(i){$(i).addEventListener('click',function(){nStep(1)})});
+$('nUndo').addEventListener('click',function(){nStep(-1)});$('nRedo').addEventListener('click',function(){nStep(1)});
+/* v29: granular per-session editor undo/redo (typing bursts, word boundaries, deletions, paste, structural edits); discarded on close */
+var eH={u:[],r:[],cur:null,sel:null,id:null,on:false},eLast=null,eLastSel=null,eT=null,eKind='',eMoved=false,eEl=null,eBusy=false,eSt=null,eTxtAt=0,eWasF=null,eWs=false,eWd=false,EH_MAX=200;
+function eNote(){return fullId?findN(fullId):null}
+function eSnap(){var n=eNote();if(!n)return 'null';if(n.type==='check')chkSync(n);else if(n.type==='mix')mSync(n);else n.text=$('nfText').value;
+ return JSON.stringify(n,function(k,v){return k==='updatedAt'||k==='editedAt'||k==='_key'||k==='iv'||k==='ct'||k==='salt'?undefined:v})}
+function eEds(){return [].slice.call($('noteFull').querySelectorAll('.nfcard textarea,.nfcard input[type=text],.nfcard [contenteditable=true]')).filter(function(x){return x.offsetParent!==null})}
+function eSelGet(){var a=document.activeElement,L=eEds(),i=L.indexOf(a);if(i<0)return eLastSel;var o={i:i};try{o.s=a.selectionStart;o.e=a.selectionEnd}catch(_){}return o}
+function eBtns(){var nr=$('noteFull').classList.contains('nro'),u=$('nfUndo'),r=$('nfRedo');if(u)u.disabled=!eH.on||!eH.u.length;if(r)r.disabled=!eH.on||!eH.r.length}
+function eReset(){clearTimeout(eT);eT=null;var n=eNote();eH={u:[],r:[],cur:null,sel:null,id:fullId,on:true};if(n&&n.lock){eH.on=false}eH.cur=eSnap();eH.sel=null;eLast=eH.cur;eLastSel=null;eKind='';eMoved=false;eEl=null;eBtns()}
+function eClear(){clearTimeout(eT);eT=null;eH={u:[],r:[],cur:null,sel:null,id:null,on:false};eLast=null;eLastSel=null;eBtns()}
+function eCommit(st,sel){if(!eH.on||st==null||st===eH.cur)return;eH.u.push({s:eH.cur,sel:eH.sel});if(eH.u.length>EH_MAX)eH.u.shift();eH.r=[];eH.cur=st;eH.sel=sel;eBtns()}
+function eFlush(){clearTimeout(eT);eT=null;eWd=false;eWs=false;if(eLast!==eH.cur)eCommit(eLast,eLastSel)}
+function eSync(){if(!$('noteFull').classList.contains('show'))return false;if(eH.id&&fullId&&eH.id!==fullId)eReset();if(!eH.id&&fullId)eH.id=fullId;return eH.on}
+function eTxt(t){return !!(t&&t.closest&&t.closest('.nfcard')&&(t.tagName==='TEXTAREA'||(t.tagName==='INPUT'&&t.type==='text')||t.isContentEditable))}
+function eInput(e){if(eBusy||!eSync())return;var t=e.target;if(!eTxt(t))return;
+ var it=e.inputType||'',k=/^delete/.test(it)?'del':/Paste|Drop/.test(it)?'paste':'ins';
+ var st=eSnap(),sel=eSelGet(),ch='';try{ch=(t.value||'').charAt((t.selectionStart||0)-1)}catch(_){}var ws=/\s/.test(ch);
+ if(k==='paste'||k!==eKind||eMoved||t!==eEl||(k==='ins'&&!ws&&eWs)){if(eLast!==eH.cur)eCommit(eLast,eLastSel);eWd=false}
+ eKind=k;eMoved=false;eEl=t;eLast=st;eLastSel=sel;if(k==='ins'&&!ws)eWd=true;eWs=k==='ins'&&ws&&eWd;clearTimeout(eT);
+ if(k==='paste'){eCommit(st,sel);eKind=''}else eT=setTimeout(eFlush,800)}
+function eStruct(){if(eBusy||!eSync())return;clearTimeout(eSt);eSt=setTimeout(function(){eSt=null;if(eBusy||!eSync())return;var st=eSnap();if(st===eLast)return;eFlush();eLast=st;eLastSel=eSelGet();eCommit(st,eLastSel);eKind=''},0)}
+(function(){var F=$('noteFull');F.addEventListener('input',function(e){if(eTxt(e.target))eTxtAt=Date.now()},true);F.addEventListener('input',eInput);
+ F.addEventListener('pointerdown',function(e){if(e.target.closest&&e.target.closest('.nfcard'))eMoved=true},true);
+ F.addEventListener('keydown',function(e){if(/^(Arrow|Home|End|PageUp|PageDown)/.test(e.key||''))eMoved=true},true);
+ var _ss=nSaveSoon;nSaveSoon=function(){_ss.apply(this,arguments);if(Date.now()-eTxtAt>40)eStruct()};
+ var _sn=saveNotes;saveNotes=function(soft){_sn.apply(this,arguments);if(Date.now()-eTxtAt>40)eStruct()};
+ new MutationObserver(function(){var sh=F.classList.contains('show');if(sh&&!eH.on&&eH.id===null&&eH.cur===null)setTimeout(function(){if(F.classList.contains('show'))eReset()},0);else if(!sh&&(eH.on||eH.cur!==null))eClear()}).observe(F,{attributes:true,attributeFilter:['class']})})();
+function eApply(st,sel,refocus){var n=eNote();eBusy=true;try{
+ if(st==='null'||st==null){if(n){if(n.type==='check'){n.title='';n.items=[]}else n.text=''}}
+ else{var d=JSON.parse(st),i=notes.indexOf(n);if(i<0&&d.id)i=notes.findIndex(function(x){return x.id===d.id});var now=new Date().toISOString();d.updatedAt=d.editedAt=now;
+  if(i>=0){notes[i]=d}else{notes.push(d);fullId=d.id}n=d}
+ if(n){mShow(n);$('noteFull').classList.toggle('chk',n.type==='check');if(n.type==='check')chkRender();else if(n.type==='mix')mRender();else $('nfText').value=n.text||'';edState()}
+ nSaveT&&clearTimeout(nSaveT);nSaveT=null;LS.set('ns_notes',notes.map(nStore));renderNotes();
+ if(sel){var L=eEds(),el=L[sel.i]||L[L.length-1];if(el){try{if(refocus)el.focus({preventScroll:true});if(sel.s!=null)el.setSelectionRange(Math.min(sel.s,el.value.length),Math.min(sel.e,el.value.length))}catch(_){}}}
+ }finally{eBusy=false}eLast=eH.cur;eLastSel=eH.sel;eKind='';eEl=null;eBtns()}
+function eStep(dir){var n=eNote();if(n&&n.lock){toast('Nu se poate într-o notiță blocată');return}if(!eH.on){return}eFlush();
+ var from=dir<0?eH.u:eH.r,to=dir<0?eH.r:eH.u;if(!from.length)return;var cs=eSelGet();to.push({s:eH.cur,sel:dir<0?(eH.sel||cs):eH.sel});var x=from.pop();eH.cur=x.s;eH.sel=x.sel;
+ var rf=eWasF&&eWasF.closest&&eWasF.closest('.nfcard');eApply(eH.cur,eH.sel||(dir<0?null:cs),rf);toast(dir<0?'Anulat':'Refăcut')}
+['nfUndo','nfRedo'].forEach(function(id,j){var b=$(id);b.addEventListener('pointerdown',function(){eWasF=document.activeElement},true);b.addEventListener('mousedown',function(e){e.preventDefault()});b.addEventListener('click',function(){eStep(j?1:-1);eWasF=null})});
 /* v55: per-note PIN lock (PBKDF2-SHA256 150k -> AES-GCM); plaintext never stored for locked notes */
 function b64e(u){var s='';u=new Uint8Array(u);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s)}
 function b64d(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u}
