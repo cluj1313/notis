@@ -1044,7 +1044,7 @@ function renderNotes(){renderNoteTabs();var ul=$('notesList');if(!ul)return;var 
  if(srch){var qs=q.split(/\s+/);list=list.filter(function(n){var hy=nHay(n);return qs.every(function(w){return hy.indexOf(w)>=0})}).sort(nCmp);m='search'}
  if(m==='alpha')list=list.slice().sort(nCmp);else if(m==='created'||m==='updated'){var k=m==='created'?'createdAt':'updatedAt';list=list.slice().sort(function(a,b){return String(b[k]||'').localeCompare(String(a[k]||''))})}
  list.forEach(function(n){var pr='';if(n.type==='check'){var it=(n.items||[]).filter(function(x){return x.text.trim()});pr='☑ '+it.filter(function(x){return x.done}).length+'/'+it.length+' · '}else if(n.type==='mix'){var it2=[];(n.blocks||[]).forEach(function(b){if(b.t==='chk')it2=it2.concat((b.items||[]).filter(function(x){return x.text.trim()}))});if(it2.length)pr='☑ '+it2.filter(function(x){return x.done}).length+'/'+it2.length+' · '}
-  if(n.lock)pr='';h+='<li class="note'+(n.lock&&!n.ltitle?' nlocked':'')+(n.color?' ncol':'')+(n.del?' ndel':'')+'" data-id="'+esc(n.id)+'"'+(n.color?' style="--nc:'+esc(n.color)+'"':'')+'><span class="t">'+(n.lock?esc(n.ltitle||'Notiță blocată'):srch?(nSnipHL(n.text.trim().split('\n')[0],q.split(/\s+/))||esc(n.text.trim().split('\n')[0])):esc(n.text.trim().split('\n')[0]))+'</span><small class="nts">'+(alNext(n)?'⏰ ':'')+(n.lock?'🔒 ':'')+pr+(n.del&&nTrash&&!srch?'șters '+nDateOf(n.del):nDate(n))+(srch&&n.del?' · <span class="nstab">🗑 Coș</span>':'')+(srch&&!n.del?(function(){var tb=findNT(n.tab);return tb?' · <span class="nstab"'+(tb.color?' style="--nc:'+esc(tb.color)+'"':'')+'>'+esc(tb.name)+'</span>':''})():'')+'</small>'+(srch&&!n.lock?nSnips(n,q):'')+'</li>'});
+  if(n.lock)pr='';h+='<li class="note'+(n.lock&&!n.ltitle?' nlocked':'')+(n.color?' ncol':'')+(n.del?' ndel':'')+'" data-id="'+esc(n.id)+'"'+(n.color?' style="--nc:'+esc(ncT(n.color))+'"':'')+'><span class="t">'+(n.lock?esc(n.ltitle||'Notiță blocată'):srch?(nSnipHL(n.text.trim().split('\n')[0],q.split(/\s+/))||esc(n.text.trim().split('\n')[0])):esc(n.text.trim().split('\n')[0]))+'</span><small class="nts">'+(alNext(n)?'⏰ ':'')+(n.lock?'🔒 ':'')+pr+(n.del&&nTrash&&!srch?'șters '+nDateOf(n.del):nDate(n))+(srch&&n.del?' · <span class="nstab">🗑 Coș</span>':'')+(srch&&!n.del?(function(){var tb=findNT(n.tab);return tb?' · <span class="nstab"'+(tb.color?' style="--nc:'+esc(tb.color)+'"':'')+'>'+esc(tb.name)+'</span>':''})():'')+'</small>'+(srch&&!n.lock?nSnips(n,q):'')+'</li>'});
  setHTML(ul,h&&h.indexOf('class="note')>=0?h:(h||'')+'<li class="empty">'+(srch?'Niciun rezultat.':nTrash?'Coșul e gol.':'Nicio notiță.')+'</li>')}
 function nDateOf(iso){try{var d=new Date(iso);return d.toLocaleDateString('ro-RO',{day:'numeric',month:'short'}).replace('.','')}catch(_){return ''}}
 /* v21: search snippets — matching lines in context, matches underlined */
@@ -1491,10 +1491,10 @@ function mBack(t){var q=mItem(t);if(!q.x)return;mPre(q.n);var ord=mOrder(q.n,q.b
 $('noteFull').addEventListener('click',function(e){if($('noteFull').classList.contains('mix')&&e.target.classList&&e.target.classList.contains('nfcard')){var tl=B.querySelectorAll('.nbt'),l=tl[tl.length-1];if(l){l.focus();try{l.setSelectionRange(l.value.length,l.value.length)}catch(_){}}}});
 function mClean(n){if(!n||n.type!=='mix')return;(n.blocks||[]).forEach(function(b){if(b.t==='chk')b.items=(b.items||[]).filter(function(x){return x.text.trim()})});mNorm(n);mSync(n)}
 /* color */
-function ncApply(n){var c=n&&n.color||'';$('noteFull').querySelector('.nfcard').style.background=c?'linear-gradient(180deg,'+c+'f2,'+c+'d9)':'';$('nfColor').classList.toggle('on',!!c)}
+function ncApply(n){var c=n&&n.color||'';c=ncT(c);$('noteFull').querySelector('.nfcard').style.background=c?'linear-gradient(180deg,'+c+'f2,'+c+'d9)':'';$('nfColor').classList.toggle('on',!!c)}
 function edNote(create){var n=fullId&&findN(fullId);if(!n&&create){var now=new Date().toISOString();n={id:ntUid(),text:$('nfText').value||'',ts:now,createdAt:now,updatedAt:now,tab:noteTab};notes.push(n);fullId=n.id;fullIsNew=true}return n}
 function edPop(btn,html,tag){lpCur={li:btn,edPop:tag};$('lpBox').innerHTML=html;$('lpMenu').classList.add('show');var bx=$('lpBox'),r=btn.getBoundingClientRect();bx.style.left=Math.max(10,Math.min(window.innerWidth-bx.offsetWidth-10,r.left))+'px';bx.style.top=Math.max(10,r.top-bx.offsetHeight-8)+'px';bx.style.bottom='auto';bx.style.right='auto'}
-$('nfColor').addEventListener('click',function(){var n=fullId&&findN(fullId),cur=n&&n.color||'',h='<div class="lph">Culoare</div><div class="npal">';NC.forEach(function(k){h+='<button data-ncl="'+k[0]+'" class="'+(cur===k[0]?'cur':'')+'" style="--nc:'+(k[0]||'#0a1d30')+'" aria-label="'+k[1]+'"><i'+(k[0]?'':' class="ncdef"')+'></i></button>'});edPop(this,h+'</div>','col')});
+$('nfColor').addEventListener('click',function(){var n=fullId&&findN(fullId),cur=n&&n.color||'',h='<div class="lph">Culoare</div><div class="npal">';NC.forEach(function(k){h+='<button data-ncl="'+k[0]+'" class="'+(cur===k[0]?'cur':'')+'" style="--nc:'+(ncT(k[0])||'#0a1d30')+'" aria-label="'+k[1]+'"><i'+(k[0]?'':' class="ncdef"')+'></i></button>'});edPop(this,h+'</div>','col')});
 $('nfMove').addEventListener('click',function(){var n=fullId&&findN(fullId),cur=n?n.tab:noteTab,h='<div class="lph">Mută în</div>';noteTabs.forEach(function(t){h+='<button data-nmt="'+t.id+'"'+(t.id===cur?' class="cur"':'')+'>'+esc(t.name)+(t.id===cur?' ✓':'')+'</button>'});edPop(this,h,'mv')});
 $('nfAlarm').addEventListener('click',function(){var n=edNote(true);if(!n)return;nFlush();openAlarm({k:'n',id:n.id})});
 $('nfChkIns').addEventListener('mousedown',function(e){e.preventDefault()});$('nfChkIns').addEventListener('click',mInsert);
@@ -1569,10 +1569,23 @@ notesOpen();if(NS_IMPORTED)setTimeout(function(){toast('Am importat notițele di
  h.addEventListener('touchstart',function(){t=setTimeout(go,450)},{passive:true});h.addEventListener('mousedown',function(){t=setTimeout(go,450)});['touchend','touchmove','mouseup','mouseleave'].forEach(function(ev){h.addEventListener(ev,function(){clearTimeout(t)})});h.addEventListener('contextmenu',function(e){e.preventDefault()})})();
 /* v23: themes */
 var TH_META={color:'#06111f',dark:'#000000',light:'#f3f5f8',vip:'#121110'};
-function thApply(t){if(!TH_META[t])t='color';if(t==='color')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',TH_META[t]);
+function thHex(r,g,b){return '#'+[r,g,b].map(function(x){return ('0'+Math.round(x).toString(16)).slice(-2)}).join('')}
+function vipMix(v){var k=v/100,lo=[20,19,18],hi=[244,242,238],c=lo.map(function(x,i){return x+(hi[i]-x)*k}),c2=c.map(function(x){return x*.9}),warm=k>.5?[(k-.5)*2*14,(k-.5)*2*6,-(k-.5)*2*6]:[0,0,0];
+ c=[c[0]+warm[0]*.4,c[1]+warm[1]*.4,c[2]+warm[2]*.4].map(function(x){return Math.max(0,Math.min(255,x))});var L=(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;
+ return{bg:thHex(c[0],c[1],c[2]),bg2:thHex(c2[0],c2[1],c2[2]),out:L>.5?'#1d1b18':'#f6ead2',glow:L>.5?'rgba(255,255,255,.7)':'rgba(232,201,138,.14)'}}
+/* v24: note colours per theme (stored value = Color-theme tint) */
+var NC_TH={light:{'#103a3d':'#d3eff1','#163a22':'#dbf2e1','#3a3514':'#f8f0c4','#3e2812':'#fde3c8','#3d1a1c':'#fcdcdc','#3a1832':'#f9dcef','#291c48':'#e5ddfa','#2b313b':'#e3e7ec'},
+ vip:{'#103a3d':'#14302f','#163a22':'#1b3123','#3a3514':'#3a3116','#3e2812':'#3d2916','#3d1a1c':'#3b1c1d','#3a1832':'#371b2e','#291c48':'#2a2140','#2b313b':'#2d2b29'}};
+function ncT(c){var m=typeof NC_TH!=='undefined'&&NC_TH[thCur];return c&&m&&m[c.toLowerCase()]||c}
+var thCur='color';
+function thApply(t){if(!TH_META[t])t='color';thCur=t;var R0=document.documentElement;if(t==='color')R0.removeAttribute('data-theme');else R0.setAttribute('data-theme',t);
+ var meta=TH_META[t];['--vbg','--vbg2','--vout','--vglow'].forEach(function(k){R0.style.removeProperty(k)});
+ if(t==='vip'){var v=+LS.get('ns_vipint',85),x=vipMix(v);R0.style.setProperty('--vbg',x.bg);R0.style.setProperty('--vbg2',x.bg2);R0.style.setProperty('--vout',x.out);R0.style.setProperty('--vglow',x.glow);meta=x.bg;$('vipInt').value=v}
+ var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',meta);var cs=document.querySelector('meta[name=color-scheme]');if(!cs&&t!=='color'){cs=document.createElement('meta');cs.name='color-scheme';document.head.appendChild(cs)}if(cs&&t==='color'){cs.remove();cs=null}if(cs)cs.setAttribute('content',t==='light'||(t==='vip'&&+LS.get('ns_vipint',85)>50)?'light':'dark');
  document.querySelectorAll('#thRow .thc').forEach(function(b){b.classList.toggle('on',b.dataset.th===t)})}
-thApply(LS.get('ns_theme','color'));
-$('thRow').addEventListener('click',function(e){var b=e.target.closest('.thc');if(!b)return;LS.set('ns_theme',b.dataset.th);thApply(b.dataset.th)});
+thApply(LS.get('ns_theme','color'));if(thCur!=='color')try{renderNotes()}catch(_){}
+$('thRow').addEventListener('click',function(e){var b=e.target.closest('.thc');if(!b)return;LS.set('ns_theme',b.dataset.th);thApply(b.dataset.th);try{renderNotes();edState()}catch(_){}});
+$('vipInt').addEventListener('input',function(){LS.set('ns_vipint',+this.value);thApply('vip')});
 alCheck(); /* notes are loaded after alInit: run the alarm catch-up again so note alarms fire on open */
 /* v21: trashed note = read-only */
 (function(){var nf=$('noteFull'),ro=function(){return nf.classList.contains('nro')};
