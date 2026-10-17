@@ -1567,6 +1567,12 @@ notesOpen();if(NS_IMPORTED)setTimeout(function(){toast('Am importat notițele di
 /* Notis: long-press on the NOTIȚE title opens Setări (voice + backup) */
 (function(){var h=document.querySelector('#notesPg .ntop h2'),t=null;function go(){t=null;try{if(navigator.vibrate)navigator.vibrate(20)}catch(_){}$('bSettings').onclick()}
  h.addEventListener('touchstart',function(){t=setTimeout(go,450)},{passive:true});h.addEventListener('mousedown',function(){t=setTimeout(go,450)});['touchend','touchmove','mouseup','mouseleave'].forEach(function(ev){h.addEventListener(ev,function(){clearTimeout(t)})});h.addEventListener('contextmenu',function(e){e.preventDefault()})})();
+/* v23: themes */
+var TH_META={color:'#06111f',dark:'#000000',light:'#f3f5f8',vip:'#121110'};
+function thApply(t){if(!TH_META[t])t='color';if(t==='color')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name=theme-color]');if(m)m.setAttribute('content',TH_META[t]);
+ document.querySelectorAll('#thRow .thc').forEach(function(b){b.classList.toggle('on',b.dataset.th===t)})}
+thApply(LS.get('ns_theme','color'));
+$('thRow').addEventListener('click',function(e){var b=e.target.closest('.thc');if(!b)return;LS.set('ns_theme',b.dataset.th);thApply(b.dataset.th)});
 alCheck(); /* notes are loaded after alInit: run the alarm catch-up again so note alarms fire on open */
 /* v21: trashed note = read-only */
 (function(){var nf=$('noteFull'),ro=function(){return nf.classList.contains('nro')};
