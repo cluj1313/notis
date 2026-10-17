@@ -1254,6 +1254,8 @@ function fullClose(fromPop){if(!$('noteFull').classList.contains('show'))return;
 var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
 $('nfBack').addEventListener('click',function(){fullClose()});
+$('nfDone').addEventListener('click',function(){try{var ae=document.activeElement;if(ae&&ae.blur)ae.blur()}catch(_){}fullClose()});
+(function(){var vv=window.visualViewport,b=$('nfDone');if(!vv||!b)return;function f(){var k=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));if(k>60){b.style.setProperty('--kbo',k+'px');b.classList.add('kb')}else{b.classList.remove('kb');b.style.removeProperty('--kbo')}}vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f()})();
 function nFlushAll(){if(fullId)fullFlush();if(draftId){var n=findN(draftId);if(n)n.text=$('iNote').value}nFlush()}
 document.addEventListener('visibilitychange',function(){if(document.hidden)nFlushAll()});
 window.addEventListener('pagehide',nFlushAll);window.addEventListener('beforeunload',nFlushAll);

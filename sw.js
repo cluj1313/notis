@@ -1,8 +1,8 @@
 /* Notis service worker: app shell cache. HTML = network-first (updates arrive), static = cache-first.
    Voice model files (Mihai, own cache "jarvis-piper-v1") and weather (Open-Meteo) are NOT touched: passed straight to the network. */
-var VERSION='notis-shell-v27';
+var VERSION='notis-shell-v28';
 var SHELL=['./','index.html','manifest.webmanifest',
- 'icons/favicon.png','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png','art/jad-t.svg','art/jad-b.svg','art/lac-t.svg','art/lac-b.svg','art/tus-t.svg','art/tus-b.svg','art/paper.svg','art/neon-b.svg','art/papyrus.svg','art/pap-t.svg','art/pap-b.svg','art/m-land.svg','art/m-bamboo.svg','art/m-sakura.svg','art/m-motto.svg','art/m-chain.svg','art/m-flag.svg','art/flag.svg','art/cleo-q.svg','art/cleo-b.svg','art/cleo-l.svg','art/cleo-pap.svg'];
+ 'icons/favicon.png','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png','art/jad-t.svg','art/jad-b.svg','art/lac-t.svg','art/lac-b.svg','art/tus-t.svg','art/tus-b.svg','art/paper.svg','art/neon-b.svg','art/papyrus.svg','art/pap-t.svg','art/pap-b.svg','art/m-land.svg','art/m-bamboo.svg','art/m-sakura.svg','art/m-motto.svg','art/m-column.svg','art/m-carp.svg','art/m-carp-far.svg','art/m-wolf.svg','art/m-flag-s.svg','art/flag-s.svg','art/cleo-q.svg','art/cleo-b.svg','art/cleo-l.svg','art/cleo-pap.svg'];
 var FONT_HOSTS=/^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com)\//,DSEG=/^https:\/\/cdn\.jsdelivr\.net\/npm\/dseg@/;
 self.addEventListener('install',function(e){e.waitUntil(caches.open(VERSION).then(function(c){
  return Promise.all(SHELL.map(function(u){return c.add(new Request(u,{cache:'reload'})).catch(function(){})}))}).then(function(){return self.skipWaiting()}))});
