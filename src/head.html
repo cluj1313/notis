@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v21">
+<meta name="jarvis-version" content="notis-v22">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -475,6 +475,12 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 #noteFull.nro #nfRestore{display:block}#noteFull.nro #nfRead,#noteFull.nro .nfhist,#noteFull.nro #nfTools,#noteFull.nro .nftools{display:none!important}
 #noteFull::after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom));background:rgba(4,11,20,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid rgba(63,216,255,.12);z-index:10;pointer-events:none}
 #noteFull .nwrap{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+
+/* v22 */
+.ntab:not(.on):not(.nadd1){opacity:.72}
+.ntab.on{border-width:2px;padding:7px 13px;font-weight:700;background:color-mix(in srgb,var(--nc) 28%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--nc) 55%,transparent),inset 0 0 8px color-mix(in srgb,var(--nc) 25%,transparent);text-shadow:0 0 6px color-mix(in srgb,var(--nc) 50%,transparent)}
+@keyframes nswL{from{opacity:.3;transform:translateX(24px)}to{opacity:1;transform:none}}@keyframes nswR{from{opacity:.3;transform:translateX(-24px)}to{opacity:1;transform:none}}
+#notesList.nsw-l{animation:nswL .15s ease-out}#notesList.nsw-r{animation:nswR .15s ease-out}
 </style>
 </head>
 <body>

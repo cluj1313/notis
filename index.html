@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v21">
+<meta name="jarvis-version" content="notis-v22">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -475,6 +475,12 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 #noteFull.nro #nfRestore{display:block}#noteFull.nro #nfRead,#noteFull.nro .nfhist,#noteFull.nro #nfTools,#noteFull.nro .nftools{display:none!important}
 #noteFull::after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(62px + env(safe-area-inset-bottom));background:rgba(4,11,20,.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid rgba(63,216,255,.12);z-index:10;pointer-events:none}
 #noteFull .nwrap{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+
+/* v22 */
+.ntab:not(.on):not(.nadd1){opacity:.72}
+.ntab.on{border-width:2px;padding:7px 13px;font-weight:700;background:color-mix(in srgb,var(--nc) 28%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--nc) 55%,transparent),inset 0 0 8px color-mix(in srgb,var(--nc) 25%,transparent);text-shadow:0 0 6px color-mix(in srgb,var(--nc) 50%,transparent)}
+@keyframes nswL{from{opacity:.3;transform:translateX(24px)}to{opacity:1;transform:none}}@keyframes nswR{from{opacity:.3;transform:translateX(-24px)}to{opacity:1;transform:none}}
+#notesList.nsw-l{animation:nswL .15s ease-out}#notesList.nsw-r{animation:nswR .15s ease-out}
 </style>
 </head>
 <body>
@@ -2029,6 +2035,17 @@ window.addEventListener('resize',function(){if(nHlM.length)nHlClear()});
 $('noteTabs').addEventListener('click',function(e){var b=e.target.closest('.ntab');if(!b)return;if(draftId)draftFinish();
  if(b.classList.contains('nadd1')){jvPrompt('Tab nou','',function(nm){var t={id:ntUid(),name:nm};noteTabs.push(t);noteTab=t.id;saveNotes();renderNotes()});return}
  noteTab=b.dataset.id;saveNotes();renderNotes()});
+/* v22: horizontal swipe on the list switches tabs */
+function ntChipShow(){var c=document.querySelector('#noteTabs .ntab.on');if(c&&c.scrollIntoView)try{c.scrollIntoView({inline:'nearest',block:'nearest'})}catch(_){}}
+function ntGo(d){var i=noteTabs.findIndex(function(t){return t.id===noteTab}),j=i+d;if(i<0||j<0||j>=noteTabs.length)return false;if(draftId)draftFinish();noteTab=noteTabs[j].id;saveNotes();renderNotes();ntChipShow();
+ var ul=$('notesList');ul.classList.remove('nsw-l','nsw-r');void ul.offsetWidth;ul.classList.add(d>0?'nsw-l':'nsw-r');setTimeout(function(){ul.classList.remove('nsw-l','nsw-r')},200);return true}
+(function(){var pg=$('notesPg'),S=null;
+ function blocked(t){return nQ||nTrash||pg.classList.contains('nsrch')||ndrag||$('noteFull').classList.contains('show')||document.querySelector('.modal.show')||$('lpMenu').classList.contains('show')||(t.closest&&t.closest('#noteTabs,input,textarea,select,.ntop,#shModal,#crop,#phView'))}
+ pg.addEventListener('touchstart',function(e){S=null;if(e.touches.length!==1)return;var t=e.touches[0];if(t.clientX<24||t.clientX>innerWidth-24||blocked(e.target))return;S={x:t.clientX,y:t.clientY,t:Date.now()}},{passive:true});
+ pg.addEventListener('touchmove',function(e){if(!S)return;var t=e.touches[0];if(Math.abs(t.clientY-S.y)>40&&Math.abs(t.clientY-S.y)>Math.abs(t.clientX-S.x))S=null},{passive:true});
+ pg.addEventListener('touchend',function(e){if(!S)return;var t=e.changedTouches[0],dx=t.clientX-S.x,dy=t.clientY-S.y,s0=S;S=null;if(Date.now()-s0.t>800||lpJust||ndrag)return;if(Math.abs(dx)>=60&&Math.abs(dx)>1.5*Math.abs(dy))ntGo(dx<0?1:-1)},{passive:true});
+ pg.addEventListener('touchcancel',function(){S=null},{passive:true});
+ setTimeout(ntChipShow,300)})();
 function noteDel(id){var n=findN(id);if(!n)return;var cf=$('cfModal').querySelector('.cftxt'),t0=cf.textContent,ok=$('cfOk'),o0=ok.textContent;cf.textContent='Mută notița în coș?';ok.textContent='Mută în coș';var back=function(){cf.textContent=t0;ok.textContent=o0};
  jvConfirm(function(){back();saveNotes();n.del=new Date().toISOString();n.delTab=n.tab;nFlush();renderNotes();toast('Mutată în coș')});var no=$('cfNo').onclick;$('cfNo').onclick=function(){back();no&&no()}}
 function nTrashed(){return notes.filter(function(n){return n.del})}

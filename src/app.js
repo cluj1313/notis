@@ -1279,6 +1279,17 @@ window.addEventListener('resize',function(){if(nHlM.length)nHlClear()});
 $('noteTabs').addEventListener('click',function(e){var b=e.target.closest('.ntab');if(!b)return;if(draftId)draftFinish();
  if(b.classList.contains('nadd1')){jvPrompt('Tab nou','',function(nm){var t={id:ntUid(),name:nm};noteTabs.push(t);noteTab=t.id;saveNotes();renderNotes()});return}
  noteTab=b.dataset.id;saveNotes();renderNotes()});
+/* v22: horizontal swipe on the list switches tabs */
+function ntChipShow(){var c=document.querySelector('#noteTabs .ntab.on');if(c&&c.scrollIntoView)try{c.scrollIntoView({inline:'nearest',block:'nearest'})}catch(_){}}
+function ntGo(d){var i=noteTabs.findIndex(function(t){return t.id===noteTab}),j=i+d;if(i<0||j<0||j>=noteTabs.length)return false;if(draftId)draftFinish();noteTab=noteTabs[j].id;saveNotes();renderNotes();ntChipShow();
+ var ul=$('notesList');ul.classList.remove('nsw-l','nsw-r');void ul.offsetWidth;ul.classList.add(d>0?'nsw-l':'nsw-r');setTimeout(function(){ul.classList.remove('nsw-l','nsw-r')},200);return true}
+(function(){var pg=$('notesPg'),S=null;
+ function blocked(t){return nQ||nTrash||pg.classList.contains('nsrch')||ndrag||$('noteFull').classList.contains('show')||document.querySelector('.modal.show')||$('lpMenu').classList.contains('show')||(t.closest&&t.closest('#noteTabs,input,textarea,select,.ntop,#shModal,#crop,#phView'))}
+ pg.addEventListener('touchstart',function(e){S=null;if(e.touches.length!==1)return;var t=e.touches[0];if(t.clientX<24||t.clientX>innerWidth-24||blocked(e.target))return;S={x:t.clientX,y:t.clientY,t:Date.now()}},{passive:true});
+ pg.addEventListener('touchmove',function(e){if(!S)return;var t=e.touches[0];if(Math.abs(t.clientY-S.y)>40&&Math.abs(t.clientY-S.y)>Math.abs(t.clientX-S.x))S=null},{passive:true});
+ pg.addEventListener('touchend',function(e){if(!S)return;var t=e.changedTouches[0],dx=t.clientX-S.x,dy=t.clientY-S.y,s0=S;S=null;if(Date.now()-s0.t>800||lpJust||ndrag)return;if(Math.abs(dx)>=60&&Math.abs(dx)>1.5*Math.abs(dy))ntGo(dx<0?1:-1)},{passive:true});
+ pg.addEventListener('touchcancel',function(){S=null},{passive:true});
+ setTimeout(ntChipShow,300)})();
 function noteDel(id){var n=findN(id);if(!n)return;var cf=$('cfModal').querySelector('.cftxt'),t0=cf.textContent,ok=$('cfOk'),o0=ok.textContent;cf.textContent='Mută notița în coș?';ok.textContent='Mută în coș';var back=function(){cf.textContent=t0;ok.textContent=o0};
  jvConfirm(function(){back();saveNotes();n.del=new Date().toISOString();n.delTab=n.tab;nFlush();renderNotes();toast('Mutată în coș')});var no=$('cfNo').onclick;$('cfNo').onclick=function(){back();no&&no()}}
 function nTrashed(){return notes.filter(function(n){return n.del})}
