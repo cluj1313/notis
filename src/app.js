@@ -1636,5 +1636,8 @@ alCheck(); /* notes are loaded after alInit: run the alarm catch-up again so not
  nf.addEventListener('beforeinput',function(e){if(ro())e.preventDefault()},true);
  nf.addEventListener('click',function(e){if(!ro())return;if(e.target.closest('#nfRestore')){var id=fullId;fullClose();nRestore(id);return}if(e.target.closest('input[type=checkbox],.cix,.ciadd,.nbi .phx'))e.preventDefault(),e.stopPropagation()},true);
  var b=document.createElement('button');b.type='button';b.id='nfRestore';b.className='btn pill';b.textContent='↩ Reface';nf.appendChild(b)})();
+/* v35: note row spacing slider */
+function nrpApply(){var v=+LS.get('ns_nrowpad',8);if(!(v>=4&&v<=14))v=8;document.documentElement.style.setProperty('--nrp',v+'px');var s=$('sNrp');if(s){s.value=v;$('vNrp').textContent=v+'px'}}
+nrpApply();$('sNrp').addEventListener('input',function(){LS.set('ns_nrowpad',+this.value);nrpApply()});
 })();
 

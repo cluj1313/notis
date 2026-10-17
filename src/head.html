@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v34">
+<meta name="jarvis-version" content="notis-v35">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -347,7 +347,7 @@ html.jv-notes body{overflow:hidden}
 .ntab{flex:none;background:rgba(var(--s1R),.35);border:1px solid var(--line);color:var(--txt);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .ntab.on{border-color:rgba(var(--acR),.75);background:rgba(var(--acR),.16);color:var(--cyan);box-shadow:0 0 10px rgba(var(--acR),.25)}
 .ntab.nadd1{color:var(--cyan2);font-size:17px;padding:6px 14px}.ntab.jv-lpon{background:rgba(var(--acR),.25)}
-#notesList .note{display:flex;align-items:baseline;gap:10px;padding:12px 4px;cursor:pointer}
+#notesList .note{display:flex;align-items:baseline;gap:10px;padding:var(--nrp,8px) 4px;min-height:36px;box-sizing:border-box;cursor:pointer}
 #notesList .note::after{display:none}
 #notesList .note .t{display:block;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #notesList .note .nts{float:none;flex:none;margin:0;display:block}
@@ -802,6 +802,7 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 
  <div class="sec">Temă</div>
  <div class="field"><div class="throw" id="thRow"><button type="button" class="thc" data-th="color"><i style="background:#3fd8ff"></i>Color</button><button type="button" class="thc" data-th="dark"><i style="background:#000"></i>Dark</button><button type="button" class="thc" data-th="light"><i style="background:#f3f5f8"></i>Light</button><button type="button" class="thc" data-th="vip"><i style="background:linear-gradient(135deg,#e8c98a,#a8823f)"></i>VIP</button><button type="button" class="thc" data-th="jad"><i style="background:linear-gradient(135deg,#2f6b58,#0f2a24)"></i>Jad</button><button type="button" class="thc" data-th="lac"><i style="background:linear-gradient(135deg,#a51c22,#5a0f12)"></i>Lac Roșu</button><button type="button" class="thc" data-th="tus"><i style="background:radial-gradient(circle,#1a1a1a 30%,#f2ece0 34%)"></i>Tuș</button><button type="button" class="thc" data-th="pap"><i style="background:linear-gradient(135deg,#e2cfa4,#b8955a)"></i>Papirus</button><button type="button" class="thc" data-th="salon"><i style="background:linear-gradient(135deg,#8a5a17,#e9c77b 55%,#b8862b)"></i>Salon Auriu</button><button type="button" class="thc" data-th="cleo"><i style="background:linear-gradient(135deg,#1b4f86,#0b6f78 50%,#d4a62a)"></i>Cleopatra</button><button type="button" class="thc" data-th="neon"><i style="background:linear-gradient(135deg,#ff3d9a,#29e0ff)"></i><span style="font-size:12px;line-height:1.05">Neon<br>Shanghai</span></button></div><div id="vipRow"><label for="vipInt"><span>Fundal VIP</span><span>întunecat ↔ luminos</span></label><input type="range" id="vipInt" min="0" max="100" step="1"></div></div>
+ <div class="field" id="fNrp"><label for="sNrp">Spațiu între notițe <span class="val" id="vNrp"></span></label><input type="range" id="sNrp" min="4" max="14" step="1"></div>
  <div class="sec">Voce</div>
  <div class="field"><label for="sEngine">Motor voce</label><select id="sEngine"></select></div>
  <div class="field" id="fPiper"><div class="prow"><span class="ptxt" id="pState">…</span><button type="button" class="btn" id="pDl">Descarcă</button><button type="button" class="btn" id="pDel">Șterge</button></div>
