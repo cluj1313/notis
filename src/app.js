@@ -1650,5 +1650,16 @@ alCheck(); /* notes are loaded after alInit: run the alarm catch-up again so not
 /* v35: note row spacing slider */
 function nrpApply(){var v=+LS.get('ns_nrowpad',8);if(!(v>=4&&v<=14))v=8;document.documentElement.style.setProperty('--nrp',v+'px');var s=$('sNrp');if(s){s.value=v;$('vNrp').textContent=v+'px'}}
 nrpApply();$('sNrp').addEventListener('input',function(){LS.set('ns_nrowpad',+this.value);nrpApply()});
+/* v39: app shortcuts (manifest) -> ?a=new | ?a=search | ?tab=<name>; on load and via launchQueue when already open */
+var nsLaunchAt=0,nsLaunchU='';
+function nsLaunch(u){var U;try{U=new URL(u,location.href)}catch(_){return}var q=U.searchParams,a=q.get('a'),tb=q.get('tab');if(!a&&tb==null)return;
+ var key=(a||'')+'|'+(tb||'');if(key===nsLaunchU&&Date.now()-nsLaunchAt<2000)return;nsLaunchU=key;nsLaunchAt=Date.now();
+ try{if(/[?&](a|tab)=/.test(location.search))history.replaceState(history.state,'',location.pathname+location.hash)}catch(_){}
+ try{if($('modal').classList.contains('show'))$('modal').classList.remove('show')}catch(_){}
+ if($('noteFull').classList.contains('show'))fullClose();if(nTrash)nTrashOpen(false);notesOpen();
+ if(tb!=null){var f=nFold(tb).trim(),t=noteTabs.filter(function(x){return nFold(x.name).trim()===f})[0]||noteTabs.filter(function(x){return f&&nFold(x.name).indexOf(f)>=0})[0]||noteTabs[0];if(t&&t.id!==noteTab){noteTab=t.id;saveNotes()}renderNotes()}
+ if(a==='new')setTimeout(fullNew,60);else if(a==='search')setTimeout(nSearchOpen,60)}
+setTimeout(function(){nsLaunch(location.href)},30);
+if(window.launchQueue&&launchQueue.setConsumer)launchQueue.setConsumer(function(p){if(p&&p.targetURL)nsLaunch(p.targetURL)});
 })();
 
