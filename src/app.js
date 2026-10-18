@@ -1605,9 +1605,10 @@ $('nsImpX').onclick=function(){try{localStorage.setItem('ns_impban','off')}catch
 if(!nsReal()){var s0=nsFromLS();if(s0.notes.length&&nsMerge(s0)){NS_IMPORTED=true;try{localStorage.setItem('ns_impban','off')}catch(_){}}}
 nsBanner();
 notesOpen();if(NS_IMPORTED)setTimeout(function(){toast('Am importat notițele din Jarvis')},400);
-/* Notis: long-press on the NOTIȚE title opens Setări (voice + backup) */
-(function(){var h=document.querySelector('#notesPg .ntop h2'),t=null;function go(){t=null;try{if(navigator.vibrate)navigator.vibrate(20)}catch(_){}$('bSettings').onclick()}
- h.addEventListener('touchstart',function(){t=setTimeout(go,450)},{passive:true});h.addEventListener('mousedown',function(){t=setTimeout(go,450)});['touchend','touchmove','mouseup','mouseleave'].forEach(function(ev){h.addEventListener(ev,function(){clearTimeout(t)})});h.addEventListener('contextmenu',function(e){e.preventDefault()})})();
+/* Notis v37: tap on the NOTIS title opens Setări (the only entry point) */
+(function(){var h=document.querySelector('#notesPg .ntop h2'),x0=0,y0=0,mv=false;
+ h.addEventListener('pointerdown',function(e){x0=e.clientX;y0=e.clientY;mv=false});h.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10)mv=true});
+ h.addEventListener('click',function(){if(mv)return;$('bSettings').onclick()});h.addEventListener('contextmenu',function(e){e.preventDefault()})})();
 /* v23: themes */
 var TH_META={color:'#06111f',dark:'#000000',light:'#f3f5f8',vip:'#121110'};
 function thHex(r,g,b){return '#'+[r,g,b].map(function(x){return ('0'+Math.round(x).toString(16)).slice(-2)}).join('')}
