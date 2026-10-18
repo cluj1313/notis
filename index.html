@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v39">
+<meta name="jarvis-version" content="notis-v40">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -1812,7 +1812,7 @@ var bkPhTmp=null;function bkExportPayload(e){return{jarvisBackup:1,version:1,exp
 function bkFilename(e){var t=(e.ts||'').replace(/[:.]/g,'-').slice(0,19)||'backup';return 'notis-backup-'+t+'.json'}
 function bkShare(id){if(!bkFind(id))return;phDump().then(function(p){bkPhTmp=p;try{bkShare0(id)}finally{bkPhTmp=null}})}
 function bkShare0(id){var e=bkFind(id);if(!e)return;var json=JSON.stringify(bkExportPayload(e),null,2),file=new File([json],bkFilename(e),{type:'application/json'});
- function dl(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=bkFilename(e);document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);toast('Backup descărcat')}
+ function dl(){if(window.NotisNative&&NotisNative.saveFile){var ok0=false;try{ok0=NotisNative.saveFile(bkFilename(e),json)}catch(_){}toast(ok0?'Backup salvat în Descărcări: '+bkFilename(e):'Nu am putut salva backupul');return}var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json],{type:'application/json'}));a.download=bkFilename(e);document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},800);toast('Backup descărcat')}
  if(navigator.share){var p={title:'Backup Notis · '+e.label,text:'Backup Notis din '+e.label,files:[file]};
   if(!navigator.canShare||navigator.canShare(p))return navigator.share(p).then(function(){toast('Backup trimis')}).catch(function(err){if(err&&err.name==='AbortError')return;dl()})}
  dl()}
@@ -2697,15 +2697,35 @@ function nrpApply(){var v=+LS.get('ns_nrowpad',8);if(!(v>=4&&v<=14))v=8;document
 nrpApply();$('sNrp').addEventListener('input',function(){LS.set('ns_nrowpad',+this.value);nrpApply()});
 /* v39: app shortcuts (manifest) -> ?a=new | ?a=search | ?tab=<name>; on load and via launchQueue when already open */
 var nsLaunchAt=0,nsLaunchU='';
-function nsLaunch(u){var U;try{U=new URL(u,location.href)}catch(_){return}var q=U.searchParams,a=q.get('a'),tb=q.get('tab');if(!a&&tb==null)return;
- var key=(a||'')+'|'+(tb||'');if(key===nsLaunchU&&Date.now()-nsLaunchAt<2000)return;nsLaunchU=key;nsLaunchAt=Date.now();
- try{if(/[?&](a|tab)=/.test(location.search))history.replaceState(history.state,'',location.pathname+location.hash)}catch(_){}
+function nsLaunch(u){var U;try{U=new URL(u,location.href)}catch(_){return}var q=U.searchParams,a=q.get('a'),tb=q.get('tab'),op=q.get('open');if(!a&&tb==null&&!op)return;
+ var key=(a||'')+'|'+(tb||'')+'|'+(op||'');if(key===nsLaunchU&&Date.now()-nsLaunchAt<2000)return;nsLaunchU=key;nsLaunchAt=Date.now();
+ try{if(/[?&](a|tab|open)=/.test(location.search))history.replaceState(history.state,'',location.pathname+location.hash)}catch(_){}
  try{if($('modal').classList.contains('show'))$('modal').classList.remove('show')}catch(_){}
  if($('noteFull').classList.contains('show'))fullClose();if(nTrash)nTrashOpen(false);notesOpen();
  if(tb!=null){var f=nFold(tb).trim(),t=noteTabs.filter(function(x){return nFold(x.name).trim()===f})[0]||noteTabs.filter(function(x){return f&&nFold(x.name).indexOf(f)>=0})[0]||noteTabs[0];if(t&&t.id!==noteTab){noteTab=t.id;saveNotes()}renderNotes()}
+ if(op){var on=findN(op);if(on&&!on.del){if(on.tab&&on.tab!==noteTab&&findNT(on.tab)){noteTab=on.tab;saveNotes();renderNotes()}setTimeout(function(){fullOpen(op)},60)}}
  if(a==='new')setTimeout(fullNew,60);else if(a==='search')setTimeout(nSearchOpen,60)}
 setTimeout(function(){nsLaunch(location.href)},30);
 if(window.launchQueue&&launchQueue.setConsumer)launchQueue.setConsumer(function(p){if(p&&p.targetURL)nsLaunch(p.targetURL)});
+/* v40: bridge to the native Android app (home-screen widget). Only active when window.NotisNative exists. */
+(function(){var N=window.NotisNative;if(!N||!N.saveSnapshot)return;var T=null;
+ function title(n){var t=n.type==='check'?(n.title||''):'';if(!t.trim())t=String(n.text||'').split('\n').filter(function(x){return x.trim()})[0]||'';return t.trim().slice(0,80)}
+ function snap(){var L=[];notes.forEach(function(n){if(n.del||n.lock)return;var it=[];
+   if(n.type==='check')chkOrder(n).forEach(function(x){if(String(x.text||'').trim())it.push({i:x.id,t:x.text.trim(),d:!!x.done})});
+   else if(n.type==='mix')(n.blocks||[]).forEach(function(b){if(b.t==='chk')mOrder(n,b).forEach(function(x){if(String(x.text||'').trim())it.push({i:x.id,b:b.id,t:x.text.trim(),d:!!x.done})})});
+   if(it.length)L.push({id:n.id,tab:n.tab||'',title:title(n)||'Listă',upd:n.updatedAt||n.ts||'',items:it})});
+  return JSON.stringify({v:1,ts:new Date().toISOString(),tabs:noteTabs.map(function(t){return{id:t.id,name:t.name}}),lists:L})}
+ function push(){T=null;try{N.saveSnapshot(snap())}catch(_){}}
+ function pushSoon(){clearTimeout(T);T=setTimeout(push,250)}
+ var sv=saveNotes;saveNotes=function(){var r=sv.apply(this,arguments);pushSoon();return r};
+ function sync(){var p=[];try{p=JSON.parse(N.peekPending()||'[]')}catch(_){p=[]}if(!p.length){push();return}var ch=false,open=fullId&&findN(fullId);
+  p.forEach(function(c){var n=findN(c.n);if(!n||n.lock)return;var a=null;if(n.type==='check')a=n.items||[];else if(n.type==='mix'&&c.b)(n.blocks||[]).forEach(function(b){if(b.id===c.b)a=b.items||[]});if(!a)return;
+   a.forEach(function(x){if(x.id===c.i&&!!x.done!==!!c.d){x.done=!!c.d;n.updatedAt=n.editedAt=new Date().toISOString();if(n.type==='check')chkSync(n);else mSync(n);ch=true}})});
+  if(ch){saveNotes();renderNotes();if(open){if(open.type==='check')chkRender();else if(open.type==='mix')mRender()}}
+  try{N.ackPending(p.length)}catch(_){}push()}
+ window.NotisApp={launch:function(u){nsLaunch(u)},sync:sync};
+ document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')sync();else push()});
+ setTimeout(sync,400)})();
 })();
 
 </script>
