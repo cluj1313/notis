@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#06111f">
 <script>try{var _t=JSON.parse(localStorage.getItem('ns_theme'));if(_t&&_t!=='color')document.documentElement.setAttribute('data-theme',_t)}catch(e){}</script>
 <link rel="manifest" href="manifest.webmanifest?v=29">
@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Notis">
-<meta name="jarvis-version" content="notis-v37">
+<meta name="jarvis-version" content="notis-v38">
 <title>Notis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Roboto+Condensed:wght@700&family=Orbitron:wght@700&family=Share+Tech+Mono&family=Rajdhani:wght@600;700&family=Audiowide&family=Teko:wght@500&family=Oxanium:wght@700&display=swap" rel="stylesheet">
@@ -618,7 +618,9 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 
 /* v28: editor done (check) ring button, floats above toolbar strip / keyboard */
 #nfDone{position:fixed;right:calc(14px + env(safe-area-inset-right));bottom:calc(74px + env(safe-area-inset-bottom));z-index:11;width:44px!important;height:44px!important;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;color:var(--cyan);border-color:rgba(var(--acR),.6);box-shadow:0 0 10px rgba(var(--acR),.28)}
-#nfDone svg{display:block}#nfDone.kb{bottom:calc(var(--kbo,0px) + 12px)}
+#nfDone svg{display:block}#nfDone.kb{bottom:calc(var(--kbo,0px) + 74px)}
+/* v38: when the keyboard overlays the page (layout viewport not resized), lift the whole editor toolbar to sit right above it */
+#noteFull.kb .nfhist,#noteFull.kb #nfRead{bottom:calc(var(--kbo,0px) + 14px)}#noteFull.kb::after{bottom:var(--kbo,0px);height:62px}#noteFull.kb>.nwrap{padding-bottom:calc(var(--kbo,0px) + 90px)}#noteFull{scroll-padding-bottom:calc(var(--kbo,0px) + 130px)}
 #nfText{padding-bottom:72px}#noteFull.chk .nfcard{padding-bottom:60px}
 /* v34: Romanian motif: lone-wolf photo + photo-like flag; motto is now real text on .ntop::after (decoupled); ::before keeps only bamboo/sakura on Color/Dark/Light/VIP */
 #notesPg::before,#noteFull::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:var(--arto,.08);background:var(--artc,#3fd8ff);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
@@ -2337,7 +2339,17 @@ var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
 $('nfBack').addEventListener('click',function(){fullClose()});
 $('nfDone').addEventListener('click',function(){try{var ae=document.activeElement;if(ae&&ae.blur)ae.blur()}catch(_){}fullClose()});
-(function(){var vv=window.visualViewport,b=$('nfDone');if(!vv||!b)return;function f(){var k=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));if(k>60){b.style.setProperty('--kbo',k+'px');b.classList.add('kb')}else{b.classList.remove('kb');b.style.removeProperty('--kbo')}}vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f()})();
+/* v38: keep the editor toolbar + ✔ directly above the on-screen keyboard (visualViewport), whether or not the layout viewport resizes */
+(function(){var vv=window.visualViewport,b=$('nfDone'),nf=$('noteFull');if(!vv||!b||!nf)return;var last=-1,raf=0,until=0;
+ function f(){var k=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));if(k===last)return;last=k;
+  if(k>60){nf.style.setProperty('--kbo',k+'px');b.style.setProperty('--kbo',k+'px');nf.classList.add('kb');b.classList.add('kb')}
+  else{nf.classList.remove('kb');b.classList.remove('kb');nf.style.removeProperty('--kbo');b.style.removeProperty('--kbo')}}
+ function loop(){f();if(performance.now()<until)raf=requestAnimationFrame(loop);else raf=0}
+ function burst(ms){until=Math.max(until,performance.now()+(ms||700));if(!raf)raf=requestAnimationFrame(loop)}
+ vv.addEventListener('resize',function(){f();burst(400)});vv.addEventListener('scroll',f);addEventListener('resize',function(){f();burst(400)});addEventListener('orientationchange',function(){burst(1200)});
+ nf.addEventListener('focusin',function(){burst(900)});nf.addEventListener('focusout',function(){burst(900)});nf.addEventListener('input',f);f();
+ /* buttons that don't need a picker keep the keyboard open */
+ ['nfUndo','nfRedo','nfChkIns','nfRead'].forEach(function(id){var e=$(id);if(!e)return;function keep(ev){var a=document.activeElement;if(a&&a!==document.body&&nf.contains(a)&&/^(TEXTAREA|INPUT)$/.test(a.tagName))ev.preventDefault()}e.addEventListener('pointerdown',keep);e.addEventListener('mousedown',keep)})})();
 function nFlushAll(){if(fullId)fullFlush();if(draftId){var n=findN(draftId);if(n)n.text=$('iNote').value}nFlush()}
 document.addEventListener('visibilitychange',function(){if(document.hidden)nFlushAll()});
 window.addEventListener('pagehide',nFlushAll);window.addEventListener('beforeunload',nFlushAll);

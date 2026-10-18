@@ -1294,7 +1294,17 @@ var nIgnorePop=false;
 $('nfText').addEventListener('input',fullInput);$('nfText').addEventListener('blur',fullFlush);
 $('nfBack').addEventListener('click',function(){fullClose()});
 $('nfDone').addEventListener('click',function(){try{var ae=document.activeElement;if(ae&&ae.blur)ae.blur()}catch(_){}fullClose()});
-(function(){var vv=window.visualViewport,b=$('nfDone');if(!vv||!b)return;function f(){var k=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));if(k>60){b.style.setProperty('--kbo',k+'px');b.classList.add('kb')}else{b.classList.remove('kb');b.style.removeProperty('--kbo')}}vv.addEventListener('resize',f);vv.addEventListener('scroll',f);f()})();
+/* v38: keep the editor toolbar + ✔ directly above the on-screen keyboard (visualViewport), whether or not the layout viewport resizes */
+(function(){var vv=window.visualViewport,b=$('nfDone'),nf=$('noteFull');if(!vv||!b||!nf)return;var last=-1,raf=0,until=0;
+ function f(){var k=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));if(k===last)return;last=k;
+  if(k>60){nf.style.setProperty('--kbo',k+'px');b.style.setProperty('--kbo',k+'px');nf.classList.add('kb');b.classList.add('kb')}
+  else{nf.classList.remove('kb');b.classList.remove('kb');nf.style.removeProperty('--kbo');b.style.removeProperty('--kbo')}}
+ function loop(){f();if(performance.now()<until)raf=requestAnimationFrame(loop);else raf=0}
+ function burst(ms){until=Math.max(until,performance.now()+(ms||700));if(!raf)raf=requestAnimationFrame(loop)}
+ vv.addEventListener('resize',function(){f();burst(400)});vv.addEventListener('scroll',f);addEventListener('resize',function(){f();burst(400)});addEventListener('orientationchange',function(){burst(1200)});
+ nf.addEventListener('focusin',function(){burst(900)});nf.addEventListener('focusout',function(){burst(900)});nf.addEventListener('input',f);f();
+ /* buttons that don't need a picker keep the keyboard open */
+ ['nfUndo','nfRedo','nfChkIns','nfRead'].forEach(function(id){var e=$(id);if(!e)return;function keep(ev){var a=document.activeElement;if(a&&a!==document.body&&nf.contains(a)&&/^(TEXTAREA|INPUT)$/.test(a.tagName))ev.preventDefault()}e.addEventListener('pointerdown',keep);e.addEventListener('mousedown',keep)})})();
 function nFlushAll(){if(fullId)fullFlush();if(draftId){var n=findN(draftId);if(n)n.text=$('iNote').value}nFlush()}
 document.addEventListener('visibilitychange',function(){if(document.hidden)nFlushAll()});
 window.addEventListener('pagehide',nFlushAll);window.addEventListener('beforeunload',nFlushAll);
