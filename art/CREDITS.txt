@@ -1,0 +1,7 @@
+Background photos (Wikimedia Commons, CC0 / public domain):
+bg-mist: Fog-shrouded mountain ridge (Unsplash)
+bg-forest: Foggy forest trail
+bg-lake: Moraine Lake 17092005
+bg-sea: Sea horizon in Corona Del Mar (Unsplash)
+bg-snow: Sea of snowy peaks (Unsplash)
+bg-night: Milky Way over Brofjorden as seen from Sandvik 1
