@@ -841,7 +841,7 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
 <body>
 <div class="wrap">
  <header>
-  <div class="brand"><div class="orb" id="orb"><img class="orb-img" width="210" height="312" alt="Jarvis" decoding="async"><svg class="orb-race" viewBox="0 0 1152 1712" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><mask id="orbHat" maskUnits="userSpaceOnUse" x="0" y="0" width="1152" height="1712"><rect width="1152" height="1712" fill="#fff"/><polygon points="371,280 734,280 737,450 378,450" fill="#000"/></mask></defs><g mask="url(#orbHat)"><path class="rt" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rm" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rh" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/></g></svg><span class="orb-spark" aria-hidden="true"></span></div><div><h1>JARVIS</h1><small>COMMAND CENTER</small></div></div>
+  <div class="brand"><div class="orb" id="orb"><img class="orb-img" width="210" height="312" alt="Notis" decoding="async"><svg class="orb-race" viewBox="0 0 1152 1712" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><mask id="orbHat" maskUnits="userSpaceOnUse" x="0" y="0" width="1152" height="1712"><rect width="1152" height="1712" fill="#fff"/><polygon points="371,280 734,280 737,450 378,450" fill="#000"/></mask></defs><g mask="url(#orbHat)"><path class="rt" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rm" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rh" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/></g></svg><span class="orb-spark" aria-hidden="true"></span></div><div><h1>NOTIS</h1><small>COMMAND CENTER</small></div></div>
   <div class="right"><div class="clock" id="clock" data-ghost="88.88">--.--</div>
    <div class="hbtns"><button class="btn pill" id="bSettings">Setări</button><button class="btn pill" id="bShare">Trimite copia</button></div></div>
  </header>
@@ -1221,7 +1221,7 @@ applyNewsSize(newsScale);
 
 /* ---------- greeting ---------- */
 function greeting(){var h=new Date().getHours();var g=h>=5&&h<12?TR('Bună dimineața'):h>=12&&h<18?TR('Bună ziua'):TR('Bună seara');return cfg.name?g+', '+cfg.name+'.':g+'!'}
-function greetFull(){return greeting()+TR(' Sunt Jarvis, asistentul tău. Cu ce te pot ajuta?')}
+function greetFull(){return greeting()+TR(' Sunt Notis, asistentul tău. Cu ce te pot ajuta?')}
 var greetBusy=false,greetRestoreT=null;
 function renderGreet(force){if(greetBusy&&!force)return;greetBusy=false;
  var seg=prepSeg($('greet'),greetFull());var i=seg.words.length-1;
@@ -2013,7 +2013,7 @@ $('bBkFile').onchange=function(){var f=this.files&&this.files[0];if(!f)return;
 
 /* ---------- share ---------- */
 function summary(){var d=new Date(),tk=dkey(),o=tasks.filter(function(t){return live(t)&&!t.done});
- var L=[TR('JARVIS · ')+ZILE[d.getDay()]+', '+d.getDate()+' '+LUNI[d.getMonth()]+' '+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes()),'',TR('Vremea · ')+cfg.city+': '+wxSentence(wx),''];
+ var L=[TR('Notis · ')+ZILE[d.getDay()]+', '+d.getDate()+' '+LUNI[d.getMonth()]+' '+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes()),'',TR('Vremea · ')+cfg.city+': '+wxSentence(wx),''];
  var az=listFor('azi').filter(function(t){return !t.done}),mn=listFor('maine').filter(function(t){return !t.done});
  if(az.length){L.push(TR('Taskuri pentru azi:'));az.forEach(function(t){L.push('• '+t.text+(t.fromDay&&t.fromDay<tk?' ('+shortDate(t.fromDay)+')':''))});L.push('')}
  if(mn.length){L.push(TR('Taskuri pentru mâine:'));mn.forEach(function(t){L.push('• '+t.text)})}
@@ -2041,8 +2041,8 @@ $('bShare').onclick=function(){var url=blankURL(),text=TR('JARVIS Command Center
  function upd(){var f=$('fInstall');if(!f)return;f.style.display=standalone()?'none':'';
   $('sInstall').style.display=deferred?'':'none';$('installHint').style.display=deferred?'none':''}
  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;upd();
-  if(!standalone()&&!LS.get('ns_installTip',false)){LS.set('ns_installTip',true);setTimeout(function(){toast(TR('Poți instala JARVIS ca aplicație: Setări → Instalează aplicația'))},2500)}});
- window.addEventListener('appinstalled',function(){deferred=null;upd();toast(TR('JARVIS a fost instalat'))});
+  if(!standalone()&&!LS.get('ns_installTip',false)){LS.set('ns_installTip',true);setTimeout(function(){toast(TR('Poți instala Notis ca aplicație: Setări → Instalează aplicația'))},2500)}});
+ window.addEventListener('appinstalled',function(){deferred=null;upd();toast(TR('Notis a fost instalat'))});
  $('sInstall').onclick=function(){if(!deferred){upd();return}var d=deferred;d.prompt();
   (d.userChoice||Promise.resolve()).then(function(){deferred=null;upd()})};
  $('bSettings').addEventListener('click',upd);upd();
@@ -2170,14 +2170,14 @@ function alRoll(at,rep){var now=Date.now(),st=rep*60000;if(at>now)return at;retu
 function alPerm(){try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission().catch(function(){})}catch(_){}}
 function alSchedule(t){ /* Notification Triggers where supported (feature-detected) */
  try{if(!('showTrigger' in Notification.prototype)||typeof TimestampTrigger==='undefined'||Notification.permission!=='granted'||!navigator.serviceWorker)return;
-  navigator.serviceWorker.ready.then(function(r){var nx=alNext(t);if(nx>Date.now())r.showNotification('⏰ JARVIS',{body:t.text,tag:'jv-al-'+t.id,showTrigger:new TimestampTrigger(nx),requireInteraction:true})})}catch(_){}}
+  navigator.serviceWorker.ready.then(function(r){var nx=alNext(t);if(nx>Date.now())r.showNotification('⏰ Notis',{body:t.text,tag:'jv-al-'+t.id,showTrigger:new TimestampTrigger(nx),requireInteraction:true})})}catch(_){}}
 function alDelete(){var t=alGet(alId);if(t){delete t.alarm;alPersist(alId);toast(TR('Alarmă ștearsă'))}closeAlarm()}
 var alQueue=[],alCur=null,alBeepT=null;
 function alBeep(on){clearInterval(alBeepT);alBeepT=null;if(!on)return;var one=function(){try{unlockAudio();if(!actx)return;var t0=actx.currentTime;[0,.25,.5].forEach(function(o){var g=actx.createGain(),os=actx.createOscillator();os.type='square';os.frequency.value=880;g.gain.setValueAtTime(.0001,t0+o);g.gain.exponentialRampToValueAtTime(.25,t0+o+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+o+.18);os.connect(g);g.connect(actx.destination);os.start(t0+o);os.stop(t0+o+.2)})}catch(_){}
  try{if(navigator.vibrate)navigator.vibrate([400,200,400])}catch(_){}};one();alBeepT=setInterval(one,1500)}
 function alShow(){if(alCur||!alQueue.length)return;alCur=alQueue.shift();$('alfTask').textContent=alCur.text;$('alFire').classList.add('show');alBeep(true)}
 function alFire(t,r){if(t.lock)t={id:t.id,text:t.ltitle||TR('Notiță blocată')};alQueue.push({r:r,text:t.text});alShow();
- try{if(window.Notification&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.getRegistration().then(function(r){if(r)r.showNotification('⏰ JARVIS',{body:t.text,tag:'jv-al-'+t.id,renotify:true,requireInteraction:true,vibrate:[400,200,400],icon:'icons/icon-192.png'});else new Notification('⏰ JARVIS',{body:t.text})}).catch(function(){})}catch(_){}}
+ try{if(window.Notification&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.getRegistration().then(function(r){if(r)r.showNotification('⏰ Notis',{body:t.text,tag:'jv-al-'+t.id,renotify:true,requireInteraction:true,vibrate:[400,200,400],icon:'icons/icon-192.png'});else new Notification('⏰ Notis',{body:t.text})}).catch(function(){})}catch(_){}}
 function alStop(snooze){alBeep(false);$('alFire').classList.remove('show');var c=alCur;alCur=null;
  if(c&&snooze){var t=alGet(c.r);if(t){if(!t.alarm)t.alarm={at:Date.now()+600000,rep:0,until:null};t.alarm.snz=Date.now()+600000;alPersist(c.r);alSchedule(t);toast(TR('Amânat 10 min'))}}
  setTimeout(alShow,300)}
@@ -3198,7 +3198,7 @@ renderAbList();
   var tg=function(){var o=!h.classList.contains('open');set(o);st[i]=o?1:0;try{localStorage.setItem('nt_secopen',JSON.stringify(st))}catch(e){}};
   h.addEventListener('click',tg);h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}})});
  var css=document.createElement('style');css.textContent='#modal .sect{cursor:pointer;display:flex;align-items:center;justify-content:space-between;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;padding-bottom:4px}'+
-  '#modal .sect::after{content:"\\25BE";font-size:40px;line-height:1;letter-spacing:0;transition:transform .2s;transform:rotate(-90deg)}#modal .sect.open::after{transform:none}'+
+  '#modal .sect::after{content:"\\25BE";font-size:28px;line-height:1;letter-spacing:0;transition:transform .2s;transform:rotate(-90deg)}#modal .sect.open::after{transform:none}'+
   '#modal .secb{display:none}#modal .sect.open+.secb{display:block}';document.head.appendChild(css)})();
 </script>
 </body>
