@@ -843,7 +843,7 @@ html.notis #modal .field:has(#sName),html.notis #modal .field:has(#sRemindUrg),h
  <header>
   <div class="brand"><div class="orb" id="orb"><img class="orb-img" width="210" height="312" alt="Notis" decoding="async"><svg class="orb-race" viewBox="0 0 1152 1712" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><mask id="orbHat" maskUnits="userSpaceOnUse" x="0" y="0" width="1152" height="1712"><rect width="1152" height="1712" fill="#fff"/><polygon points="371,280 734,280 737,450 378,450" fill="#000"/></mask></defs><g mask="url(#orbHat)"><path class="rt" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rm" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/><path class="rh" d="M1074.5 877A498 527 0 1 1 78.5 877A498 527 0 1 1 1074.5 877Z"/></g></svg><span class="orb-spark" aria-hidden="true"></span></div><div><h1>NOTIS</h1><small>COMMAND CENTER</small></div></div>
   <div class="right"><div class="clock" id="clock" data-ghost="88.88">--.--</div>
-   <div class="hbtns"><button class="btn pill" id="bSettings">Setări</button><button class="btn pill" id="bShare">Trimite copia</button></div></div>
+   <div class="hbtns"><button class="btn pill" id="bSettings">Setări</button></div></div>
  </header>
 
  <div class="offnote" id="offNote" hidden></div>
@@ -2021,15 +2021,6 @@ function summary(){var d=new Date(),tk=dkey(),o=tasks.filter(function(t){return 
 function copy(text){if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(text);
  return new Promise(function(res,rej){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();
   try{document.execCommand('copy')?res():rej()}catch(e){rej(e)}document.body.removeChild(ta)})}
-function blankURL(){return 'https://cluj1313.github.io/jarvis/blank.html'}
-$('bShare').onclick=function(){var url=blankURL(),text=TR('JARVIS Command Center – aplicația goală (fără date).\n\n👉 Deschide linkul: ')+url+TR('\n\nDin link o poți instala pe telefon ca aplicație (meniu ⋮ → „Instalează aplicația” / „Adaugă pe ecranul de pornire”). Fișierul atașat e doar o copie de rezervă.');
- function shareLink(){if(navigator.share)return navigator.share({title:'JARVIS',text:text,url:url}).catch(function(e){if(e&&e.name!=='AbortError')return copyLink()});return copyLink()}
- function copyLink(){return copy(url).then(function(){toast(TR('Link copiat: ')+url)},function(){prompt(TR('Copiază linkul:'),url)})}
- if(!/^https?:/.test(location.protocol)){copyLink();return}
- fetch(url,{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.blob()}).then(function(b){
-  var f=new File([b],'jarvis.html',{type:'text/html'});
-  if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:'JARVIS',text:text}).catch(function(e){if(e&&e.name!=='AbortError')return shareLink()});
-  return shareLink()}).catch(shareLink)};
 
 
 /* ---------- PWA: service worker + install helper ---------- */
