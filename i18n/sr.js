@@ -740,5 +740,11 @@ NOTIS_I18N={
 "Alarmă repetitivă o dată la": "Ponavljajući alarm na svakih",
 "Prima doză la": "Prva doza u",
 "Ștergi medicamentul?": "Obrisati ovaj lek?",
+"Eu": "Ја",
+"Persoană nouă": "Нова особа",
+"Persoană": "Особа",
+"Ștergi persoana și medicamentele ei?": "Обрисати ову особу и њене лекове?",
+"Permite notificările și alarmele pentru Notis, ca să sune la timp": "Дозволите обавештења и аларме за Notis да би звонио на време",
+"Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?": "На Xiaomi уређају дозволите „Аутоматско покретање” за Notis да би аларми звонили и кад је апликација затворена. Отворити подешавања?",
 "Medicamente": "Lekovi"
 };

@@ -740,5 +740,11 @@ NOTIS_I18N={
 "Alarmă repetitivă o dată la": "Korduv äratus iga",
 "Prima doză la": "Esimene annus kell",
 "Ștergi medicamentul?": "Kas kustutada see ravim?",
+"Eu": "Mina",
+"Persoană nouă": "Uus inimene",
+"Persoană": "Inimene",
+"Ștergi persoana și medicamentele ei?": "Kas kustutada see inimene ja tema ravimid?",
+"Permite notificările și alarmele pentru Notis, ca să sune la timp": "Luba Notisele märguanded ja äratused, et see heliseks õigel ajal",
+"Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?": "Xiaomis luba Notisele „Automaatkäivitus”, et äratused heliseksid ka suletud rakendusega. Kas avada seaded?",
 "Medicamente": "Ravimid"
 };

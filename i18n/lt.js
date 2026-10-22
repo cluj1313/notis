@@ -740,5 +740,11 @@ NOTIS_I18N={
 "Alarmă repetitivă o dată la": "Kartotinis žadintuvas kas",
 "Prima doză la": "Pirma dozė",
 "Ștergi medicamentul?": "Ištrinti šiuos vaistus?",
+"Eu": "Aš",
+"Persoană nouă": "Naujas asmuo",
+"Persoană": "Asmuo",
+"Ștergi persoana și medicamentele ei?": "Ištrinti šį asmenį ir jo vaistus?",
+"Permite notificările și alarmele pentru Notis, ca să sune la timp": "Leiskite Notis pranešimus ir žadintuvus, kad skambėtų laiku",
+"Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?": "Xiaomi telefone leiskite Notis „Automatinį paleidimą“, kad žadintuvai skambėtų uždarius programą. Atidaryti nustatymus?",
 "Medicamente": "Vaistai"
 };

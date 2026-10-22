@@ -2160,7 +2160,11 @@ function alSave(){var t=alGet(alId);if(!t)return closeAlarm();var at=alParse($('
  t.alarm={at:at,rep:rep,until:until||null,snz:null};alPersist(alId);closeAlarm();toast(TR('Alarmă setată · ')+alShort(at));
  alPerm();alSchedule(t)}
 function alRoll(at,rep){var now=Date.now(),st=rep*60000;if(at>now)return at;return at+Math.ceil((now-at+1)/st)*st}
-function alPerm(){try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission().catch(function(){})}catch(_){}}
+function alPerm(){var N=window.NotisNative;if(N&&N.alarmPerms&&!DEMO){try{var st=N.alarmPerms(true);if(st&&st!=='ok'){toast(TR('Permite notificările și alarmele pentru Notis, ca să sune la timp'));return}
+  if(N.isXiaomi&&N.isXiaomi()&&N.openAutostart&&!LS.get('ns_xmhint',0)){LS.set('ns_xmhint',1);setTimeout(function(){var cf=$('cfModal').querySelector('.cftxt'),t0=cf.textContent,ok=$('cfOk'),no=$('cfNo'),o0=ok.textContent,n0=no.textContent,back=function(){cf.textContent=t0;ok.textContent=o0;no.textContent=n0};
+   cf.textContent=TR('Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?');ok.textContent=TR('Da');no.textContent=TR('Nu');
+   ok.onclick=function(){jvClose('cfModal');back();try{N.openAutostart()}catch(_){}};no.onclick=function(){jvClose('cfModal');back()};$('cfModal').classList.add('show')},400)}}catch(_){}return}
+ try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission().catch(function(){})}catch(_){}}
 function alSchedule(t){ /* Notification Triggers where supported (feature-detected) */
  try{if(!('showTrigger' in Notification.prototype)||typeof TimestampTrigger==='undefined'||Notification.permission!=='granted'||!navigator.serviceWorker)return;
   navigator.serviceWorker.ready.then(function(r){var nx=alNext(t);if(nx>Date.now())r.showNotification('⏰ Notis',{body:t.text,tag:'jv-al-'+t.id,showTrigger:new TimestampTrigger(nx),requireInteraction:true})})}catch(_){}}
@@ -2169,10 +2173,11 @@ var alQueue=[],alCur=null,alBeepT=null;
 function alBeep(on){clearInterval(alBeepT);alBeepT=null;if(!on)return;var one=function(){try{unlockAudio();if(!actx)return;var t0=actx.currentTime;[0,.25,.5].forEach(function(o){var g=actx.createGain(),os=actx.createOscillator();os.type='square';os.frequency.value=880;g.gain.setValueAtTime(.0001,t0+o);g.gain.exponentialRampToValueAtTime(.25,t0+o+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+o+.18);os.connect(g);g.connect(actx.destination);os.start(t0+o);os.stop(t0+o+.2)})}catch(_){}
  try{if(navigator.vibrate)navigator.vibrate([400,200,400])}catch(_){}};one();alBeepT=setInterval(one,1500)}
 function alShow(){if(alCur||!alQueue.length)return;alCur=alQueue.shift();$('alfTask').textContent=alCur.text;$('alFire').classList.add('show');alBeep(true)}
-function alFire(t,r){if(t.lock)t={id:t.id,text:t.ltitle||TR('Notiță blocată')};alQueue.push({r:r,text:t.text});alShow();
+function alFire(t,r){if(t.lock)t={id:t.id,text:t.ltitle||TR('Notiță blocată')};alQueue.push({r:r,text:t.text,med:t.med?t.id:null});alShow();
  try{if(window.Notification&&Notification.permission==='granted'&&navigator.serviceWorker)navigator.serviceWorker.getRegistration().then(function(r){if(r)r.showNotification('⏰ Notis',{body:t.text,tag:'jv-al-'+t.id,renotify:true,requireInteraction:true,vibrate:[400,200,400],icon:'icons/icon-192.png'});else new Notification('⏰ Notis',{body:t.text})}).catch(function(){})}catch(_){}}
 function alStop(snooze){alBeep(false);$('alFire').classList.remove('show');var c=alCur;alCur=null;
- if(c&&snooze){var t=alGet(c.r);if(t){if(!t.alarm)t.alarm={at:Date.now()+600000,rep:0,until:null};t.alarm.snz=Date.now()+600000;alPersist(c.r);alSchedule(t);toast(TR('Amânat 10 min'))}}
+ if(c&&snooze&&c.med&&window.medSnooze){medSnooze(c.med,c.text);toast(TR('Amânat 10 min'))}
+ else if(c&&snooze){var t=alGet(c.r);if(t){if(!t.alarm)t.alarm={at:Date.now()+600000,rep:0,until:null};t.alarm.snz=Date.now()+600000;alPersist(c.r);alSchedule(t);toast(TR('Amânat 10 min'))}}
  setTimeout(alShow,300)}
 function alCheck(){var now=Date.now(),chg=[];alAll().forEach(function(e){var t=e.o,a=t.alarm;if(!a||!a.at)return;
  var nx=alNext(t);if(nx>now)return;
@@ -3180,13 +3185,15 @@ window.nfReadFit=nfReadFit;setTimeout(nfReadFit,300);
 var UT_DEF=[['curent','Curent','kWh','idx'],['gaz','Gaz','m³','idx'],['apa','Apă','m³','idx'],['gunoi','Gunoi','','pay'],['internet','Internet','','pay'],['media','Media','','pay']];
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function utLoad(){var d=LS.get('ns_util',null);if(!d||!Array.isArray(d.list)){d={list:UT_DEF.map(function(x){return{id:x[0],k:x[0],unit:x[2],mode:x[3],cur:NL==='ro'?'lei':'',rows:[]}}),open:{}}}if(!d.open)d.open={};return d}
-function medLoad(){var d=LS.get('ns_med',null);if(!d||!Array.isArray(d.list))d={list:[]};return d}
+function medNorm(d){if(!d||!Array.isArray(d.list))d={list:[]};if(!Array.isArray(d.persons)){d.persons=[{id:'me',k:'me'}];d.open=d.open||{};d.open.me=1} /* v65: persons — existing medicines move into the first person, nothing is dropped */
+ if(!d.open)d.open={};if(!d.snz)d.snz={};var p0=d.persons[0];d.list.forEach(function(m){if(!m.p||!d.persons.some(function(x){return x.id===m.p})){if(!p0){p0={id:'me',k:'me'};d.persons.push(p0);d.open.me=1}m.p=p0.id}});return d}
+function medLoad(){return medNorm(LS.get('ns_med',null))}
 var UT=utLoad(),MED=medLoad();
 function utSave(){LS.set('ns_util',UT)}
 function medSave(){LS.set('ns_med',MED);try{saveNotes(true)}catch(_){}} /* saveNotes pushes the snapshot (native alarms) */
 window.spReload=function(){UT=utLoad();MED=medLoad()};
 window.spCollect=function(){return{ns_util:JSON.parse(JSON.stringify(UT)),ns_med:JSON.parse(JSON.stringify(MED))}};
-window.spApply=function(d){if(d&&d.ns_util&&Array.isArray(d.ns_util.list)){UT=JSON.parse(JSON.stringify(d.ns_util));if(!UT.open)UT.open={};utSave()}if(d&&d.ns_med&&Array.isArray(d.ns_med.list)){MED=JSON.parse(JSON.stringify(d.ns_med));medSave()}};
+window.spApply=function(d){if(d&&d.ns_util&&Array.isArray(d.ns_util.list)){UT=JSON.parse(JSON.stringify(d.ns_util));if(!UT.open)UT.open={};utSave()}if(d&&d.ns_med&&Array.isArray(d.ns_med.list)){MED=medNorm(JSON.parse(JSON.stringify(d.ns_med)));medSave()}};
 /* ---- tabs: one-time additive migration ---- */
 window.spMigrate=function(){if(LS.get('ns_spmig1',0))return;var ch=false;
  function fit(kind,names,id,name,color){if(noteTabs.some(function(t){return t.kind===kind}))return;var f=noteTabs.filter(function(t){return names.indexOf(nFold(t.name).trim())>=0})[0];
@@ -3243,12 +3250,22 @@ var SLOT=['Dimineață','Amiază','Seară'];
 function mSlots(m){if(m.rep>0){var st=m.st||'08:00',p=st.split(':'),t0=+p[0]*60+(+p[1]),k=Math.max(1,Math.min(6,Math.floor(24/m.rep))),a=[];for(var i=0;i<k;i++){var x=(t0+i*m.rep*60)%1440;a.push({lbl:pad(Math.floor(x/60))+':'+pad(x%60),t:pad(Math.floor(x/60))+':'+pad(x%60),al:!!m.ral})}return a}
  var idx=m.n===1?[0]:m.n===2?[0,2]:[0,1,2];return idx.map(function(i){var t=(m.t||[])[i];return{s:i,lbl:t||TR(SLOT[i]),t:t||'',al:!!(m.al||[])[i]&&!!t}})}
 function mChk(m){var d=today();if(!m.c||m.c.d!==d){if(m.c&&m.c.d&&(m.c.s||[]).some(Boolean)){m.h=m.h||{};m.h[m.c.d]=m.c.s;var ks=Object.keys(m.h).sort();while(ks.length>90)delete m.h[ks.shift()]}m.c={d:d,s:[]}}return m.c}
-function medRender(){var h='<div class="spv spmed">';MED.list.forEach(function(m){var c=mChk(m),S=mSlots(m);
- h+='<div class="mdrow" data-m="'+esc(m.id)+'"><span class="mdnm ux" data-a="medit">'+esc(m.name)+(m.rep>0?'<small class="mdrep">⟳ '+esc(TR(m.rep+' ore'))+'</small>':'')+'</span><span class="mddo">';
+function pName(p){return p.name||TR('Eu')}
+function pFind(id){return MED.persons.filter(function(p){return p.id===id})[0]}
+function medRender(){var h='<div class="spv spmed">';MED.persons.forEach(function(p){var o=!!MED.open[p.id],L=MED.list.filter(function(m){return m.p===p.id});
+ h+='<div class="spsec mdper'+(o?' open':'')+'" data-p="'+esc(p.id)+'"><div class="sphd" data-a="ptog"><span class="spnm'+(p.name?' ux':'')+'">'+esc(pName(p))+'</span><span class="spun"></span><span class="spcnt">'+(L.length||'')+'</span><button type="button" class="spgear" data-a="pcfg" aria-label="Setări">⚙</button><i class="sparr"></i></div>';
+ if(o){h+='<div class="spbd">'+medRows(L)+'<button type="button" class="btn spadd" data-a="mnew">+ Medicament nou</button></div>'}h+='</div>'});
+ return h+'<button type="button" class="btn spnew" data-a="pnew">+ Persoană</button></div>'}
+function medRows(L){var h='';L.forEach(function(m){var c=mChk(m),S=mSlots(m);
+ h+='<div class="mdrow'+(S.length>3?' many':'')+'" data-m="'+esc(m.id)+'"><span class="mdnm ux" data-a="medit">'+esc(m.name)+(m.rep>0?'<small class="mdrep">⟳ '+esc(TR(m.rep+' ore'))+'</small>':'')+'</span><span class="mddo">';
  S.forEach(function(s,i){h+='<span class="mdd"><button type="button" class="mdc'+(c.s[i]?' on':'')+'" data-a="mchk" data-i="'+i+'" aria-label="'+esc(s.lbl)+'"></button><small class="'+(s.t?'ux':'')+'">'+(s.al?'⏰':'')+esc(s.lbl)+'</small></span>'});
- h+='</span></div>'});if(!MED.list.length)h+='<div class="spempty">Niciun medicament.</div>';
- return h+'<button type="button" class="btn spnew" data-a="mnew">+ Medicament nou</button></div>'}
-function medEdit(m){var isNew=!m;m=m||{id:uid(),name:'',n:3,t:['08:00','14:00','20:00'],al:[1,1,1],rep:0,st:'08:00',ral:1};var T=(m.t||['08:00','14:00','20:00']).slice(),A=(m.al||[]).slice();
+ h+='</span></div>'});if(!L.length)h+='<div class="spempty">Niciun medicament.</div>';return h}
+function pCfg(p){var isNew=!p;p=p||{id:uid(),name:''};
+ dOpen(isNew?TR('Persoană nouă'):pName(p),'<div class="field"><label>Nume</label><input id="spN" maxlength="30"></div>',
+  function(){var n=$('spN').value.trim();if(!n){toast(TR('Numele e obligatoriu'));return false}if(isNew||n!==pName(p)){p.name=n;delete p.k}if(isNew){MED.persons.push(p);MED.open[p.id]=1}medSave();spRender()},
+  isNew?null:function(){ask('Ștergi persoana și medicamentele ei?',function(){MED.persons=MED.persons.filter(function(x){return x!==p});MED.list=MED.list.filter(function(m){return m.p!==p.id});delete MED.open[p.id];medSave();jvClose('spModal');spRender()})});
+ $('spN').value=isNew?'':pName(p);setTimeout(function(){$('spN').focus()},80)}
+function medEdit(m,pid){var isNew=!m;m=m||{id:uid(),p:pid,name:'',n:3,t:['08:00','14:00','20:00'],al:[1,1,1],rep:0,st:'08:00',ral:1};var T=(m.t||['08:00','14:00','20:00']).slice(),A=(m.al||[]).slice();
  var dz='';[0,1,2].forEach(function(i){dz+='<div class="mdz" data-s="'+i+'"><span class="mdzl">'+SLOT[i]+'</span><input type="time" id="mdT'+i+'" value="'+esc(T[i]||'')+'"><label class="mdal"><input type="checkbox" id="mdA'+i+'"'+(A[i]?' checked':'')+'> ⏰</label></div>'});
  dOpen(isNew?TR('Medicament nou'):TR('Medicament'),'<div class="field"><label>Nume</label><input id="mdN" maxlength="40" value="'+esc(m.name)+'"></div>'+seg('mdMode',[['fix',TR('Ore fixe')],['rep',TR('Repetitivă')]],m.rep>0?'rep':'fix')+
   '<div id="mdFix" style="margin-top:12px"><div class="field"><label>Doze pe zi</label>'+seg('mdNn',[[1,'1'],[2,'2'],[3,'3']],m.n||3)+'</div>'+dz+'</div>'+
@@ -3264,13 +3281,18 @@ function medEdit(m){var isNew=!m;m=m||{id:uid(),name:'',n:3,t:['08:00','14:00','
 /* dose alarm instants */
 function hmNext(hm,stepMin,now){var p=hm.split(':'),d=new Date(now);d.setHours(+p[0],+p[1],0,0);var at=d.getTime(),st=(stepMin||1440)*60000;if(at>now)at-=Math.ceil((at-now)/st)*st;while(at<=now)at+=st;return at}
 function medAlarms(){var out=[],now=Date.now();if(!noteTabs.some(function(t){return t.kind==='med'}))return out;
- MED.list.forEach(function(m){if(m.rep>0){if(m.ral)out.push({id:'med-'+m.id+'-r',text:'💊 '+m.name,hm:m.st||'08:00',rep:m.rep*60})}
-  else mSlots(m).forEach(function(s){if(s.al)out.push({id:'med-'+m.id+'-'+s.s,text:'💊 '+m.name+' · '+TR(SLOT[s.s])+' '+s.t,hm:s.t,rep:1440})})});
- out.forEach(function(a){a.at=hmNext(a.hm,a.rep,now)});return out}
+ var many=MED.persons.length>1;
+ MED.list.forEach(function(m){var pp=pFind(m.p),who=pp&&many?' — '+pName(pp):'';if(m.rep>0){if(m.ral)out.push({id:'med-'+m.id+'-r',text:'💊 '+m.name+who,hm:m.st||'08:00',rep:m.rep*60})}
+  else mSlots(m).forEach(function(s){if(s.al)out.push({id:'med-'+m.id+'-'+s.s,text:'💊 '+m.name+' · '+TR(SLOT[s.s])+' '+s.t+who,hm:s.t,rep:1440})})});
+ out.forEach(function(a){a.at=hmNext(a.hm,a.rep,now)});
+ Object.keys(MED.snz||{}).forEach(function(k){var z=MED.snz[k];if(z&&z.at>now)out.push({id:k+'-z',text:z.text,at:z.at,rep:0,snz:1})});return out}
+window.medSnooze=function(id,text){MED.snz=MED.snz||{};var now=Date.now();for(var k in MED.snz)if(!MED.snz[k]||MED.snz[k].at<now-6e5)delete MED.snz[k];MED.snz[String(id).replace(/-z$/,'')]={at:now+600000,text:text};medSave()};
 window.medSnap=function(){var t=(noteTabs.filter(function(x){return x.kind==='med'})[0]||{}).id||'';return medAlarms().map(function(a){return{id:a.id,tab:'__med',type:'med',title:a.text,text:a.text,upd:'',alarm:{at:a.at,rep:a.rep,until:null,snz:null}}})};
 /* in-page ring (web, or app on screen; native rings when the app is closed) */
 var fired={},boot=Date.now();
-function medTick(){if(DEMO)return;var now=Date.now();medAlarms().forEach(function(a){var last=a.at-a.rep*60000;if(last>boot&&now-last<5*60000&&!fired[a.id+last]){fired[a.id+last]=1;try{alFire({id:a.id,text:a.text},null)}catch(_){}}})}
+function medTick(){if(DEMO)return;var now=Date.now();
+ Object.keys(MED.snz||{}).forEach(function(k){var z=MED.snz[k];if(z&&z.at<=now){delete MED.snz[k];LS.set('ns_med',MED);if(now-z.at<5*60000)try{alFire({id:k+'-z',text:z.text,med:1},null)}catch(_){}}});
+ medAlarms().forEach(function(a){if(a.snz)return;var last=a.at-a.rep*60000;if(last>boot&&now-last<5*60000&&!fired[a.id+last]){fired[a.id+last]=1;try{alFire({id:a.id,text:a.text,med:1},null)}catch(_){}}})}
 setInterval(medTick,15000);
 /* ---- render into the notes page ---- */
 window.spRender=function(){var v=$('spView');if(!v)return;var k=kindOf(),srch=!!nFold(nQ).trim(),on=k&&!nTrash&&!srch&&!tbHidden(noteTab)&&!nFolder;
@@ -3282,7 +3304,9 @@ document.addEventListener('click',function(e){var v=$('spView');if(!v||!v.contai
  if(A==='tog'&&u){if(e.target.closest('.spgear'))return;UT.open[u.id]=UT.open[u.id]?0:1;if(!UT.open[u.id])delete UT.open[u.id];utSave();spRender()}
  else if(A==='cfg'&&u){e.stopPropagation();utCfg(u)}
  else if(A==='add'&&u)utRow(u);else if(A==='unew')utCfg(null);
- else if(A==='mnew')medEdit(null);
+ else if(A==='pnew')pCfg(null);
+ else if((A==='ptog'||A==='pcfg'||A==='mnew')&&a.closest('.mdper')){var pp=pFind(a.closest('.mdper').dataset.p);if(!pp)return;
+  if(A==='pcfg'){e.stopPropagation();pCfg(pp)}else if(A==='mnew')medEdit(null,pp.id);else{if(e.target.closest('.spgear'))return;MED.open[pp.id]=MED.open[pp.id]?0:1;if(!MED.open[pp.id])delete MED.open[pp.id];LS.set('ns_med',MED);spRender()}}
  else{var md=a.closest('.mdrow'),m=md&&MED.list.filter(function(x){return x.id===md.dataset.m})[0];if(!m)return;
   if(A==='medit')medEdit(m);else if(A==='mchk'){var c=mChk(m),i=+a.dataset.i;c.s[i]=!c.s[i];LS.set('ns_med',MED);spRender()}}});
 document.addEventListener('click',function(e){var v=$('spView');if(!v||!v.contains(e.target))return;var r=e.target.closest('.sprow');if(!r)return;var su=r.closest('.spsec'),u=su&&uFind(su.dataset.u);if(!u)return;var row=(u.rows||[]).filter(function(x){return x.id===r.dataset.r})[0];if(row)utRow(u,row)});
@@ -3292,7 +3316,7 @@ document.addEventListener('click',function(e){var v=$('spView');if(!v||!v.contai
 /* daily reset while open */
 setInterval(function(){if(kindOf()==='med'&&MED.list.some(function(m){return m.c&&m.c.d!==today()})){MED.list.forEach(mChk);LS.set('ns_med',MED);spRender()}},60000);
 /* notification tap ?open=med-… → Medicamente tab */
-var nl=nsLaunch;nsLaunch=function(u){try{var q=new URL(u,location.href).searchParams.get('open');if(q&&q.indexOf('med-')===0){var t=noteTabs.filter(function(x){return x.kind==='med'})[0];if(t){if($('noteFull').classList.contains('show'))fullClose();notesOpen();noteTab=t.id;nFolder='';saveNotes(true);renderNotes()}return}}catch(_){}return nl.apply(this,arguments)};
+var nl=nsLaunch;nsLaunch=function(u){try{var q=new URL(u,location.href).searchParams.get('open');if(q&&q.indexOf('med-')===0){var t=noteTabs.filter(function(x){return x.kind==='med'})[0];var mp=MED.list.filter(function(m){return m.id===q.split('-')[1]})[0];if(mp){MED.open[mp.p]=1;LS.set('ns_med',MED)}if(t){if($('noteFull').classList.contains('show'))fullClose();notesOpen();noteTab=t.id;nFolder='';saveNotes(true);renderNotes()}return}}catch(_){}return nl.apply(this,arguments)};
 spMigrate();renderNotes();
 })();
 window.NOTIS_BOOTED=true;
@@ -3341,7 +3365,7 @@ renderAbList();
 .al2>.field{flex:1;min-width:0}
 .mdrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(var(--lnR),.14)}
 .mdnm{flex:1;min-width:0;font-size:16.5px;color:var(--txt);cursor:pointer;overflow-wrap:anywhere}.mdrep{display:block;color:var(--mut);font-size:12px}
-.mddo{display:flex;gap:6px;flex:none}.mdd{display:flex;flex-direction:column;align-items:center;width:52px}
+.mddo{display:flex;gap:6px;flex:none}.mdrow.many{flex-wrap:wrap}.mdrow.many .mdnm{flex-basis:100%}.mdrow.many .mddo{width:100%;justify-content:space-between}.mdper .spbd{padding-left:4px}.mdd{display:flex;flex-direction:column;align-items:center;width:52px}
 .mdd small{font-size:11px;color:var(--mut);margin-top:3px;white-space:nowrap}
 .mdc{width:32px;height:32px;border-radius:50%;border:2px solid var(--cyan);background:transparent;cursor:pointer;padding:0;position:relative}
 .mdc.on{background:var(--cyan)}.mdc.on::after{content:"";position:absolute;left:10px;top:5px;width:7px;height:13px;border:solid #06121f;border-width:0 3px 3px 0;transform:rotate(45deg)}

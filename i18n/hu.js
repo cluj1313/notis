@@ -740,5 +740,11 @@ NOTIS_I18N={
 "Alarmă repetitivă o dată la": "Ismétlődő ébresztő ennyi óránként",
 "Prima doză la": "Első adag",
 "Ștergi medicamentul?": "Törlöd ezt a gyógyszert?",
+"Eu": "Én",
+"Persoană nouă": "Új személy",
+"Persoană": "Személy",
+"Ștergi persoana și medicamentele ei?": "Törlöd ezt a személyt és a gyógyszereit?",
+"Permite notificările și alarmele pentru Notis, ca să sune la timp": "Engedélyezd az értesítéseket és ébresztéseket a Notis számára, hogy időben szóljon",
+"Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?": "Xiaomin engedélyezd az „Automatikus indítás”-t a Notis számára, hogy az ébresztők zárt alkalmazásnál is szóljanak. Megnyitod a beállításokat?",
 "Medicamente": "Gyógyszerek"
 };

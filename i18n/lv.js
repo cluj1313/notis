@@ -740,5 +740,11 @@ NOTIS_I18N={
 "Alarmă repetitivă o dată la": "Atkārtots modinātājs ik pēc",
 "Prima doză la": "Pirmā deva plkst.",
 "Ștergi medicamentul?": "Dzēst šīs zāles?",
+"Eu": "Es",
+"Persoană nouă": "Jauna persona",
+"Persoană": "Persona",
+"Ștergi persoana și medicamentele ei?": "Dzēst šo personu un tās zāles?",
+"Permite notificările și alarmele pentru Notis, ca să sune la timp": "Atļaujiet Notis paziņojumus un modinātājus, lai tas zvanītu laikā",
+"Pe Xiaomi, permite „Pornire automată” pentru Notis, ca alarmele să sune cu aplicația închisă. Deschid setările?": "Xiaomi ierīcē atļaujiet Notis „Automātisko palaišanu”, lai modinātāji zvanītu arī ar aizvērtu lietotni. Atvērt iestatījumus?",
 "Medicamente": "Zāles"
 };
