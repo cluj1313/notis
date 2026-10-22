@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Ubat-ubatan",
 "Margine laterală": "Margin sisi",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Ketik 0 / 1. Masa adalah pilihan (tiada masa = tiada penggera).",
-"Alege cel puțin o doză": "Pilih sekurang-kurangnya satu dos"
+"Alege cel puțin o doză": "Pilih sekurang-kurangnya satu dos",
+"Zile de luat": "Hari pengambilan",
+"Început": "Mula"
 };

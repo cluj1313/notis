@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Ilaçe",
 "Margine laterală": "Mbushja anësore",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Prekni 0 / 1. Ora është opsionale (pa orë = pa alarm).",
-"Alege cel puțin o doză": "Zgjidhni të paktën një dozë"
+"Alege cel puțin o doză": "Zgjidhni të paktën një dozë",
+"Zile de luat": "Ditë marrjeje",
+"Început": "Fillimi"
 };

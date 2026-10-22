@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "الأدوية",
 "Margine laterală": "الهامش الجانبي",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "المس 0 / 1. الوقت اختياري (بدون وقت = بدون منبه).",
-"Alege cel puțin o doză": "اختر جرعة واحدة على الأقل"
+"Alege cel puțin o doză": "اختر جرعة واحدة على الأقل",
+"Zile de luat": "أيام العلاج",
+"Început": "البداية"
 };

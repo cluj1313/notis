@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Lääkkeet",
 "Margine laterală": "Sivumarginaali",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Napauta 0 / 1. Aika on valinnainen (ei aikaa = ei hälytystä).",
-"Alege cel puțin o doză": "Valitse vähintään yksi annos"
+"Alege cel puțin o doză": "Valitse vähintään yksi annos",
+"Zile de luat": "Ottopäivät",
+"Început": "Alku"
 };

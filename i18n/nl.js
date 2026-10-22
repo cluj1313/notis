@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Medicijnen",
 "Margine laterală": "Zijmarge",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Tik 0 / 1. Tijd is optioneel (geen tijd = geen alarm).",
-"Alege cel puțin o doză": "Kies minstens één dosis"
+"Alege cel puțin o doză": "Kies minstens één dosis",
+"Zile de luat": "Innamedagen",
+"Început": "Begin"
 };

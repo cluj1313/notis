@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "داروها",
 "Margine laterală": "حاشیه کناری",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "0 / 1 را لمس کنید. زمان اختیاری است (بدون زمان = بدون هشدار).",
-"Alege cel puțin o doză": "حداقل یک دوز انتخاب کنید"
+"Alege cel puțin o doză": "حداقل یک دوز انتخاب کنید",
+"Zile de luat": "روزهای مصرف",
+"Început": "شروع"
 };

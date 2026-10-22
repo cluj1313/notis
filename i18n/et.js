@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Ravimid",
 "Margine laterală": "Külgveeris",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Puuduta 0 / 1. Kellaaeg on valikuline (kellaajata = äratuseta).",
-"Alege cel puțin o doză": "Vali vähemalt üks annus"
+"Alege cel puțin o doză": "Vali vähemalt üks annus",
+"Zile de luat": "Võtmise päevad",
+"Început": "Algus"
 };

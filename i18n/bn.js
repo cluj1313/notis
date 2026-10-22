@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "ওষুধসমূহ",
 "Margine laterală": "পাশের মার্জিন",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "0 / 1 ট্যাপ করুন। সময় ঐচ্ছিক (সময় নেই = অ্যালার্ম নেই)।",
-"Alege cel puțin o doză": "অন্তত একটি ডোজ বেছে নিন"
+"Alege cel puțin o doză": "অন্তত একটি ডোজ বেছে নিন",
+"Zile de luat": "সেবনের দিন",
+"Început": "শুরু"
 };

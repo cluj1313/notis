@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "İlaçlar",
 "Margine laterală": "Yan kenar boşluğu",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "0 / 1'e dokunun. Saat isteğe bağlıdır (saat yok = alarm yok).",
-"Alege cel puțin o doză": "En az bir doz seçin"
+"Alege cel puțin o doză": "En az bir doz seçin",
+"Zile de luat": "Kullanım günü",
+"Început": "Başlangıç"
 };

@@ -749,6 +749,8 @@ NOTIS_I18N={
 "Medicamente": "Medicines",
 "Margine laterală": "Side margin",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Tap 0 / 1. Time is optional (no time = no alarm).",
-"Alege cel puțin o doză": "Choose at least one dose"
+"Alege cel puțin o doză": "Choose at least one dose",
+"Zile de luat": "Days to take",
+"Început": "Start"
 };
 NOTIS_I18N_RX=[[/\b1 (notes|folders)\b/g,function(m,w){return '1 '+w.slice(0,-1)}]];

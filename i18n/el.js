@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Φάρμακα",
 "Margine laterală": "Πλευρικό περιθώριο",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Πατήστε 0 / 1. Η ώρα είναι προαιρετική (χωρίς ώρα = χωρίς ξυπνητήρι).",
-"Alege cel puțin o doză": "Επιλέξτε τουλάχιστον μία δόση"
+"Alege cel puțin o doză": "Επιλέξτε τουλάχιστον μία δόση",
+"Zile de luat": "Ημέρες λήψης",
+"Început": "Έναρξη"
 };

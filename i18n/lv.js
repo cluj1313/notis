@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Zāles",
 "Margine laterală": "Sānu mala",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Pieskarieties 0 / 1. Laiks nav obligāts (bez laika = bez modinātāja).",
-"Alege cel puțin o doză": "Izvēlieties vismaz vienu devu"
+"Alege cel puțin o doză": "Izvēlieties vismaz vienu devu",
+"Zile de luat": "Lietošanas dienas",
+"Început": "Sākums"
 };

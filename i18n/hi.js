@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "दवाइयाँ",
 "Margine laterală": "किनारे का मार्जिन",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "0 / 1 टैप करें। समय वैकल्पिक है (समय नहीं = अलार्म नहीं)।",
-"Alege cel puțin o doză": "कम से कम एक खुराक चुनें"
+"Alege cel puțin o doză": "कम से कम एक खुराक चुनें",
+"Zile de luat": "लेने के दिन",
+"Început": "शुरुआत"
 };

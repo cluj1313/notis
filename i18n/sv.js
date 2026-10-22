@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Läkemedel",
 "Margine laterală": "Sidomarginal",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Tryck 0 / 1. Tid är valfri (ingen tid = inget alarm).",
-"Alege cel puțin o doză": "Välj minst en dos"
+"Alege cel puțin o doză": "Välj minst en dos",
+"Zile de luat": "Dagar att ta",
+"Început": "Start"
 };

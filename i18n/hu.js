@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Gyógyszerek",
 "Margine laterală": "Oldalsó margó",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Koppints: 0 / 1. Az időpont nem kötelező (nincs időpont = nincs ébresztő).",
-"Alege cel puțin o doză": "Válassz legalább egy adagot"
+"Alege cel puțin o doză": "Válassz legalább egy adagot",
+"Zile de luat": "Szedési napok",
+"Început": "Kezdés"
 };

@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "Zdravila",
 "Margine laterală": "Stranski rob",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "Tapnite 0 / 1. Čas ni obvezen (brez časa = brez alarma).",
-"Alege cel puțin o doză": "Izberite vsaj en odmerek"
+"Alege cel puțin o doză": "Izberite vsaj en odmerek",
+"Zile de luat": "Dnevi jemanja",
+"Început": "Začetek"
 };

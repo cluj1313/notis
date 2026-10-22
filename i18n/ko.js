@@ -749,5 +749,7 @@ NOTIS_I18N={
 "Medicamente": "약",
 "Margine laterală": "측면 여백",
 "Atinge 0 / 1. Ora e opțională (fără oră = fără alarmă).": "0 / 1을 탭하세요. 시간은 선택 사항입니다(시간 없음 = 알람 없음).",
-"Alege cel puțin o doză": "최소 한 번의 복용을 선택하세요"
+"Alege cel puțin o doză": "최소 한 번의 복용을 선택하세요",
+"Zile de luat": "복용 일수",
+"Început": "시작"
 };
