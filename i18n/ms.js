@@ -266,6 +266,7 @@ NOTIS_I18N={
 "Fundal VIP": "Latar belakang VIP",
 "întunecat ↔ luminos": "gelap ↔ Cerah",
 "Exemple pentru utilizatori noi": "Contoh untuk pengguna baru",
+"Cum funcționează": "Cara ia berfungsi",
 "Resetează exemplele": "Set semula contoh",
 "Fundal": "Latar Belakang",
 "Fără imagine": "Tiada gambar",

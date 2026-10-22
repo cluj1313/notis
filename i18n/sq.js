@@ -266,6 +266,7 @@ NOTIS_I18N={
 "Fundal VIP": "Përmbledhje VIP",
 "întunecat ↔ luminos": "të errët ↔ të ndritshme",
 "Exemple pentru utilizatori noi": "Shembuj për përdoruesit e rinj",
+"Cum funcționează": "Si funksionon",
 "Resetează exemplele": "Përshkrimi i shembujve",
 "Fundal": "Përmbledhje",
 "Fără imagine": "Asnjë imazh",

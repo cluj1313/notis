@@ -266,6 +266,7 @@ NOTIS_I18N={
 "Fundal VIP": "Фон VIP",
 "întunecat ↔ luminos": "тёмный ↔ светлый",
 "Exemple pentru utilizatori noi": "Примеры для новых пользователей",
+"Cum funcționează": "Как это работает",
 "Resetează exemplele": "Сбросить примеры",
 "Fundal": "Фон",
 "Fără imagine": "Без картинки",

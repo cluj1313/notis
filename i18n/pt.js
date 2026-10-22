@@ -266,6 +266,7 @@ NOTIS_I18N={
 "Fundal VIP": "História VIP",
 "întunecat ↔ luminos": "escuro ↔ brilhante",
 "Exemple pentru utilizatori noi": "Exemplos para novos utilizadores",
+"Cum funcționează": "Como funciona",
 "Resetează exemplele": "Reiniciar exemplos",
 "Fundal": "História",
 "Fără imagine": "Nenhuma imagem",
