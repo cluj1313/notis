@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "אופן הנטילה",
 "Atenție": "זהירות",
 "Tratament nou": "טיפול חדש",
-"Ștergi tratamentul?": "למחוק את הטיפול?"
+"Ștergi tratamentul?": "למחוק את הטיפול?",
+"Distribuie": "שיתוף",
+"Importă notița": "ייבוא הפתק",
+"Notiță importată": "הפתק יובא"
 };

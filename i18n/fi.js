@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "Miten otetaan",
 "Atenție": "Huomio",
 "Tratament nou": "Uusi hoito",
-"Ștergi tratamentul?": "Poistetaanko hoito?"
+"Ștergi tratamentul?": "Poistetaanko hoito?",
+"Distribuie": "Jaa",
+"Importă notița": "Tuo muistiinpano",
+"Notiță importată": "Muistiinpano tuotu"
 };

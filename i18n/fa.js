@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "نحوه مصرف",
 "Atenție": "هشدار",
 "Tratament nou": "درمان جدید",
-"Ștergi tratamentul?": "درمان حذف شود؟"
+"Ștergi tratamentul?": "درمان حذف شود؟",
+"Distribuie": "اشتراک‌گذاری",
+"Importă notița": "وارد کردن یادداشت",
+"Notiță importată": "یادداشت وارد شد"
 };

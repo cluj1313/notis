@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "Kuidas võtta",
 "Atenție": "Tähelepanu",
 "Tratament nou": "Uus ravi",
-"Ștergi tratamentul?": "Kas kustutada ravi?"
+"Ștergi tratamentul?": "Kas kustutada ravi?",
+"Distribuie": "Jaga",
+"Importă notița": "Impordi märge",
+"Notiță importată": "Märge imporditud"
 };

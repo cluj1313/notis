@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "Cómo se toma",
 "Atenție": "Atención",
 "Tratament nou": "Tratamiento nuevo",
-"Ștergi tratamentul?": "¿Eliminar el tratamiento?"
+"Ștergi tratamentul?": "¿Eliminar el tratamiento?",
+"Distribuie": "Compartir",
+"Importă notița": "Importar la nota",
+"Notiță importată": "Nota importada"
 };

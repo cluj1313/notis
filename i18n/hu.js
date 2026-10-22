@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "Hogyan kell szedni",
 "Atenție": "Figyelem",
 "Tratament nou": "Új kezelés",
-"Ștergi tratamentul?": "Törlöd a kezelést?"
+"Ștergi tratamentul?": "Törlöd a kezelést?",
+"Distribuie": "Megosztás",
+"Importă notița": "Jegyzet importálása",
+"Notiță importată": "Jegyzet importálva"
 };

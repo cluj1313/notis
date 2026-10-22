@@ -775,5 +775,8 @@ NOTIS_I18N={
 "Cum se administrează": "Nasıl alınır",
 "Atenție": "Dikkat",
 "Tratament nou": "Yeni tedavi",
-"Ștergi tratamentul?": "Tedavi silinsin mi?"
+"Ștergi tratamentul?": "Tedavi silinsin mi?",
+"Distribuie": "Paylaş",
+"Importă notița": "Notu içe aktar",
+"Notiță importată": "Not içe aktarıldı"
 };
