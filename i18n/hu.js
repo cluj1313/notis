@@ -767,5 +767,13 @@ NOTIS_I18N={
 "⏰ Reamintire": "⏰ Emlékeztető",
 "Notă (opțional)": "Megjegyzés (nem kötelező)",
 "L": "H",
-"z": "n"
+"z": "n",
+"Folosite": "Használt",
+"Nefolosite încă": "Még nem használt",
+"Tratamente alternative": "Alternatív kezelések",
+"Simptome": "Tünetek",
+"Cum se administrează": "Hogyan kell szedni",
+"Atenție": "Figyelem",
+"Tratament nou": "Új kezelés",
+"Ștergi tratamentul?": "Törlöd a kezelést?"
 };

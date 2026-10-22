@@ -767,5 +767,13 @@ NOTIS_I18N={
 "⏰ Reamintire": "⏰ Påminnelse",
 "Notă (opțional)": "Notat (valgfritt)",
 "L": "M",
-"z": "d"
+"z": "d",
+"Folosite": "Brukt",
+"Nefolosite încă": "Ikke brukt ennå",
+"Tratamente alternative": "Alternative behandlinger",
+"Simptome": "Symptomer",
+"Cum se administrează": "Slik tas det",
+"Atenție": "Advarsel",
+"Tratament nou": "Ny behandling",
+"Ștergi tratamentul?": "Slette behandlingen?"
 };
