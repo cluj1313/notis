@@ -5685,13 +5685,14 @@ document.addEventListener('change',function(e){var s=e.target;if(!s.classList||!
 /* ---- Parole: tap anywhere on the locked screen = fingerprint prompt ---- */
 document.addEventListener('click',function(e){var lk=e.target.closest&&e.target.closest('#spView .pwlk');if(!lk||e.target.closest('button,a,input,select,textarea,[data-pa]'))return;var b=lk.querySelector('[data-pa=bio]');if(b&&lk.dataset.bio2==='1')b.click();else{var i=lk.querySelector('input[type=password],input');if(i)i.focus()}});
 /* ---- Medicamente: header fixed, only the day list scrolls (inner container), today centred ---- */
-var MDS={};
+var MDS={};function mdTK(){try{if(typeof dkey==='function')return dkey()}catch(_){}var d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function mdFit(){var v=$('spView');if(!v)return;var L=v.querySelectorAll('.spmed:not(.mdlib) .mdlist');if(!L.length){MDS={};return}var vh=window.innerHeight||640,bb=0;try{var nav=document.querySelector('#bnav,.bnav,#bottomNav,nav.tabbar');if(nav&&nav.getClientRects().length&&getComputedStyle(nav).position==='fixed')bb=nav.getBoundingClientRect().height}catch(_){}
  L.forEach(function(l){var sec=l.closest('.spbd'),per=l.closest('.mdper'),key=(per&&per.dataset.p)||'',tail=0;if(sec){var aft=false;[].forEach.call(sec.children,function(c){if(c===l){aft=true;return}if(aft)tail+=c.getBoundingClientRect().height+6})}
   var nx=per&&per.nextElementSibling,ex=0;while(nx){ex+=nx.getBoundingClientRect().height;nx=nx.nextElementSibling}var h=Math.max(170,Math.floor(vh-Math.max(0,l.getBoundingClientRect().top)-tail-Math.min(ex,90)-bb-10));l.style.maxHeight=h+'px';
-  var st=MDS[key+'|'+today()];if(st!=null)l.scrollTop=st;else{var t=l.querySelector('.mdday.mdtoday');if(t){l.scrollTop=Math.max(0,t.offsetTop-l.offsetTop-(l.clientHeight-t.offsetHeight)/2)}}
-  l.addEventListener('scroll',function(){MDS[key+'|'+today()]=l.scrollTop},{passive:true})})}
+  var st=MDS[key+'|'+mdTK()];if(st!=null)l.scrollTop=st;else{var t=l.querySelector('.mdday.mdtoday');if(t){l.scrollTop=Math.max(0,t.offsetTop-l.offsetTop-(l.clientHeight-t.offsetHeight)/2)}}
+  if(!l.__mdf){l.__mdf=1;l.addEventListener('scroll',function(){MDS[key+'|'+mdTK()]=l.scrollTop},{passive:true})}})}
 window.__mdFit=mdFit;
+(function(){var q=0;function w(){var v=$('spView');if(!v||v.__mdo||!window.MutationObserver)return;v.__mdo=1;new MutationObserver(function(){if(q)return;var f=v.querySelector('.spmed:not(.mdlib) .mdlist');if(!f||f.__mdf)return;q=1;Promise.resolve().then(function(){q=0;try{mdFit()}catch(_){}})}).observe(v,{childList:true,subtree:true})}try{w()}catch(_){}setTimeout(function(){try{w()}catch(_){}},400)})();
 /* ---- quick settings per tab (ns_tabstyle {tabId:{fs,c,lh}}) ---- */
 function TS(){var o=LS.get('ns_tabstyle',null);return o&&typeof o==='object'?o:{}}
 function tsApply(){var pg=$('notesPg');if(!pg)return;var s=TS()[noteTab]||{};pg.classList.toggle('tsF',!!s.fs);pg.classList.toggle('tsC',!!s.c);pg.classList.toggle('tsL',!!s.lh);
