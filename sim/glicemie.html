@@ -31,6 +31,11 @@ details[open] summary .cv{transform:rotate(180deg)}
 input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px 12px;font:inherit;font-size:15px;margin-bottom:8px}
 .gi{display:flex;justify-content:space-between;padding:6px 6px;border-bottom:1px solid var(--line);font-size:15px}.gi span:last-child{min-width:44px;text-align:right}
 .af{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);padding:6px 0 30px}.af select{background:#161c26;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit}
+th{white-space:nowrap!important;padding:6px 12px}td.v{padding:5px 12px 6px;min-width:96px}
+td.v .n{display:block;line-height:1.2}td.v .n u{text-decoration:none;font-size:11px;color:var(--dim);margin-left:3px}
+.bar{position:relative;height:3px;border-radius:2px;margin:4px 0 1px;background:linear-gradient(90deg,#ef4444 0 11.54%,#22c55e 11.54% 38.46%,#eab308 38.46% 53.85%,#f97316 53.85% 80.77%,#ef4444 80.77% 100%)}
+.bar.e{opacity:.22}.bar i{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+td.v:empty::after{content:none}
 </style></head><body>
 <div class="ban">SIMULARE – date fictive, doar exemplu. Nu e aplicația reală.</div>
 <div class="top"><span class="lg">NOTIS</span><span style="color:var(--dim);font-size:14px">· Medicamente</span></div>
@@ -58,10 +63,11 @@ var MS=[-1,0,1].map(function(o){return new Date(today.getFullYear(),today.getMon
 var OPEN={};OPEN[today.getFullYear()+'-'+today.getMonth()]=1;
 function days(m){var o=[],e=new Date(m.getFullYear(),m.getMonth()+1,0);for(var d=new Date(m);d<=e;d.setDate(d.getDate()+1)){var dd=new Date(d);if(dd<start)continue;if(dd>today&&m<=today)break;if(!V[key(dd)])V[key(dd)]=[null,null,null,null,null,null,null];o.push(dd)}return o}
 function mname(m){return LU[m.getMonth()].replace(/^./,function(c){return c.toUpperCase()})+' '+m.getFullYear()}
+function cell(x){if(x==null)return'<span class="n" style="color:#4b5563">–</span><div class="bar e"></div>';var pc=(Math.max(40,Math.min(300,x))-40)/260*100;return'<span class="n">'+x+'<u>mg/dl</u></span><div class="bar"><i style="left:'+pc.toFixed(1)+'%"></i></div>'}
 function renderT(){var h='';MS.forEach(function(m){var k=m.getFullYear()+'-'+m.getMonth(),op=!!OPEN[k],ds=days(m),fut=m>today;
  h+='<div class="mon'+(op?' open':'')+'" data-k="'+k+'"><div class="mh">'+mname(m)+'<span><small>'+(fut?'viitoare · ':'')+ds.length+' zile</small> <span class="cv">⌄</span></span></div>';
  if(op){h+='<div class="mb"><div class="tw"><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';
-  ds.forEach(function(d){var v=V[key(d)];h+='<tr'+(+d===+today?' class="today"':'')+'><td>'+fmt(d)+'</td>'+v.map(function(x,j){return'<td class="v '+cl(x)+'" data-k="'+key(d)+'" data-j="'+j+'">'+(x==null?'':x)+'</td>'}).join('')+'</tr>'});
+  ds.forEach(function(d){var v=V[key(d)];h+='<tr'+(+d===+today?' class="today"':'')+'><td>'+fmt(d)+'</td>'+v.map(function(x,j){return'<td class="v '+cl(x)+'" data-k="'+key(d)+'" data-j="'+j+'">'+cell(x)+'</td>'}).join('')+'</tr>'});
   h+='</table></div></div>'}h+='</div>'});document.getElementById('months').innerHTML=h}
 document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){var k=mh.parentNode.dataset.k;if(OPEN[k])delete OPEN[k];else OPEN[k]=1;renderT();return}
  var t=e.target.closest('td.v');if(t){var v=V[t.dataset.k],j=+t.dataset.j,dp=t.dataset.k.split('-');var n=prompt(fmt(new Date(dp[0],dp[1]-1,dp[2]))+'\n'+COLS[j]+' (mg/dl):',v[j]==null?'':v[j]);if(n===null)return;n=n.trim();v[j]=n===''?null:Math.max(0,Math.min(600,parseInt(n,10)||0));renderT();renderC()}});
