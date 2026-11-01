@@ -9,7 +9,7 @@ b,strong,th{font-weight:400}
 .top{display:flex;align-items:center;gap:10px;padding:10px 12px}.top .lg{font-size:22px;letter-spacing:4px;color:#cfe}
 .pills{display:flex;gap:8px;overflow-x:auto;padding:4px 12px 10px;scrollbar-width:none}.pills::-webkit-scrollbar{display:none}
 .pill{flex:0 0 auto;border:1px solid var(--line);background:#1a212c;color:var(--txt);border-radius:22px;padding:7px 16px;font:inherit;font-size:16px}
-.pill.on{background:rgba(45,212,191,.18);border-color:var(--ac);color:var(--ac);box-shadow:0 0 12px rgba(45,212,191,.35)}
+.pill:active{opacity:.7}.pill.on{background:rgba(45,212,191,.18);border-color:var(--ac);color:var(--ac);box-shadow:0 0 12px rgba(45,212,191,.35)}
 .card{background:rgba(22,28,38,.92);border:1px solid var(--line);border-radius:16px;margin:0 10px 12px;padding:10px}
 h2{font-weight:300;font-size:19px;margin:2px 4px 8px;color:#dff}
 .mh{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px solid var(--line);cursor:pointer;font-size:20px;text-transform:capitalize}
@@ -36,7 +36,7 @@ input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--t
 <div class="top"><span class="lg">NOTIS</span><span style="color:var(--dim);font-size:14px">· Medicamente</span></div>
 <div class="pills"><button class="pill">Pastile 💊</button><button class="pill on">Glicemie</button><button class="pill">Naturiste</button><button class="pill">+</button></div>
 
-<div class="card"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare ca s-o editezi</span></h2><div id="months"></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare</span></h2><button class="pill" id="exb" style="font-size:14px;padding:5px 12px">Export ⤓</button></div><div id="exm" style="display:none;border:1px solid var(--line);border-radius:12px;padding:8px;margin:0 2px 8px;background:#10161f;font-size:15px"><div style="margin-bottom:6px"><label><input type="radio" name="sc" value="open" checked> Luna deschisă</label> &nbsp; <label><input type="radio" name="sc" value="all"> Toate lunile</label></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="xcsv">CSV</button><button class="pill" id="xhtml">Tabel HTML</button><button class="pill" id="xpdf">Printează / PDF</button><button class="pill" id="xsh">Trimite</button></div><div id="xmsg" style="font-size:12px;color:var(--dim);margin-top:6px"></div></div><div id="months"></div></div>
 
 <div class="card"><h2>Grafic</h2><div class="chw" id="chw"><svg id="ch"></svg></div>
 <div class="lg2"><span><i style="background:#16a34a"></i>70–140</span><span><i style="background:#ca8a04"></i>140–180</span><span><i style="background:#ea580c"></i>180–250</span><span><i style="background:#dc2626"></i>&gt;250 / &lt;70</span></div>
@@ -44,23 +44,41 @@ input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--t
 
 <div class="card" style="padding:0 10px"><details><summary>Indice glicemic produse <span class="cv">⌄</span></summary><input class="s" id="q" placeholder="Caută produs…"><div id="gil"></div><div style="height:8px"></div></details></div>
 
-<div class="af">Afișează <select><option>Toate trei</option><option>Două</option><option>Una</option></select></div>
 <script>
 var COLS=['Dimineață (pe nemâncate)','La 2 ore după micul dejun','Înainte de prânz','La 2 ore după prânz','Înainte de cină','La 2 ore după cină','Înainte de culcare'];
 var ZI=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'],LU=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
 var today=new Date();today.setHours(0,0,0,0);var start=new Date(today);start.setDate(start.getDate()-20);
-var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
-var D=[];for(var d=new Date(start);d<=today;d.setDate(d.getDate()+1)){var r={d:new Date(d),v:[]};var base=[105,165,115,170,118,160,125];for(var i=0;i<7;i++){var x=Math.round(base[i]+(rnd()-.5)*90);if(rnd()<.18)x=null;if(+d===+today&&i>2)x=null;r.v.push(x)}D.push(r)}
 function cl(v){return v==null?'':v<70||v>250?'r':v>180?'o':v>140?'y':'g'}
 function p2(n){return(n<10?'0':'')+n}
 function fmt(d){return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear()+' - '+ZI[d.getDay()]}
-function renderT(){var by={},ord=[];D.forEach(function(r,ix){var k=r.d.getFullYear()+'-'+r.d.getMonth();if(!by[k]){by[k]=[];ord.push(k)}by[k].push(ix)});
- var h='';ord.reverse().forEach(function(k,mi){var a=by[k],m=D[a[0]].d;var cur=m.getMonth()===today.getMonth()&&m.getFullYear()===today.getFullYear();
-  h+='<div class="mon'+(cur?' open':'')+'"><div class="mh">'+LU[m.getMonth()]+' '+m.getFullYear()+'<span><small>'+a.length+' zile</small> <span class="cv">⌄</span></span></div><div class="mb"><div class="tw"><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';
-  a.forEach(function(ix){var r=D[ix];h+='<tr'+(+r.d===+today?' class="today"':'')+'><td>'+fmt(r.d)+'</td>'+r.v.map(function(v,j){return'<td class="v '+cl(v)+'" data-i="'+ix+'" data-j="'+j+'">'+(v==null?'':v)+'</td>'}).join('')+'</tr>'});
-  h+='</table></div></div></div>'});document.getElementById('months').innerHTML=h}
-document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){mh.parentNode.classList.toggle('open');return}
- var t=e.target.closest('td.v');if(t){var r=D[+t.dataset.i],j=+t.dataset.j;var n=prompt(fmt(r.d)+'\n'+COLS[j]+' (mg/dl):',r.v[j]==null?'':r.v[j]);if(n===null)return;n=n.trim();r.v[j]=n===''?null:Math.max(0,Math.min(600,parseInt(n,10)||0));renderT();renderC()}});
+var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
+function key(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+var V={},D=[];for(var d=new Date(start);d<=today;d.setDate(d.getDate()+1)){var r={d:new Date(d),v:[]};var base=[105,165,115,170,118,160,125];for(var i=0;i<7;i++){var x=Math.round(base[i]+(rnd()-.5)*90);if(rnd()<.18)x=null;if(+d===+today&&i>2)x=null;r.v.push(x)}D.push(r);V[key(r.d)]=r.v}
+var MS=[-1,0,1].map(function(o){return new Date(today.getFullYear(),today.getMonth()+o,1)});
+var openM=today.getFullYear()+'-'+today.getMonth();
+function days(m){var o=[],e=new Date(m.getFullYear(),m.getMonth()+1,0);for(var d=new Date(m);d<=e;d.setDate(d.getDate()+1)){var dd=new Date(d);if(dd<start)continue;if(dd>today&&m<=today)break;if(!V[key(dd)])V[key(dd)]=[null,null,null,null,null,null,null];o.push(dd)}return o}
+function mname(m){return LU[m.getMonth()].replace(/^./,function(c){return c.toUpperCase()})+' '+m.getFullYear()}
+function renderT(){var h='';MS.forEach(function(m){var k=m.getFullYear()+'-'+m.getMonth(),op=k===openM,ds=days(m),fut=m>today;
+ h+='<div class="mon'+(op?' open':'')+'" data-k="'+k+'"><div class="mh">'+mname(m)+'<span><small>'+(fut?'viitoare · ':'')+ds.length+' zile</small> <span class="cv">⌄</span></span></div>';
+ if(op){h+='<div class="mb"><div class="tw"><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';
+  ds.forEach(function(d){var v=V[key(d)];h+='<tr'+(+d===+today?' class="today"':'')+'><td>'+fmt(d)+'</td>'+v.map(function(x,j){return'<td class="v '+cl(x)+'" data-k="'+key(d)+'" data-j="'+j+'">'+(x==null?'':x)+'</td>'}).join('')+'</tr>'});
+  h+='</table></div></div>'}h+='</div>'});document.getElementById('months').innerHTML=h}
+document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){var k=mh.parentNode.dataset.k;openM=openM===k?null:k;renderT();return}
+ var t=e.target.closest('td.v');if(t){var v=V[t.dataset.k],j=+t.dataset.j,dp=t.dataset.k.split('-');var n=prompt(fmt(new Date(dp[0],dp[1]-1,dp[2]))+'\n'+COLS[j]+' (mg/dl):',v[j]==null?'':v[j]);if(n===null)return;n=n.trim();v[j]=n===''?null:Math.max(0,Math.min(600,parseInt(n,10)||0));renderT();renderC()}});
+function selM(){var sc=document.querySelector('input[name=sc]:checked').value;if(sc==='all')return MS.slice();var m=MS.filter(function(m){return m.getFullYear()+'-'+m.getMonth()===openM});return m.length?m:[new Date(today.getFullYear(),today.getMonth(),1)]}
+function ttl(ms){return 'Monitorizare Glicemie - '+(ms.length===1?mname(ms[0]):mname(ms[0])+' – '+mname(ms[ms.length-1]))}
+function fname(ms,ext){return ttl(ms).replace(/ – /g,'_').replace(/\s+/g,'_')+'.'+ext}
+function csv(ms){var q=function(x){return'"'+String(x).replace(/"/g,'""')+'"'};var L=[['Data'].concat(COLS).map(q).join(';')];ms.forEach(function(m){days(m).forEach(function(d){L.push([fmt(d)].concat(V[key(d)].map(function(x){return x==null?'':x})).map(q).join(';'))})});return '\ufeff'+L.join('\r\n')}
+function html(ms,pr){var b='';ms.forEach(function(m){b+='<h1>Monitorizare Glicemie - '+mname(m)+'</h1><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';days(m).forEach(function(d){b+='<tr><td>'+fmt(d)+'</td>'+V[key(d)].map(function(x){return'<td>'+(x==null?'':x)+'</td>'}).join('')+'</tr>'});b+='</table>'});
+ return '<!doctype html><html lang="ro"><head><meta charset="utf-8"><title>'+ttl(ms)+'</title><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300&display=swap" rel="stylesheet"><style>@page{size:A4 landscape;margin:10mm}body{font-family:Oswald,sans-serif;font-weight:300;color:#000}h1{font-weight:300;text-align:center;font-size:20px;margin:6px 0 8px}h1:not(:first-child){page-break-before:always}table{border-collapse:collapse;width:100%;font-size:12px}th,td{border:1px solid #000;padding:4px 5px;text-align:center;font-weight:300}th{background:#eee}td:first-child{text-align:left;white-space:nowrap}.ex{font-size:10px;text-align:center;color:#a00}</style></head><body><div class="ex">SIMULARE – date fictive</div>'+b+(pr?'<script>onload=function(){setTimeout(print,400)}<\/script>':'')+'</body></html>'}
+function dl(txt,type,fn){var u=URL.createObjectURL(new Blob([txt],{type:type}));var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},4000);msg('Descărcat: '+fn)}
+function msg(t){document.getElementById('xmsg').textContent=t}
+document.getElementById('exb').onclick=function(){var m=document.getElementById('exm');m.style.display=m.style.display==='none'?'block':'none'};
+document.getElementById('xcsv').onclick=function(){var ms=selM();dl(csv(ms),'text/csv;charset=utf-8',fname(ms,'csv'))};
+document.getElementById('xhtml').onclick=function(){var ms=selM();dl(html(ms),'text/html;charset=utf-8',fname(ms,'html'))};
+document.getElementById('xpdf').onclick=function(){var ms=selM();var w=window.open('','_blank');if(!w){msg('Pop-up blocat – folosește Tabel HTML');return}w.document.write(html(ms,1));w.document.close();msg('Alege „Salvează ca PDF" în dialogul de printare')};
+document.getElementById('xsh').onclick=function(){var ms=selM();var f=[new File([csv(ms)],fname(ms,'csv'),{type:'text/csv'}),new File([html(ms)],fname(ms,'html'),{type:'text/html'})];
+ if(navigator.canShare&&navigator.canShare({files:f}))navigator.share({files:f,title:ttl(ms)}).catch(function(){});else msg('Trimiterea nu e suportată aici – folosește CSV/HTML')};
 function renderC(){var pts=[];D.forEach(function(r,di){r.v.forEach(function(v,j){if(v!=null)pts.push({x:di+j/7,v:v})})});
  var H=220,pad=30,step=44,W=pad+D.length*step+20,y=function(v){return H-20-(Math.min(v,320)-40)/(320-40)*(H-40)};
  var s='';[[40,70,'#dc2626'],[70,140,'#16a34a'],[140,180,'#ca8a04'],[180,250,'#ea580c'],[250,320,'#dc2626']].forEach(function(b){s+='<rect x="'+pad+'" y="'+y(b[1])+'" width="'+(W-pad)+'" height="'+(y(b[0])-y(b[1]))+'" fill="'+b[2]+'" opacity=".22"/>'});
