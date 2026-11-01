@@ -36,7 +36,7 @@ input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--t
 <div class="top"><span class="lg">NOTIS</span><span style="color:var(--dim);font-size:14px">· Medicamente</span></div>
 <div class="pills"><button class="pill">Pastile 💊</button><button class="pill on">Glicemie</button><button class="pill">Naturiste</button><button class="pill">+</button></div>
 
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare</span></h2><button class="pill" id="exb" style="font-size:14px;padding:5px 12px">Export ⤓</button></div><div id="exm" style="display:none;border:1px solid var(--line);border-radius:12px;padding:8px;margin:0 2px 8px;background:#10161f;font-size:15px"><div style="margin-bottom:6px"><label><input type="radio" name="sc" value="open" checked> Luna deschisă</label> &nbsp; <label><input type="radio" name="sc" value="all"> Toate lunile</label></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="xcsv">CSV</button><button class="pill" id="xhtml">Tabel HTML</button><button class="pill" id="xpdf">Printează / PDF</button><button class="pill" id="xsh">Trimite</button></div><div id="xmsg" style="font-size:12px;color:var(--dim);margin-top:6px"></div></div><div id="months"></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare</span></h2><button class="pill" id="exb" style="font-size:14px;padding:5px 12px">Export ⤓</button></div><div id="exm" style="display:none;border:1px solid var(--line);border-radius:12px;padding:8px;margin:0 2px 8px;background:#10161f;font-size:15px"><div style="margin-bottom:6px"><label><input type="radio" name="sc" value="open" checked> Lunile deschise</label> &nbsp; <label><input type="radio" name="sc" value="all"> Toate lunile</label></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="xcsv">CSV</button><button class="pill" id="xhtml">Tabel HTML</button><button class="pill" id="xpdf">Printează / PDF</button><button class="pill" id="xsh">Trimite</button></div><div id="xmsg" style="font-size:12px;color:var(--dim);margin-top:6px"></div></div><div style="display:flex;justify-content:flex-end;gap:14px;font-size:12.5px;margin:-2px 4px 2px"><a id="oa" style="color:var(--ac);opacity:.8;cursor:pointer">Deschide toate</a><a id="ca" style="color:var(--dim);cursor:pointer">Închide toate</a></div><div id="months"></div></div>
 
 <div class="card"><h2>Grafic</h2><div class="chw" id="chw"><svg id="ch"></svg></div>
 <div class="lg2"><span><i style="background:#16a34a"></i>70–140</span><span><i style="background:#ca8a04"></i>140–180</span><span><i style="background:#ea580c"></i>180–250</span><span><i style="background:#dc2626"></i>&gt;250 / &lt;70</span></div>
@@ -55,17 +55,17 @@ var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
 function key(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
 var V={},D=[];for(var d=new Date(start);d<=today;d.setDate(d.getDate()+1)){var r={d:new Date(d),v:[]};var base=[105,165,115,170,118,160,125];for(var i=0;i<7;i++){var x=Math.round(base[i]+(rnd()-.5)*90);if(rnd()<.18)x=null;if(+d===+today&&i>2)x=null;r.v.push(x)}D.push(r);V[key(r.d)]=r.v}
 var MS=[-1,0,1].map(function(o){return new Date(today.getFullYear(),today.getMonth()+o,1)});
-var openM=today.getFullYear()+'-'+today.getMonth();
+var OPEN={};OPEN[today.getFullYear()+'-'+today.getMonth()]=1;
 function days(m){var o=[],e=new Date(m.getFullYear(),m.getMonth()+1,0);for(var d=new Date(m);d<=e;d.setDate(d.getDate()+1)){var dd=new Date(d);if(dd<start)continue;if(dd>today&&m<=today)break;if(!V[key(dd)])V[key(dd)]=[null,null,null,null,null,null,null];o.push(dd)}return o}
 function mname(m){return LU[m.getMonth()].replace(/^./,function(c){return c.toUpperCase()})+' '+m.getFullYear()}
-function renderT(){var h='';MS.forEach(function(m){var k=m.getFullYear()+'-'+m.getMonth(),op=k===openM,ds=days(m),fut=m>today;
+function renderT(){var h='';MS.forEach(function(m){var k=m.getFullYear()+'-'+m.getMonth(),op=!!OPEN[k],ds=days(m),fut=m>today;
  h+='<div class="mon'+(op?' open':'')+'" data-k="'+k+'"><div class="mh">'+mname(m)+'<span><small>'+(fut?'viitoare · ':'')+ds.length+' zile</small> <span class="cv">⌄</span></span></div>';
  if(op){h+='<div class="mb"><div class="tw"><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';
   ds.forEach(function(d){var v=V[key(d)];h+='<tr'+(+d===+today?' class="today"':'')+'><td>'+fmt(d)+'</td>'+v.map(function(x,j){return'<td class="v '+cl(x)+'" data-k="'+key(d)+'" data-j="'+j+'">'+(x==null?'':x)+'</td>'}).join('')+'</tr>'});
   h+='</table></div></div>'}h+='</div>'});document.getElementById('months').innerHTML=h}
-document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){var k=mh.parentNode.dataset.k;openM=openM===k?null:k;renderT();return}
+document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){var k=mh.parentNode.dataset.k;if(OPEN[k])delete OPEN[k];else OPEN[k]=1;renderT();return}
  var t=e.target.closest('td.v');if(t){var v=V[t.dataset.k],j=+t.dataset.j,dp=t.dataset.k.split('-');var n=prompt(fmt(new Date(dp[0],dp[1]-1,dp[2]))+'\n'+COLS[j]+' (mg/dl):',v[j]==null?'':v[j]);if(n===null)return;n=n.trim();v[j]=n===''?null:Math.max(0,Math.min(600,parseInt(n,10)||0));renderT();renderC()}});
-function selM(){var sc=document.querySelector('input[name=sc]:checked').value;if(sc==='all')return MS.slice();var m=MS.filter(function(m){return m.getFullYear()+'-'+m.getMonth()===openM});return m.length?m:[new Date(today.getFullYear(),today.getMonth(),1)]}
+function selM(){var sc=document.querySelector('input[name=sc]:checked').value;if(sc==='all')return MS.slice();var m=MS.filter(function(m){return OPEN[m.getFullYear()+'-'+m.getMonth()]});return m.length?m:[new Date(today.getFullYear(),today.getMonth(),1)]}
 function ttl(ms){return 'Monitorizare Glicemie - '+(ms.length===1?mname(ms[0]):mname(ms[0])+' – '+mname(ms[ms.length-1]))}
 function fname(ms,ext){return ttl(ms).replace(/ – /g,'_').replace(/\s+/g,'_')+'.'+ext}
 function csv(ms){var q=function(x){return'"'+String(x).replace(/"/g,'""')+'"'};var L=[['Data'].concat(COLS).map(q).join(';')];ms.forEach(function(m){days(m).forEach(function(d){L.push([fmt(d)].concat(V[key(d)].map(function(x){return x==null?'':x})).map(q).join(';'))})});return '\ufeff'+L.join('\r\n')}
@@ -91,5 +91,6 @@ var GI=[['Avocado',10],['Vânătă',20],['Banane coapte',60],['Banane necoapte',
 function nrm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function renderG(){var q=nrm(document.getElementById('q').value);document.getElementById('gil').innerHTML=GI.filter(function(g){return nrm(g[0]).indexOf(q)>=0}).map(function(g){var c=g[1]>=70?'r':g[1]>=56?'y':'g';return'<div class="gi"><span>'+g[0]+'</span><span class="'+c+'">'+g[1]+'</span></div>'}).join('')||'<div class="gi" style="color:#9aa7b6">Niciun produs</div>'}
 document.getElementById('q').addEventListener('input',renderG);
+document.getElementById('oa').onclick=function(){MS.forEach(function(m){OPEN[m.getFullYear()+'-'+m.getMonth()]=1});renderT()};document.getElementById('ca').onclick=function(){OPEN={};renderT()};
 renderT();renderC();renderG();
 </script></body></html>
