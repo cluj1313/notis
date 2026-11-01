@@ -33,7 +33,7 @@ input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--t
 .af{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);padding:6px 0 30px}.af select{background:#161c26;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit}
 th{white-space:nowrap!important;padding:6px 12px}td.v{padding:5px 12px 6px;min-width:96px}
 td.v .n{display:block;line-height:1.2}td.v .n u{text-decoration:none;font-size:11px;color:var(--dim);margin-left:3px}
-.bar{position:relative;height:3px;border-radius:2px;margin:4px 0 1px;background:linear-gradient(90deg,#ef4444 0 11.54%,#22c55e 11.54% 38.46%,#eab308 38.46% 53.85%,#f97316 53.85% 80.77%,#ef4444 80.77% 100%)}
+.bar{position:relative;height:3px;border-radius:2px;margin:4px 0 1px;background:linear-gradient(90deg,#eab308 0 11.54%,#22c55e 11.54% 38.46%,#f97316 38.46% 80.77%,#ef4444 80.77% 100%)}
 .bar.e{opacity:.22}.bar i{position:absolute;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.6)}
 td.v:empty::after{content:none}
 </style></head><body>
@@ -43,8 +43,8 @@ td.v:empty::after{content:none}
 
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare</span></h2><button class="pill" id="exb" style="font-size:14px;padding:5px 12px">Export ⤓</button></div><div id="exm" style="display:none;border:1px solid var(--line);border-radius:12px;padding:8px;margin:0 2px 8px;background:#10161f;font-size:15px"><div style="margin-bottom:6px"><label><input type="radio" name="sc" value="open" checked> Lunile deschise</label> &nbsp; <label><input type="radio" name="sc" value="all"> Toate lunile</label></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="pill" id="xcsv">CSV</button><button class="pill" id="xhtml">Tabel HTML</button><button class="pill" id="xpdf">Printează / PDF</button><button class="pill" id="xsh">Trimite</button></div><div id="xmsg" style="font-size:12px;color:var(--dim);margin-top:6px"></div></div><div style="display:flex;justify-content:flex-end;gap:14px;font-size:12.5px;margin:-2px 4px 2px"><a id="oa" style="color:var(--ac);opacity:.8;cursor:pointer">Deschide toate</a><a id="ca" style="color:var(--dim);cursor:pointer">Închide toate</a></div><div id="months"></div></div>
 
-<div class="card"><h2>Grafic</h2><div class="chw" id="chw"><svg id="ch"></svg></div>
-<div class="lg2"><span><i style="background:#16a34a"></i>70–140</span><span><i style="background:#ca8a04"></i>140–180</span><span><i style="background:#ea580c"></i>180–250</span><span><i style="background:#dc2626"></i>&gt;250 / &lt;70</span></div>
+<div class="card"><h2>Grafic</h2><div class="pills" id="per" style="padding:0 2px 8px;gap:6px"><button class="pill" data-p="1" style="font-size:13px;padding:4px 11px">1 zi</button><button class="pill on" data-p="7" style="font-size:13px;padding:4px 11px">1 săptămână</button><button class="pill" data-p="30" style="font-size:13px;padding:4px 11px">1 lună</button><button class="pill" data-p="90" style="font-size:13px;padding:4px 11px">3 luni</button><button class="pill" data-p="0" style="font-size:13px;padding:4px 11px">Total</button></div><div class="chw" id="chw"><svg id="ch"></svg></div>
+<div class="lg2"><span><i style="background:#ca8a04"></i>&lt;70</span><span><i style="background:#16a34a"></i>70–140</span><span><i style="background:#ea580c"></i>140–250</span><span><i style="background:#dc2626"></i>&gt;250</span></div>
 <div class="note">Pragurile sunt orientative, de exemplu. Se vor putea configura. NU sunt sfat medical.</div></div>
 
 <div class="card" style="padding:0 10px"><details><summary>Indice glicemic produse <span class="cv">⌄</span></summary><input class="s" id="q" placeholder="Caută produs…"><div id="gil"></div><div style="height:8px"></div></details></div>
@@ -53,7 +53,7 @@ td.v:empty::after{content:none}
 var COLS=['Dimineață (pe nemâncate)','La 2 ore după micul dejun','Înainte de prânz','La 2 ore după prânz','Înainte de cină','La 2 ore după cină','Înainte de culcare'];
 var ZI=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'],LU=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
 var today=new Date();today.setHours(0,0,0,0);var start=new Date(today);start.setDate(start.getDate()-20);
-function cl(v){return v==null?'':v<70||v>250?'r':v>180?'o':v>140?'y':'g'}
+function cl(v){return v==null?'':v<70?'y':v>250?'r':v>140?'o':'g'}
 function p2(n){return(n<10?'0':'')+n}
 function fmt(d){return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear()+' - '+ZI[d.getDay()]}
 var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
@@ -85,14 +85,20 @@ document.getElementById('xhtml').onclick=function(){var ms=selM();dl(html(ms),'t
 document.getElementById('xpdf').onclick=function(){var ms=selM();var w=window.open('','_blank');if(!w){msg('Pop-up blocat – folosește Tabel HTML');return}w.document.write(html(ms,1));w.document.close();msg('Alege „Salvează ca PDF" în dialogul de printare')};
 document.getElementById('xsh').onclick=function(){var ms=selM();var f=[new File([csv(ms)],fname(ms,'csv'),{type:'text/csv'}),new File([html(ms)],fname(ms,'html'),{type:'text/html'})];
  if(navigator.canShare&&navigator.canShare({files:f}))navigator.share({files:f,title:ttl(ms)}).catch(function(){});else msg('Trimiterea nu e suportată aici – folosește CSV/HTML')};
-function renderC(){var pts=[];D.forEach(function(r,di){r.v.forEach(function(v,j){if(v!=null)pts.push({x:di+j/7,v:v})})});
- var H=220,pad=30,step=44,W=pad+D.length*step+20,y=function(v){return H-20-(Math.min(v,320)-40)/(320-40)*(H-40)};
- var s='';[[40,70,'#dc2626'],[70,140,'#16a34a'],[140,180,'#ca8a04'],[180,250,'#ea580c'],[250,320,'#dc2626']].forEach(function(b){s+='<rect x="'+pad+'" y="'+y(b[1])+'" width="'+(W-pad)+'" height="'+(y(b[0])-y(b[1]))+'" fill="'+b[2]+'" opacity=".22"/>'});
- [70,140,180,250].forEach(function(v){s+='<text x="4" y="'+(y(v)+4)+'" fill="#9aa7b6" font-size="10">'+v+'</text>'});
- D.forEach(function(r,di){var x=pad+di*step;s+='<line x1="'+x+'" x2="'+x+'" y1="14" y2="'+(H-20)+'" stroke="rgba(255,255,255,.06)"/><text x="'+(x+2)+'" y="'+(H-6)+'" fill="#9aa7b6" font-size="10">'+p2(r.d.getDate())+'.'+p2(r.d.getMonth()+1)+'</text>'});
- var X=function(p){return pad+p.x*step};s+='<polyline fill="none" stroke="#2dd4bf" stroke-width="1.2" points="'+pts.map(function(p){return X(p)+','+y(p.v)}).join(' ')+'"/>';
- var C={g:'#4ade80',y:'#facc15',o:'#fb923c',r:'#f87171'};pts.forEach(function(p){s+='<circle cx="'+X(p)+'" cy="'+y(p.v)+'" r="3.2" fill="'+C[cl(p.v)]+'" stroke="#0d1117" stroke-width="1"/>'});
- var sv=document.getElementById('ch');sv.setAttribute('width',W);sv.setAttribute('height',H);sv.setAttribute('viewBox','0 0 '+W+' '+H);sv.innerHTML=s;var w=document.getElementById('chw');w.scrollLeft=w.scrollWidth}
+var PER=7,SH=['Dim.','+2h mic dej.','Înt. prânz','+2h prânz','Înt. cină','+2h cină','Culcare'];
+document.getElementById('per').addEventListener('click',function(e){var b=e.target.closest('[data-p]');if(!b)return;PER=+b.dataset.p;[].forEach.call(this.children,function(c){c.classList.toggle('on',c===b)});renderC()});
+function renderC(){var H=220,pad=30,y=function(v){return H-22-(Math.max(40,Math.min(v,320))-40)/(320-40)*(H-40)},C={g:'#4ade80',y:'#facc15',o:'#fb923c',r:'#f87171'};
+ var w=document.getElementById('chw'),cw=Math.max(300,w.clientWidth-2),pts=[],xl=[],W,s='';
+ if(PER===1){var v=V[key(today)]||[];W=cw;var st=(W-pad-14)/6;v.forEach(function(x,j){if(x!=null)pts.push({X:pad+8+j*st,v:x})});SH.forEach(function(t,j){xl.push([pad+8+j*st,t,1])})}
+ else{var dd=D.filter(function(r){return !PER||(today-r.d)/864e5<PER});var step=PER===7?Math.max(44,(cw-pad-20)/7):PER===30?40:PER===90?16:Math.max(16,Math.min(44,(cw-pad-20)/dd.length));W=Math.max(cw,pad+dd.length*step+20);
+  var lab=step<30?7:1;dd.forEach(function(r,di){r.v.forEach(function(x,j){if(x!=null)pts.push({X:pad+(di+j/7)*step,v:x})});xl.push([pad+di*step,di%lab?'':p2(r.d.getDate())+'.'+p2(r.d.getMonth()+1),0])})}
+ [[40,70,'#ca8a04'],[70,140,'#16a34a'],[140,250,'#ea580c'],[250,320,'#dc2626']].forEach(function(b){s+='<rect x="'+pad+'" y="'+y(b[1])+'" width="'+(W-pad)+'" height="'+(y(b[0])-y(b[1]))+'" fill="'+b[2]+'" opacity=".22"/>'});
+ [70,140,250].forEach(function(v){s+='<text x="4" y="'+(y(v)+4)+'" fill="#9aa7b6" font-size="10">'+v+'</text>'});
+ xl.forEach(function(l){s+='<line x1="'+l[0]+'" x2="'+l[0]+'" y1="14" y2="'+(H-22)+'" stroke="rgba(255,255,255,.06)"/>'+(l[1]?'<text x="'+l[0]+'" y="'+(H-7)+'" fill="#9aa7b6" font-size="'+(l[2]?9:10)+'" text-anchor="'+(l[2]?'middle':'start')+'">'+l[1]+'</text>':'')});
+ if(pts.length>1)s+='<polyline fill="none" stroke="#2dd4bf" stroke-width="1.2" points="'+pts.map(function(p){return p.X+','+y(p.v)}).join(' ')+'"/>';
+ pts.forEach(function(p){s+='<circle cx="'+p.X+'" cy="'+y(p.v)+'" r="3.2" fill="'+C[cl(p.v)]+'" stroke="#0d1117" stroke-width="1"/>'});
+ if(!pts.length)s+='<text x="'+(W/2)+'" y="'+(H/2)+'" fill="#9aa7b6" font-size="13" text-anchor="middle">Fără măsurători</text>';
+ var sv=document.getElementById('ch');sv.setAttribute('width',W);sv.setAttribute('height',H);sv.setAttribute('viewBox','0 0 '+W+' '+H);sv.innerHTML=s;w.scrollLeft=w.scrollWidth}
 var GI=[['Avocado',10],['Vânătă',20],['Banane coapte',60],['Banane necoapte',45],['Fasole albă',35],['Făină albă',85],['Orez alb',70],['Pandișpan',70],['Afine',25],['Bob fiert',80],['Bob necopt',40],['Zahăr brun',70],['Piersici',35],['Piersici conservă',55],['Chifle',70],['Sfeclă roșie crudă',30],['Ceapă',15],['Pâine secară albă',50],['Pâine integrală',65],['Pâine integrală cu făină albă',65],['Măr',35],['Suc de mere neîndulcit',50],['Mure',25],['Orz boabe',45],['Orez expandat',60],['Iaurt degresat',35],['Pâine de orez',70],['Pâine din făină albă',90],['Pâine de secară cu făină albă',65],['Năut fiert',30],['Năut conservat',35],['Zahăr',70],['Dovlecei',15],['Andive',15],['Fasole neagră',35],['Coacăze negre',15],['Ciocolată amăruie >70%',25],['Ciocolată amăruie >80%',20],['Cireșe',20],['Coacăze roșii',25],['Sfeclă roșie',30],['Orez roșu',55],['Usturoi',30],['Curmale uscate',70],['Pâine crocantă',70],['Macaroane chinezești',30],['Paste făinoase din făină albă',70],['Drojdie',35],['Dovleac',75],['Orez sălbatic',35],['Fasole albă/roșie/neagră',35],['Fasole mung/flageolet',25],['Fasole conservată',40],['Fasole verde',15],['Smochine uscate',40],['Smochine proaspete',35],['Fructoză',20],['Glucoză',100],['Rodie',35],['Grepfruit',30],['Mazăre verde',35],['Pară',30],['Hrișcă',40],['Ciuperci',15],['Humus',25],['Mere coapte',35],['Mere uscate',35],['Caise conservate',60],['Muesli neîndulcit',50],['Semințe in/susan/mac',35],['Nectarine',35],['Castraveți',15],['Măsline',15]];
 function nrm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
 function renderG(){var q=nrm(document.getElementById('q').value);document.getElementById('gil').innerHTML=GI.filter(function(g){return nrm(g[0]).indexOf(q)>=0}).map(function(g){var c=g[1]>=70?'r':g[1]>=56?'y':'g';return'<div class="gi"><span>'+g[0]+'</span><span class="'+c+'">'+g[1]+'</span></div>'}).join('')||'<div class="gi" style="color:#9aa7b6">Niciun produs</div>'}
