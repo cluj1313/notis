@@ -1,0 +1,77 @@
+<!doctype html><html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Notis – simulare Glicemie</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--card:#161c26;--line:rgba(255,255,255,.09);--txt:#e8eef5;--dim:#9aa7b6;--ac:#2dd4bf}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 600px at 50% -200px,#1d2a3a,#0d1117);color:var(--txt);font-family:Oswald,sans-serif;font-weight:300;letter-spacing:.2px;min-height:100vh}
+b,strong,th{font-weight:400}
+.ban{background:#3b2f08;color:#ffd77a;font-size:12.5px;text-align:center;padding:5px 8px}
+.top{display:flex;align-items:center;gap:10px;padding:10px 12px}.top .lg{font-size:22px;letter-spacing:4px;color:#cfe}
+.pills{display:flex;gap:8px;overflow-x:auto;padding:4px 12px 10px;scrollbar-width:none}.pills::-webkit-scrollbar{display:none}
+.pill{flex:0 0 auto;border:1px solid var(--line);background:#1a212c;color:var(--txt);border-radius:22px;padding:7px 16px;font:inherit;font-size:16px}
+.pill.on{background:rgba(45,212,191,.18);border-color:var(--ac);color:var(--ac);box-shadow:0 0 12px rgba(45,212,191,.35)}
+.card{background:rgba(22,28,38,.92);border:1px solid var(--line);border-radius:16px;margin:0 10px 12px;padding:10px}
+h2{font-weight:300;font-size:19px;margin:2px 4px 8px;color:#dff}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:10px 6px;border-bottom:1px solid var(--line);cursor:pointer;font-size:20px;text-transform:capitalize}
+.mh .cv{transition:transform .2s;opacity:.7}.mon.open .mh .cv{transform:rotate(180deg)}.mh small{color:var(--dim);font-size:13px;margin-left:8px}
+.mb{display:none;padding-top:6px}.mon.open .mb{display:block}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid var(--line)}
+table{border-collapse:separate;border-spacing:0;font-size:14.5px;min-width:820px;width:100%}
+th,td{padding:6px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12.5px;color:var(--dim);white-space:normal;line-height:1.15;vertical-align:bottom;background:#141a23;min-width:78px}
+th:first-child,td:first-child{position:sticky;left:0;background:#121821;text-align:left;z-index:1;min-width:150px;border-right:1px solid var(--line)}
+td.v{cursor:pointer}td.v:empty::after{content:'–';color:#4b5563}
+tr.today td{background:rgba(45,212,191,.07)}tr.today td:first-child{color:var(--ac);background:#132326}
+.g{color:#4ade80}.y{color:#facc15}.o{color:#fb923c}.r{color:#f87171}
+.chw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:#0f141c}
+.lg2{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--dim);margin:8px 4px 2px}.lg2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.note{font-size:12px;color:#fbbf24;margin:6px 4px 0}
+details{border-top:1px solid var(--line)}summary{list-style:none;cursor:pointer;padding:12px 6px;font-size:18px;display:flex;justify-content:space-between}summary::-webkit-details-marker{display:none}
+details[open] summary .cv{transform:rotate(180deg)}
+input.s{width:100%;background:#0f141c;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px 12px;font:inherit;font-size:15px;margin-bottom:8px}
+.gi{display:flex;justify-content:space-between;padding:6px 6px;border-bottom:1px solid var(--line);font-size:15px}.gi span:last-child{min-width:44px;text-align:right}
+.af{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--dim);padding:6px 0 30px}.af select{background:#161c26;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit}
+</style></head><body>
+<div class="ban">SIMULARE – date fictive, doar exemplu. Nu e aplicația reală.</div>
+<div class="top"><span class="lg">NOTIS</span><span style="color:var(--dim);font-size:14px">· Medicamente</span></div>
+<div class="pills"><button class="pill">Pastile 💊</button><button class="pill on">Glicemie</button><button class="pill">Naturiste</button><button class="pill">+</button></div>
+
+<div class="card"><h2>Glicemie <span style="font-size:13px;color:var(--dim)">mg/dl · atinge o valoare ca s-o editezi</span></h2><div id="months"></div></div>
+
+<div class="card"><h2>Grafic</h2><div class="chw" id="chw"><svg id="ch"></svg></div>
+<div class="lg2"><span><i style="background:#16a34a"></i>70–140</span><span><i style="background:#ca8a04"></i>140–180</span><span><i style="background:#ea580c"></i>180–250</span><span><i style="background:#dc2626"></i>&gt;250 / &lt;70</span></div>
+<div class="note">Pragurile sunt orientative, de exemplu. Se vor putea configura. NU sunt sfat medical.</div></div>
+
+<div class="card" style="padding:0 10px"><details><summary>Indice glicemic produse <span class="cv">⌄</span></summary><input class="s" id="q" placeholder="Caută produs…"><div id="gil"></div><div style="height:8px"></div></details></div>
+
+<div class="af">Afișează <select><option>Toate trei</option><option>Două</option><option>Una</option></select></div>
+<script>
+var COLS=['Dimineață (pe nemâncate)','La 2 ore după micul dejun','Înainte de prânz','La 2 ore după prânz','Înainte de cină','La 2 ore după cină','Înainte de culcare'];
+var ZI=['Duminică','Luni','Marți','Miercuri','Joi','Vineri','Sâmbătă'],LU=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+var today=new Date();today.setHours(0,0,0,0);var start=new Date(today);start.setDate(start.getDate()-20);
+var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
+var D=[];for(var d=new Date(start);d<=today;d.setDate(d.getDate()+1)){var r={d:new Date(d),v:[]};var base=[105,165,115,170,118,160,125];for(var i=0;i<7;i++){var x=Math.round(base[i]+(rnd()-.5)*90);if(rnd()<.18)x=null;if(+d===+today&&i>2)x=null;r.v.push(x)}D.push(r)}
+function cl(v){return v==null?'':v<70||v>250?'r':v>180?'o':v>140?'y':'g'}
+function p2(n){return(n<10?'0':'')+n}
+function fmt(d){return p2(d.getDate())+'.'+p2(d.getMonth()+1)+'.'+d.getFullYear()+' - '+ZI[d.getDay()]}
+function renderT(){var by={},ord=[];D.forEach(function(r,ix){var k=r.d.getFullYear()+'-'+r.d.getMonth();if(!by[k]){by[k]=[];ord.push(k)}by[k].push(ix)});
+ var h='';ord.reverse().forEach(function(k,mi){var a=by[k],m=D[a[0]].d;var cur=m.getMonth()===today.getMonth()&&m.getFullYear()===today.getFullYear();
+  h+='<div class="mon'+(cur?' open':'')+'"><div class="mh">'+LU[m.getMonth()]+' '+m.getFullYear()+'<span><small>'+a.length+' zile</small> <span class="cv">⌄</span></span></div><div class="mb"><div class="tw"><table><tr><th>Data</th>'+COLS.map(function(c){return'<th>'+c+'</th>'}).join('')+'</tr>';
+  a.forEach(function(ix){var r=D[ix];h+='<tr'+(+r.d===+today?' class="today"':'')+'><td>'+fmt(r.d)+'</td>'+r.v.map(function(v,j){return'<td class="v '+cl(v)+'" data-i="'+ix+'" data-j="'+j+'">'+(v==null?'':v)+'</td>'}).join('')+'</tr>'});
+  h+='</table></div></div></div>'});document.getElementById('months').innerHTML=h}
+document.getElementById('months').addEventListener('click',function(e){var mh=e.target.closest('.mh');if(mh){mh.parentNode.classList.toggle('open');return}
+ var t=e.target.closest('td.v');if(t){var r=D[+t.dataset.i],j=+t.dataset.j;var n=prompt(fmt(r.d)+'\n'+COLS[j]+' (mg/dl):',r.v[j]==null?'':r.v[j]);if(n===null)return;n=n.trim();r.v[j]=n===''?null:Math.max(0,Math.min(600,parseInt(n,10)||0));renderT();renderC()}});
+function renderC(){var pts=[];D.forEach(function(r,di){r.v.forEach(function(v,j){if(v!=null)pts.push({x:di+j/7,v:v})})});
+ var H=220,pad=30,step=44,W=pad+D.length*step+20,y=function(v){return H-20-(Math.min(v,320)-40)/(320-40)*(H-40)};
+ var s='';[[40,70,'#dc2626'],[70,140,'#16a34a'],[140,180,'#ca8a04'],[180,250,'#ea580c'],[250,320,'#dc2626']].forEach(function(b){s+='<rect x="'+pad+'" y="'+y(b[1])+'" width="'+(W-pad)+'" height="'+(y(b[0])-y(b[1]))+'" fill="'+b[2]+'" opacity=".22"/>'});
+ [70,140,180,250].forEach(function(v){s+='<text x="4" y="'+(y(v)+4)+'" fill="#9aa7b6" font-size="10">'+v+'</text>'});
+ D.forEach(function(r,di){var x=pad+di*step;s+='<line x1="'+x+'" x2="'+x+'" y1="14" y2="'+(H-20)+'" stroke="rgba(255,255,255,.06)"/><text x="'+(x+2)+'" y="'+(H-6)+'" fill="#9aa7b6" font-size="10">'+p2(r.d.getDate())+'.'+p2(r.d.getMonth()+1)+'</text>'});
+ var X=function(p){return pad+p.x*step};s+='<polyline fill="none" stroke="#2dd4bf" stroke-width="1.2" points="'+pts.map(function(p){return X(p)+','+y(p.v)}).join(' ')+'"/>';
+ var C={g:'#4ade80',y:'#facc15',o:'#fb923c',r:'#f87171'};pts.forEach(function(p){s+='<circle cx="'+X(p)+'" cy="'+y(p.v)+'" r="3.2" fill="'+C[cl(p.v)]+'" stroke="#0d1117" stroke-width="1"/>'});
+ var sv=document.getElementById('ch');sv.setAttribute('width',W);sv.setAttribute('height',H);sv.setAttribute('viewBox','0 0 '+W+' '+H);sv.innerHTML=s;var w=document.getElementById('chw');w.scrollLeft=w.scrollWidth}
+var GI=[['Avocado',10],['Vânătă',20],['Banane coapte',60],['Banane necoapte',45],['Fasole albă',35],['Făină albă',85],['Orez alb',70],['Pandișpan',70],['Afine',25],['Bob fiert',80],['Bob necopt',40],['Zahăr brun',70],['Piersici',35],['Piersici conservă',55],['Chifle',70],['Sfeclă roșie crudă',30],['Ceapă',15],['Pâine secară albă',50],['Pâine integrală',65],['Pâine integrală cu făină albă',65],['Măr',35],['Suc de mere neîndulcit',50],['Mure',25],['Orz boabe',45],['Orez expandat',60],['Iaurt degresat',35],['Pâine de orez',70],['Pâine din făină albă',90],['Pâine de secară cu făină albă',65],['Năut fiert',30],['Năut conservat',35],['Zahăr',70],['Dovlecei',15],['Andive',15],['Fasole neagră',35],['Coacăze negre',15],['Ciocolată amăruie >70%',25],['Ciocolată amăruie >80%',20],['Cireșe',20],['Coacăze roșii',25],['Sfeclă roșie',30],['Orez roșu',55],['Usturoi',30],['Curmale uscate',70],['Pâine crocantă',70],['Macaroane chinezești',30],['Paste făinoase din făină albă',70],['Drojdie',35],['Dovleac',75],['Orez sălbatic',35],['Fasole albă/roșie/neagră',35],['Fasole mung/flageolet',25],['Fasole conservată',40],['Fasole verde',15],['Smochine uscate',40],['Smochine proaspete',35],['Fructoză',20],['Glucoză',100],['Rodie',35],['Grepfruit',30],['Mazăre verde',35],['Pară',30],['Hrișcă',40],['Ciuperci',15],['Humus',25],['Mere coapte',35],['Mere uscate',35],['Caise conservate',60],['Muesli neîndulcit',50],['Semințe in/susan/mac',35],['Nectarine',35],['Castraveți',15],['Măsline',15]];
+function nrm(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function renderG(){var q=nrm(document.getElementById('q').value);document.getElementById('gil').innerHTML=GI.filter(function(g){return nrm(g[0]).indexOf(q)>=0}).map(function(g){var c=g[1]>=70?'r':g[1]>=56?'y':'g';return'<div class="gi"><span>'+g[0]+'</span><span class="'+c+'">'+g[1]+'</span></div>'}).join('')||'<div class="gi" style="color:#9aa7b6">Niciun produs</div>'}
+document.getElementById('q').addEventListener('input',renderG);
+renderT();renderC();renderG();
+</script></body></html>
