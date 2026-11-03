@@ -17,6 +17,7 @@ Toate numele de nivel superior sunt globale (fostul IIFE din index.html a fost d
 | 9 | js/boot.js | pornire: screensaver, `NOTIS_BOOTED`, backup automat |
 | 10 | js/setari-ui.js | Setări: rând iconiță + secțiuni pliabile |
 | 11 | js/glicemie.js | Medicamente: categorii + Glicemie |
+| 12 | js/stats.js | Contor anonim instalări + coduri „Ai un cod?” + panou admin (zona secretă); Worker `notis-stats.cluj1313.workers.dev` |
 
 ## Test per modul
 După o modificare într-un modul rulează:
