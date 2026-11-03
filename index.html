@@ -4296,7 +4296,7 @@ function utMig(d){if(d.v>=168)return d;var f=function(x){return nFold(String(x||
 /* v188: remove empty Amanet / Cimitir / Biserică (no rows, reminder, alarm, own name, own group); any with user data stay. Add the new defaults once. */
 function utEmpty(u){return !(u.rows||[]).length&&!u.rem&&!u.al&&!u.name&&!u.g&&!(u.yrs||[]).length&&!u.yr}
 function utMig188(d){if(d.v>=188)return d;var G=UT_GONE.map(function(x){return x[0]}),rm=[];
- d.list=d.list.filter(function(u){if(G.indexOf(u.k)>=0&&utEmpty(u)){rm.push(u.k);return false}return true});
+ d.list=d.list.filter(function(u){if(G.indexOf(u.k)>=0){rm.push(u.k);if(d.open)delete d.open[u.id];return false}return true});
  UT_DEF.forEach(function(x){if(['vigneta','crcasa','crauto','net','stream'].indexOf(x[0])>=0&&!d.list.some(function(u){return u.k===x[0]}))d.list.push(utDef(x))});
  try{LS.set('ns_util_mig188',{ts:Date.now(),removed:rm})}catch(_){}d.v=188;d.__m=1;return d}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
