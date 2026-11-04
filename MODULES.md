@@ -17,6 +17,7 @@ Toate numele de nivel superior sunt globale (fostul IIFE din index.html a fost d
 | 9 | js/boot.js | pornire: screensaver, `NOTIS_BOOTED`, backup automat |
 | 10 | js/setari-ui.js | Setări: rând iconiță + secțiuni pliabile |
 | 11 | js/glicemie.js | Medicamente: categorii + Glicemie |
+| 11b | js/taskx.js | v199: tab Sarcini (kind 'task', opt-in din Setări): ns_tk(+_bak), subsarcini, poze cu nume (IndexedDB, prefix 'tk:'), phPickN pentru „Foto cu nume” în notițe |
 | 12 | js/stats.js | Contor anonim instalări + coduri „Ai un cod?” + panou admin (zona secretă); Worker `notis-stats.cluj1313.workers.dev` |
 
 ## Test per modul
