@@ -19,6 +19,7 @@ Toate numele de nivel superior sunt globale (fostul IIFE din index.html a fost d
 | 11 | js/glicemie.js | Medicamente: categorii + Glicemie |
 | 11b | js/taskx.js | v199: tab Sarcini (kind 'task', opt-in din Setări): ns_tk(+_bak), subsarcini, poze cu nume (IndexedDB, prefix 'tk:'), phPickN pentru „Foto cu nume” în notițe |
 | 12 | js/stats.js | Contor anonim instalări + coduri „Ai un cod?” + panou admin (zona secretă); Worker `notis-stats.cluj1313.workers.dev` |
+| 13 | js/cardq.js | v226 detector de margini pentru cărți de vizită/documente (Hough + scor pe margini + rafinare), `cardQuad`/`cardCrop`; folosit de Parole (📇) și de notițe (Carte de vizită) |
 
 ## Test per modul
 După o modificare într-un modul rulează:
