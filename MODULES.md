@@ -9,6 +9,7 @@ Toate numele de nivel superior sunt globale (fostul IIFE din index.html a fost d
 | 1 | js/core.js | stocare (localStorage), i18n `TR`, notițe/taburi/editor, liste, cumpărături, urgențe, medicamente + alarme, voce, backup (`bkShare0`), lansare din scurtături/widget (`nsLaunch`: `?a=` `?tab=` `?open=` `?tk=`) |
 | 2 | js/plati.js | Plăți (tab kind `util`): `UT_DEF`, grupuri, migrări, plăți/alarme |
 | 3 | js/crm.js | CRM (tab kind `crm`) |
+| 3b | js/picons.js | v229: pictograme de brand pentru Parole (Simple Icons, CC0, incluse local) — `PW_ICONS` |
 | 4 | js/parole.js | Parole (seif criptat) |
 | 5 | js/tabs.js | constante app (`NOTIS_WEB_REL`), ordinea taburilor, urgențe |
 | 6 | js/setari.js | Setări (modal) |
