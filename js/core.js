@@ -2916,9 +2916,9 @@ document.addEventListener('click',function(e){if(e.target&&e.target.id==='ndDone
  function closeVc(){var m=$('vcMenu');if(m)m.remove()}
  function ico(s){return s}
  function openVc(anchor){closeVc();var m=document.createElement('div');m.id='vcMenu';
-  var h='<button type="button" class="vci" data-vc="read"><span>'+esc(TR('Citire'))+'</span><svg class="vico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 7H20v13H6.5A2.5 2.5 0 0 0 4 22.5z"/></svg></button>';
-  h+='<div class="vcs"></div><button type="button" class="vci" data-vc="dict"><span>'+esc(TR('Dictare'))+'</span><svg class="vico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/></svg></button>';
-  h+='<div class="vcs"></div><button type="button" class="vci" data-vc="rec"><span>'+esc(TR('Înregistrare'))+'</span><i class="vcdot" aria-hidden="true"></i></button>';
+  var h='<button type="button" class="vci" data-vc="read"><span>'+esc(TR('Citire'))+'</span><span class="vico vemo" aria-hidden="true">🔊</span></button>';
+  h+='<div class="vcs"></div><button type="button" class="vci" data-vc="dict"><span>'+esc(TR('Dictare'))+'</span><span class="vico vemo" aria-hidden="true">🗣️</span></button>';
+  h+='<div class="vcs"></div><button type="button" class="vci" data-vc="rec"><span>'+esc(TR('Înregistrare'))+'</span><span class="vico vemo" aria-hidden="true">🔴</span></button>';
   m.innerHTML=h;document.body.appendChild(m);
   var r=anchor.getBoundingClientRect();m.style.left=Math.max(8,Math.min(window.innerWidth-m.offsetWidth-8,r.right-m.offsetWidth))+'px';
   m.style.bottom=(window.innerHeight-r.top+8)+'px';
