@@ -10,7 +10,7 @@ Toate numele de nivel superior sunt globale (fostul IIFE din index.html a fost d
 | 2 | js/plati.js | Plăți (tab kind `util`): `UT_DEF`, grupuri, migrări, plăți/alarme |
 | 3 | js/crm.js | CRM (tab kind `crm`) |
 | 3b | js/picons.js | v229: pictograme de brand pentru Parole (Simple Icons, CC0, incluse local) — `PW_ICONS` |
-| 3c | js/v231.js | v231: ⋮ pe fiecare folder și notiță din listă (Redenumește, Mută, Culoare, Share, Blochează, Șterge) — `rwOpen`, `rwAct`; v232: `rowShMenu` (⋮ → Share pe rândurile din Înregistrări și Tratamente alternative) | — v233: `js/parole.js` PIN card, reorder sub-tabs (pills) + Categorii list
+| 3c | js/v231.js | v231: ⋮ pe fiecare folder și notiță din listă (Redenumește, Mută, Culoare, Share, Blochează, Șterge) — `rwOpen`, `rwAct`; v232: `rowShMenu` (⋮ → Share pe rândurile din Înregistrări și Tratamente alternative) | — v233: `js/parole.js` PIN card, reorder sub-tabs (pills) + Categorii list — v234: rânduri Parole reordonabile (`D.ord`)
 | 4 | js/parole.js | Parole (seif criptat) |
 | 5 | js/tabs.js | constante app (`NOTIS_WEB_REL`), ordinea taburilor, urgențe |
 | 6 | js/setari.js | Setări (modal) |
